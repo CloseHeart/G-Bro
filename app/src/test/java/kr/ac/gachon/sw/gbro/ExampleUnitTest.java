@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.gachonlost;
+package kr.ac.gachon.sw.gbro;
 
 import org.junit.Test;
 

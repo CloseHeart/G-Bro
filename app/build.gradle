@@ -8,7 +8,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "kr.ac.gachon.sw.gachonlost"
+        applicationId "kr.ac.gachon.sw.gbro"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1000
