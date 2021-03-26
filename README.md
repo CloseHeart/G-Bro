@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-    Lost and Found Community for Gachon University Member
+    Lost and Found Community Application for Gachon University Member
 </p>
 
 ## Preview
