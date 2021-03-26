@@ -6,7 +6,7 @@
 
 <p align="center">
     <a href="http://www.apache.org/licenses/LICENSE-2.0"><img alt="License" src="https://img.shields.io/github/license/Closeheart/G-Bro"></a>
-    <a href="https://img.shields.io/github/stars/Closeheart/G-Bro?style=social"><img alt="Github Stars" src="https://img.shields.io/github/stars/Closeheart/G-Bro?style=social"></a>
+    <img alt="Github Stars" src="https://img.shields.io/github/stars/Closeheart/G-Bro?style=social">
 </p>
 
 <p align="center">
