@@ -8,6 +8,8 @@
 
     <color name="gbro_main">#a3c0ff</color>
     <color name="gbro_second">#7b94f5</color>
+    <color name="gbro_dark_main">#6c61c9</color>
+    <color name="gbro_dark_second">#3C3C3C</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
