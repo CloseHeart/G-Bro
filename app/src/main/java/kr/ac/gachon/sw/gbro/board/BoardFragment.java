@@ -8,14 +8,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
-import kr.ac.gachon.sw.gbro.databinding.ActivityBoardBinding;
+import kr.ac.gachon.sw.gbro.databinding.FragmentBoardBinding;
 
-public class BoardFragment extends BaseFragment<ActivityBoardBinding> {
+public class BoardFragment extends BaseFragment<FragmentBoardBinding> {
     @Override
-    protected ActivityBoardBinding getBinding() {
-        return ActivityBoardBinding.inflate(getLayoutInflater());
+    protected FragmentBoardBinding getBinding() {
+        return FragmentBoardBinding.inflate(getLayoutInflater());
     }
 
     @Nullable
