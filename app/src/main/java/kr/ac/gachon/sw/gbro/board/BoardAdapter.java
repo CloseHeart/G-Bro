@@ -1,5 +1,6 @@
 package kr.ac.gachon.sw.gbro.board;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemBoardBinding;
 
 public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHolder> {
@@ -37,6 +39,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
     public void onBindViewHolder(@NonNull BoardAdapter.BoardViewHolder holder, int position) {
         ItemBoardBinding binding = holder.itemBoardBinding;
         Post currentPost = postList.get(position);
+        binding.ivThumbnail.setImageResource(R.mipmap.ic_launcher);
         binding.tvTitle.setText(currentPost.postTitle);
         binding.tvSummary.setText(currentPost.postSummary);
         binding.tvLocation.setText(currentPost.postLocation);
@@ -46,5 +49,15 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
     @Override
     public int getItemCount() {
         return postList.size();
+    }
+
+    public void addItem(Post post) {
+        postList.add(post);
+        notifyDataSetChanged();
+    }
+
+    public void addAll(ArrayList<Post> post) {
+        postList.addAll(post);
+        notifyDataSetChanged();
     }
 }

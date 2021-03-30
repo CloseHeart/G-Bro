@@ -4,23 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="bottom"
+    app:umanoDragView="@id/view_swipeBar"
+    app:umanoPanelHeight="120dp"
+    app:umanoOverlay="true"
     tools:context=".MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
-        <TextView
+        <FrameLayout
+            android:id="@+id/fl_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+        <com.naver.maps.map.widget.LocationButtonView
+            android:id="@+id/map_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_margin="12dp"
+            android:layout_gravity="end|top" />
 
+    </FrameLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/splash_background"
+        android:orientation="vertical" >
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/view_swipeBar"
+            android:background="@color/white"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="60dp"
+            android:layout_height="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <FrameLayout
+            android:id="@+id/fl_board"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"  />
+
+    </LinearLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

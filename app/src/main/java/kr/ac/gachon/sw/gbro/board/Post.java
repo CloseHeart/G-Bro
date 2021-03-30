@@ -14,4 +14,14 @@ public class Post {
     int writerId;
     String writerNick;
     Date writeTime;
+
+    public Post(int postNumber, int postType, String title, String summary, String location, int writeid, String writerNick) {
+        this.postNumber = postNumber;
+        this.postType = postType;
+        this.postTitle = title;
+        this.postSummary = summary;
+        this.postLocation = location;
+        this.writerId = writeid;
+        this.writerNick = writerNick;
+    }
 }

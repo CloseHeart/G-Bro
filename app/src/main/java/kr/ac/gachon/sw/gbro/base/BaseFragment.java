@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewbinding.ViewBinding;
 
 public abstract class BaseFragment<B extends ViewBinding> extends Fragment {
-    B binding;
+    protected B binding;
     protected abstract B getBinding();
 
     protected void initBinding() {
@@ -18,5 +18,11 @@ public abstract class BaseFragment<B extends ViewBinding> extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.initBinding();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

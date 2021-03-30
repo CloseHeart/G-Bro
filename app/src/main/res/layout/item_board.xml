@@ -3,14 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/iv_thumbnail"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars[0]" />
@@ -20,13 +22,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="갤럭시 버즈 프로 찾습니다 ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ  "
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_thumbnail"
         app:layout_constraintTop_toTopOf="parent" />
@@ -42,6 +44,7 @@
         android:maxLines="1"
         android:text="IT대 601호에서 갤럭시 버즈를 분실했습니다 ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ"
         android:textColor="?android:attr/textColorSecondary"
+        android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_thumbnail"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
@@ -55,6 +58,7 @@
         android:layout_marginEnd="4dp"
         android:text="IT융합대학"
         android:textColor="?android:attr/textColorSecondary"
+        android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_thumbnail"
         app:layout_constraintTop_toBottomOf="@+id/tv_summary" />
@@ -65,8 +69,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
         android:text="10:18"
         android:textColor="?android:attr/textColorSecondary"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_thumbnail"
         app:layout_constraintTop_toBottomOf="@+id/tv_location" />
 
@@ -76,11 +83,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="이미닉네임이다있대"
         android:textColor="?android:attr/textColorSecondary"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_uploadtime"
         app:layout_constraintTop_toBottomOf="@+id/tv_location" />
