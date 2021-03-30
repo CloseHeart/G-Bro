@@ -53,4 +53,7 @@ dependencies {
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
+
+    // Layout
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
 }
