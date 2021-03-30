@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewbinding.ViewBinding;
 
 public abstract class BaseFragment<B extends ViewBinding> extends Fragment {
-    private B binding;
+    B binding;
     protected abstract B getBinding();
 
     protected void initBinding() {

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
 
 public abstract class BaseActivity<B extends ViewBinding> extends AppCompatActivity {
-    private B binding;
+    B binding;
     protected abstract B getBinding();
 
     protected void initBinding() {
