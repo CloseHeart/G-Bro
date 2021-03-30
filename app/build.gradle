@@ -53,4 +53,13 @@ dependencies {
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
+
+    // Layout
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
+
+    // Naver Maps SDK
+    implementation 'com.naver.maps:map-sdk:3.11.0'
+
+    // Google Play Services
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 }
