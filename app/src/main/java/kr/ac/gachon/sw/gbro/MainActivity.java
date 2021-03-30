@@ -5,6 +5,10 @@ import android.view.Gravity;
 
 import androidx.annotation.NonNull;
 
+
+import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapOptions;
@@ -35,6 +39,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
         if(mapFragment == null) {
             NaverMapOptions options = new NaverMapOptions()
+                    .camera(new CameraPosition(new LatLng(37.45082183610419, 127.12877229523757), 16))
                     .logoGravity(Gravity.START|Gravity.TOP)
                     .logoMargin(8, 8, 8, 8)
                     .locationButtonEnabled(false)
