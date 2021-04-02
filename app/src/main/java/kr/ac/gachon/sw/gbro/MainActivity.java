@@ -1,26 +1,22 @@
 package kr.ac.gachon.sw.gbro;
 
 import android.os.Bundle;
-import android.view.Gravity;
+import android.view.View;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
-
-import com.naver.maps.geometry.LatLng;
-import com.naver.maps.map.CameraPosition;
-import com.naver.maps.map.CameraUpdate;
-import com.naver.maps.map.MapFragment;
-import com.naver.maps.map.NaverMap;
-import com.naver.maps.map.NaverMapOptions;
-import com.naver.maps.map.OnMapReadyCallback;
-import com.naver.maps.map.UiSettings;
-import com.naver.maps.map.widget.LocationButtonView;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.board.BoardFragment;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
+import kr.ac.gachon.sw.gbro.map.MapFragment;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements OnMapReadyCallback {
+public class MainActivity extends BaseActivity<ActivityMainBinding> {
+    long lastPressedTime = 0;
+    long backPressedTime = 2000;
+
     @Override
     protected ActivityMainBinding getBinding() {
         return ActivityMainBinding.inflate(getLayoutInflater());
@@ -29,40 +25,62 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setMap();
         setFragment();
-    }
-
-    private void setMap() {
-        MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.fl_map);
-
-        if(mapFragment == null) {
-            NaverMapOptions options = new NaverMapOptions()
-                    .camera(new CameraPosition(new LatLng(37.45082183610419, 127.12877229523757), 16))
-                    .logoGravity(Gravity.START|Gravity.TOP)
-                    .logoMargin(8, 8, 8, 8)
-                    .locationButtonEnabled(false)
-                    .compassEnabled(false)
-                    .zoomControlEnabled(false);
-            mapFragment = MapFragment.newInstance(options);
-            getSupportFragmentManager().beginTransaction().add(R.id.fl_map, mapFragment).commit();
-        }
-
-        mapFragment.getMapAsync(naverMap -> {
-            LocationButtonView locationButtonView = binding.mapLocation;
-            locationButtonView.setMap(naverMap);
-        });
-    }
-
-
-    private void setFragment() {
-        BoardFragment boardFragment = new BoardFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.fl_board, boardFragment).commit();
+        setSlidingPanel();
     }
 
     @Override
-    public void onMapReady(@NonNull NaverMap naverMap) {
+    public void onBackPressed() {
+        // 열려있다면
+        if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            // 닫기
+            binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+        // 그게 아니라면
+        else {
+            // 두 번 눌러서 종료할 수 있도록 함
+            if (System.currentTimeMillis() > lastPressedTime + backPressedTime) {
+                lastPressedTime = System.currentTimeMillis();
+                Toast.makeText(this, getString(R.string.backpressed), Toast.LENGTH_SHORT).show();
+            } else {
+                super.onBackPressed();
+            }
+        }
+    }
 
+    private void setFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        BoardFragment boardFragment = new BoardFragment();
+        fragmentManager.beginTransaction().add(binding.flBoard.getId(), boardFragment).commit();
+
+        MapFragment mapFragment = new MapFragment();
+        fragmentManager.beginTransaction().add(binding.flMap.getId(), mapFragment).commit();
+    }
+
+    private void setSlidingPanel() {
+        SlidingUpPanelLayout slidingUpPanelLayout = binding.mainpanel;
+
+        // TODO : 다크모드 / 일반모드 변경시에 Panel 상태와 상관 없이 ActionBar가 사라지는 문제 해결
+        if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) getSupportActionBar().hide();
+
+        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                // If Close
+                if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    getSupportActionBar().hide();
+                }
+                // If Open
+                else if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    getSupportActionBar().show();
+                }
+            }
+        });
     }
 }
