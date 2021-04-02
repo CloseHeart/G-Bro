@@ -1,10 +1,9 @@
 package kr.ac.gachon.sw.gbro;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -15,6 +14,9 @@ import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
+    long lastPressedTime = 0;
+    long backPressedTime = 2000;
+
     @Override
     protected ActivityMainBinding getBinding() {
         return ActivityMainBinding.inflate(getLayoutInflater());
@@ -25,6 +27,25 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         super.onCreate(savedInstanceState);
         setFragment();
         setSlidingPanel();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // 열려있다면
+        if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            // 닫기
+            binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+        // 그게 아니라면
+        else {
+            // 두 번 눌러서 종료할 수 있도록 함
+            if (System.currentTimeMillis() > lastPressedTime + backPressedTime) {
+                lastPressedTime = System.currentTimeMillis();
+                Toast.makeText(this, getString(R.string.backpressed), Toast.LENGTH_SHORT).show();
+            } else {
+                super.onBackPressed();
+            }
+        }
     }
 
     private void setFragment() {
