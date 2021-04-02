@@ -11,22 +11,9 @@
     tools:context=".MainActivity">
 
     <FrameLayout
+        android:id="@+id/fl_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <FrameLayout
-            android:id="@+id/fl_map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
-
-        <com.naver.maps.map.widget.LocationButtonView
-            android:id="@+id/map_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            android:layout_gravity="end|top" />
-
     </FrameLayout>
 
     <LinearLayout
