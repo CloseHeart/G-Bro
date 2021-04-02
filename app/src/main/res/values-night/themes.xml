@@ -8,12 +8,17 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
     </style>
 
     <style name="Theme.GBro.Splash" parent="Theme.GBro">
+        <item name="android:windowBackground">@color/gray</item>
         <item name="android:windowFullscreen">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.GBro.Board" parent="Theme.GBro">
+        <item name="android:windowBackground">@color/black</item>
     </style>
 </resources>

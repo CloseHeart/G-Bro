@@ -2,12 +2,13 @@
 <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainpanel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
     app:umanoDragView="@id/view_swipeBar"
     app:umanoPanelHeight="120dp"
-    app:umanoOverlay="true"
+    app:umanoOverlay="false"
     tools:context=".MainActivity">
 
     <FrameLayout
@@ -19,8 +20,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/splash_background"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:theme="@style/Theme.GBro.Board" >
 
         <View
             android:id="@+id/view_swipeBar"
