@@ -1,9 +1,13 @@
 package kr.ac.gachon.sw.gbro;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.FragmentManager;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -36,6 +40,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             // 닫기
             binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
+
         // 그게 아니라면
         else {
             // 두 번 눌러서 종료할 수 있도록 함
@@ -48,37 +53,44 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+    }
+
     private void setFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         BoardFragment boardFragment = new BoardFragment();
-        fragmentManager.beginTransaction().add(binding.flBoard.getId(), boardFragment).commit();
+        fragmentManager.beginTransaction().replace(binding.flBoard.getId(), boardFragment).commit();
 
         MapFragment mapFragment = new MapFragment();
-        fragmentManager.beginTransaction().add(binding.flMap.getId(), mapFragment).commit();
+        fragmentManager.beginTransaction().replace(binding.flMap.getId(), mapFragment).commit();
     }
 
     private void setSlidingPanel() {
         SlidingUpPanelLayout slidingUpPanelLayout = binding.mainpanel;
-
-        // TODO : 다크모드 / 일반모드 변경시에 Panel 상태와 상관 없이 ActionBar가 사라지는 문제 해결
-        if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) getSupportActionBar().hide();
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-
+                Log.d(MainActivity.this.getLocalClassName(), "slideOffset : " + slideOffset);
             }
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 // If Close
                 if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    getSupportActionBar().hide();
+                    if(actionBar != null) actionBar.hide();
                 }
                 // If Open
                 else if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    getSupportActionBar().show();
+                    if(actionBar != null) actionBar.show();
                 }
             }
         });
