@@ -15,4 +15,5 @@
 local.properties
 /keystore
 google-services.json
+credentials.json
 app/src/main/res/values/naverapi.xml
