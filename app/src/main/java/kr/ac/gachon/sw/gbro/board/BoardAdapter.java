@@ -2,7 +2,6 @@ package kr.ac.gachon.sw.gbro.board;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -12,11 +11,15 @@ import java.util.ArrayList;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemBoardBinding;
+import kr.ac.gachon.sw.gbro.util.Util;
+import kr.ac.gachon.sw.gbro.util.model.Post;
 
 public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHolder> {
-    public ArrayList<Post> postList;
+    private Context context;
+    private ArrayList<Post> postList;
 
-    public BoardAdapter(ArrayList<Post> postList) {
+    public BoardAdapter(Context context, ArrayList<Post> postList) {
+        this.context = context;
         this.postList = postList;
     }
 
@@ -40,10 +43,11 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         ItemBoardBinding binding = holder.itemBoardBinding;
         Post currentPost = postList.get(position);
         binding.ivThumbnail.setImageResource(R.mipmap.ic_launcher);
-        binding.tvTitle.setText(currentPost.postTitle);
-        binding.tvSummary.setText(currentPost.postSummary);
-        binding.tvLocation.setText(currentPost.postLocation);
-        binding.tvWriter.setText(currentPost.writerNick);
+        binding.tvTitle.setText(currentPost.getTitle());
+        binding.tvSummary.setText(currentPost.getContent());
+        binding.tvUploadtime.setText(Util.timeStamptoString(currentPost.getWriteTime()));
+        binding.tvLocation.setText(currentPost.getSummaryBuildingName(context));
+        binding.tvWriter.setText(currentPost.getWriterId());
     }
 
     @Override
@@ -57,6 +61,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
     }
 
     public void addAll(ArrayList<Post> post) {
+        postList.clear();
         postList.addAll(post);
         notifyDataSetChanged();
     }
