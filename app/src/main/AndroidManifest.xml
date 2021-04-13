@@ -18,13 +18,17 @@
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="@string/navermap_clientid" />
 
-        <activity android:name=".SplashActivity"
+        <activity android:name=".LoginActivity"
             android:theme="@style/Theme.GBro.Splash" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".SplashActivity"
+            android:theme="@style/Theme.GBro.Splash" >
         </activity>
 
         <activity android:name=".MainActivity" />
