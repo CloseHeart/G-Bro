@@ -21,7 +21,7 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> {
         super.onCreate(savedInstanceState);
 
         // MainActivity로 이동을 위한 Intent 생성
-        Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        Intent loginActivityIntent = new Intent(this, LoginActivity.class);
 
         // 지정한 시간 이후에 MainActivity로 이동시키기 위해 Handler 생성
         splashHandler = new Handler();
@@ -29,7 +29,7 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> {
         // Handler가 실행할 작업 설정
         moveActivity = () -> {
             // 새 액티비티 시작
-            startActivity(mainActivityIntent);
+            startActivity(loginActivityIntent);
 
             // 현재 액티비티 종료
             finish();
