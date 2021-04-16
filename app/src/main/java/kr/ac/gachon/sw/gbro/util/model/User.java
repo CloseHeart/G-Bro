@@ -4,16 +4,17 @@ import com.google.firebase.Timestamp;
 
 public class User {
     private String userEmail;
-    private String userNickName;
+    private String userName;
     private String userProfileImgURL;
     private boolean isAdmin;
     private Timestamp registerTime;
 
-    public User(String userEmail, String userNickName, String userProfileImgURL) {
+    public User(String userEmail, String userName, String userProfileImgURL, Timestamp registerTime) {
         this.userEmail = userEmail;
-        this.userNickName = userNickName;
+        this.userName = userName;
         this.userProfileImgURL = userProfileImgURL;
         this.isAdmin = false;
+        this.registerTime =  registerTime;
     }
 
     public String getUserEmail() {
@@ -21,7 +22,7 @@ public class User {
     }
 
     public String getUserNickName() {
-        return userNickName;
+        return userName;
     }
 
     public String getUserProfileImgURL() {
