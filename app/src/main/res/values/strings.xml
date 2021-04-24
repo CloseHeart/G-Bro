@@ -4,4 +4,6 @@
     <string name="backpressed">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
     <string name="login_invalid">가천대학교 구성원만 사용할 수 있습니다.</string>
     <string name="login_error">로그인에 실패했습니다.</string>
+    <string name="login_sucess">로그인에 성공했습니다.</string>
+    <string name="login_requireverify">메일 인증 절차 후 사용하실 수 있습니다! 클라우드 메일을 확인하셔서 인증 절차를 거치신 후 다시 접속해주세요!</string>
 </resources>
