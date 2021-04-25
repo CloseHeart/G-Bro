@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.naver.maps.geometry.LatLng;
+import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapOptions;
@@ -53,6 +54,11 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
             mapFragment.getMapAsync(naverMap -> {
                 LocationButtonView locationButtonView = binding.mapwidgetLocation;
                 locationButtonView.setMap(naverMap);
+
+                naverMap.setExtent(new LatLngBounds(new LatLng(37.44792028734633, 127.12628356183701), new LatLng(37.4570968690434, 127.13723061921826)));
+                naverMap.setMinZoom(16.0);
+                naverMap.setMaxZoom(0.0);
+
             });
         }
     }

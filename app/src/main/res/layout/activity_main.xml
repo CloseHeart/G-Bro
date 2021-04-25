@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:umanoDragView="@id/view_swipeBar"
-        app:umanoPanelHeight="200dp"
+        app:umanoPanelHeight="120dp"
         app:umanoOverlay="true"
         app:umanoShadowHeight="0dp"
         android:gravity="bottom" >
