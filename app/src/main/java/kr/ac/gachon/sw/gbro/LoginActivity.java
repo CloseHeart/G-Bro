@@ -146,6 +146,11 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                 });
     }
 
+    /*
+     * 유저가 이미 회원가입 되었는지, 혹은 아닌지 체크한다
+     * @author Suyeon Jung, Minjae Seon
+     * @return Void
+     */
     private void checkUser() {
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -175,6 +180,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                                                 // 성공했다면
                                                 if(documentTask.isSuccessful()) {
                                                     Log.d(LoginActivity.this.getLocalClassName(), "writeNewUser:success");
+                                                    Toast.makeText(getApplicationContext(), R.string.login_success, Toast.LENGTH_LONG).show();
                                                     // MainActivity로
                                                     startActivity(mainActivityIntent);
                                                     finish();

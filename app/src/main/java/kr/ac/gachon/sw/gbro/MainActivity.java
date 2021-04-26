@@ -31,6 +31,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         super.onCreate(savedInstanceState);
         setFragment();
         setSlidingPanel();
+        setFab();
     }
 
     @Override
@@ -61,6 +62,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         }
     }
 
+    /*
+     * 각 Fragment들을 설정한다
+     * @author Minjae Seon
+     * @return Void
+     */
     private void setFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -71,6 +77,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         fragmentManager.beginTransaction().replace(binding.flMap.getId(), mapFragment).commit();
     }
 
+    /*
+     * SlidingPanel 관련 이벤트를 설정한다
+     * @author Minjae Seon
+     * @return Void
+     */
     private void setSlidingPanel() {
         SlidingUpPanelLayout slidingUpPanelLayout = binding.mainpanel;
         ActionBar actionBar = getSupportActionBar();
@@ -93,6 +104,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     if(actionBar != null) actionBar.show();
                 }
             }
+        });
+    }
+
+    /*
+     * FloatingActionButton을 설정한다
+     * @author Minjae Seon
+     * @return Void
+     */
+    private void setFab() {
+        // 글쓰기 버튼
+        binding.fabWrite.setOnClickListener(v -> {
+            Toast.makeText(this, "글쓰기 버튼입니다", Toast.LENGTH_SHORT).show();
+        });
+
+        // 설정 버튼
+        binding.fabSetting.setOnClickListener(v -> {
+            Toast.makeText(this, "설정 버튼입니다", Toast.LENGTH_SHORT).show();
         });
     }
 }

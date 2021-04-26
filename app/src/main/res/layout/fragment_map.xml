@@ -9,4 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <com.naver.maps.map.widget.LocationButtonView
+        android:id="@+id/mapwidget_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_margin="12dp" />
+
 </FrameLayout>

@@ -64,6 +64,7 @@ dependencies {
 
     // Layout
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
 
     // Naver Maps SDK
     implementation 'com.naver.maps:map-sdk:3.11.0'
