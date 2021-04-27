@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="게시물분류">
+        <item>전체</item>
+        <item>분실물</item>
+        <item>습득물</item>
+    </string-array>
+
+    <string-array name="product">
+        <item>지갑</item>
+        <item>핸드폰</item>
+        <item>돈</item>
+        <item>장난감</item>
+    </string-array>
+
+    <string-array name="product_value">
+        <item>wallet</item>
+        <item>phone</item>
+        <item>money</item>
+        <item>toy</item>
+    </string-array>
+</resources>

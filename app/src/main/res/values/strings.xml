@@ -9,4 +9,7 @@
 
     <string name="fab_write">글쓰기</string>
     <string name="fab_setting">설정</string>
+    <string name="search_hint">찾을 게시물 이름을 입력해주세요.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

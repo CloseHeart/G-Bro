@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.firebase.Timestamp;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
+import kr.ac.gachon.sw.gbro.MainActivity;
+import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
 import kr.ac.gachon.sw.gbro.databinding.FragmentBoardBinding;
 import kr.ac.gachon.sw.gbro.util.model.Post;
@@ -53,7 +57,6 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> {
         }
 
         Log.d("BoardFragment", "postList Size : " + postList.size());
-
         binding.rvBoard.setHasFixedSize(true);
         binding.rvBoard.setLayoutManager(new LinearLayoutManager(getActivity()));
 
