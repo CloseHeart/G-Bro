@@ -31,7 +31,11 @@
             android:theme="@style/Theme.GBro.Splash" >
         </activity>
 
-        <activity android:name=".MainActivity" />
+        <activity android:name=".SettingActivity"
+            android:theme="@style/Theme.GBro.Splash">
+        </activity>
+
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>
