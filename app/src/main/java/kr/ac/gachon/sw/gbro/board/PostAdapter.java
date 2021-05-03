@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.gbro;
+package kr.ac.gachon.sw.gbro.board;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -12,6 +12,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
+
+import kr.ac.gachon.sw.gbro.R;
 
 public class PostAdapter extends PagerAdapter {
 

@@ -17,9 +17,7 @@
             android:layout_gravity="top"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:src="@mipmap/splashlogo"
-            app:civ_border_color="#FF000000"
-            app:civ_border_width="1dp">
+            android:src="@mipmap/splashlogo" >
 
             <ImageView
                 android:id="@+id/other_profile_url"

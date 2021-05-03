@@ -1,25 +1,25 @@
-package kr.ac.gachon.sw.gbro;
+package kr.ac.gachon.sw.gbro.setting;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.ListPreference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
+
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+
+import kr.ac.gachon.sw.gbro.R;
 
 
-public class  SettingPreferenceFragment extends PreferenceFragment {
-
+public class SettingPreferenceFragment extends PreferenceFragmentCompat {
     SharedPreferences prefs;
-
     ListPreference productPreference;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings_preference);
+
         productPreference = (ListPreference)findPreference("found_list");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());

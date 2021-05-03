@@ -3,6 +3,7 @@ package kr.ac.gachon.sw.gbro;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +28,7 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> {
         mAuth = FirebaseAuth.getInstance();
 
         // 지정한 시간 이후에 Activity 이동을 위해 Handler 생성
-        splashHandler = new Handler();
+        splashHandler = new Handler(Looper.getMainLooper());
 
         // Handler가 실행할 작업 설정
         moveActivity = () -> {

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PostContentActivity"
+    tools:context=".board.PostContentActivity"
     android:background="@color/gbro_brighter_main">
 
     <!--  메인으로 돌아갈떄 누를 버튼 -->

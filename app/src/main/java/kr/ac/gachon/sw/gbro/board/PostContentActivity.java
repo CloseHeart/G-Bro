@@ -1,30 +1,17 @@
-package kr.ac.gachon.sw.gbro;
+package kr.ac.gachon.sw.gbro.board;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import kr.ac.gachon.sw.gbro.MainActivity;
+import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
-import kr.ac.gachon.sw.gbro.board.BoardFragment;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
-import kr.ac.gachon.sw.gbro.map.MapFragment;
 import me.relex.circleindicator.CircleIndicator;
 
 public class PostContentActivity extends BaseActivity<ActivityMainBinding> {
