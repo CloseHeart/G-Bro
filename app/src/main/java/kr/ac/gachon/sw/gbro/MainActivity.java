@@ -129,7 +129,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
         // 설정 버튼
         binding.fabSetting.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+
+            // 여기 postcontent setting으로 바꾸기(원상복구 )
+            Intent intent = new Intent(MainActivity.this, PostContentActivity.class);
             startActivity(intent);
             Toast.makeText(this, "설정 버튼입니다", Toast.LENGTH_SHORT).show();
         });

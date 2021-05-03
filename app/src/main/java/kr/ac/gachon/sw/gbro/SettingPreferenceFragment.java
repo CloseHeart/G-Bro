@@ -9,7 +9,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
 
-public class SettingPreferenceFragment extends PreferenceFragment {
+public class  SettingPreferenceFragment extends PreferenceFragment {
 
     SharedPreferences prefs;
 
