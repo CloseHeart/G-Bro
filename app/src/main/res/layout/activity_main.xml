@@ -7,28 +7,6 @@
     tools:context=".MainActivity"
     android:orientation="vertical" >
 
-    <androidx.appcompat.widget.Toolbar
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/tool_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <Spinner
-            android:id="@+id/spinner"
-            android:entries="@array/게시물분류"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-
-        <EditText
-            android:id="@+id/searchname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/search_hint"
-            />
-
-    </androidx.appcompat.widget.Toolbar>
-
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         android:id="@+id/mainpanel"
         android:layout_width="match_parent"
@@ -60,7 +38,7 @@
 
             <FrameLayout
                 android:id="@+id/fl_board"
-                android:background="@color/white"
+                android:background="?attr/colorOnPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"  />
         </LinearLayout>

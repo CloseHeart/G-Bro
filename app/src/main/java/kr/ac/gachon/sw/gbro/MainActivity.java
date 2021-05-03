@@ -4,11 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -31,7 +28,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setFragment();
-        setSpinner();
         setSlidingPanel();
         setFab();
     }
@@ -87,12 +83,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private void setSlidingPanel() {
         SlidingUpPanelLayout slidingUpPanelLayout = binding.mainpanel;
 
-        Toolbar toolbar = binding.toolBar;
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowCustomEnabled(true); // 커스터마이징 하기 위해 필요
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.hide();
+        CustomActionBar customActionBar = new CustomActionBar(this, getSupportActionBar());
+        customActionBar.setActionBar();
+        customActionBar.hide();
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -104,11 +97,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 // If Close
                 if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    if(actionBar != null)  actionBar.hide();
+                    // 액션바 가리기
+                    customActionBar.hide();
+
+                    // Swiper 보이기
+                    binding.viewSwipeBar.setVisibility(View.VISIBLE);
                 }
                 // If Open
                 else if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    if(actionBar != null)  actionBar.show();
+                    // 액션바 보이기
+                    customActionBar.show();
+
+                    // Swiper 없애기
+                    binding.viewSwipeBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -133,23 +134,4 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             Toast.makeText(this, "설정 버튼입니다", Toast.LENGTH_SHORT).show();
         });
     }
-
-    /*
-     * Spinner 리스너 처리
-     * @author Taehyun Park
-     * @return Void
-     */
-    private void setSpinner(){
-        // 특정 아이템이 선택된다면 발생하는 이벤트
-        binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                Toast.makeText(getApplicationContext(),parent.getItemAtPosition(position)+" 게시물 목록입니다.",Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
-    }
-
 }
