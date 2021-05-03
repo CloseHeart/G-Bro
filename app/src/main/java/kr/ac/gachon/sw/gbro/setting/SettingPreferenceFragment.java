@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.gbro;
+package kr.ac.gachon.sw.gbro.setting;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
@@ -7,6 +7,8 @@ import android.preference.Preference;
 import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+
+import kr.ac.gachon.sw.gbro.R;
 
 
 public class  SettingPreferenceFragment extends PreferenceFragment {

@@ -1,15 +1,12 @@
 package kr.ac.gachon.sw.gbro;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
@@ -20,6 +17,7 @@ import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.board.BoardFragment;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
+import kr.ac.gachon.sw.gbro.setting.SettingActivity;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
     long lastPressedTime = 0;

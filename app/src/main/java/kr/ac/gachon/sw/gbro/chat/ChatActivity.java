@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.gbro;
+package kr.ac.gachon.sw.gbro.chat;
 
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
+import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityChattingBinding;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;

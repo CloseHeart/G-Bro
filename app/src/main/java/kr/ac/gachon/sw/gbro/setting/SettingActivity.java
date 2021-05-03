@@ -1,9 +1,11 @@
-package kr.ac.gachon.sw.gbro;
+package kr.ac.gachon.sw.gbro.setting;
 
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import kr.ac.gachon.sw.gbro.R;
 
 public class SettingActivity extends AppCompatActivity {
 

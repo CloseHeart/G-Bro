@@ -1,4 +1,4 @@
-package kr.ac.gachon.sw.gbro;
+package kr.ac.gachon.sw.gbro.chat;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.MyChatMessageBinding;
 import kr.ac.gachon.sw.gbro.databinding.OtherChatMessageBinding;
 
