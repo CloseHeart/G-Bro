@@ -13,29 +13,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GBro">
+        <activity android:name=".PostContentActivity"></activity>
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="@string/navermap_clientid" />
 
-        <activity android:name=".SplashActivity"
-            android:theme="@style/Theme.GBro.Splash" >
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/Theme.GBro.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".LoginActivity"
-            android:theme="@style/Theme.GBro.Splash" >
-        </activity>
-
-        <activity android:name=".SettingActivity"
-            android:theme="@style/Theme.GBro.Splash">
-        </activity>
-
-        <activity android:name=".MainActivity"></activity>
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/Theme.GBro.Splash" />
+        <activity
+            android:name=".SettingActivity"
+            android:theme="@style/Theme.GBro.Splash" />
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>
