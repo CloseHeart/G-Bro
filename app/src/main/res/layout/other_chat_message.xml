@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/other_chat_message_item_linear"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="10dp"
+    android:padding="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical">
+
+        <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/other_chatmessage_iv_profile"
+            android:layout_gravity="top"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@mipmap/splashlogo"
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="1dp">
+
+            <ImageView
+                android:id="@+id/other_profile_url"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_launcher" />
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/other_chatmessage_tv_nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:text="닉네임"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/other_chatmessage_tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLength="150"
+                android:maxLines="15"
+                android:padding="10dp"
+                android:text="메세지 내용"
+                android:background="@color/purple_200"
+                android:textColor="@color/black"
+                android:textSize="15dp" />
+            <TextView
+                android:id="@+id/other_chatmessage_tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="2021-05-01 12:30" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
