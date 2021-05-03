@@ -38,6 +38,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             // 닫기
             binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            binding.viewSwipeBar.setVisibility(View.VISIBLE);
         }
 
         // 그게 아니라면
@@ -57,6 +58,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         super.onResume();
         if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            binding.viewSwipeBar.setVisibility(View.VISIBLE);
         }
     }
 
