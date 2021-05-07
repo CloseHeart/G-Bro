@@ -1,6 +1,7 @@
 package kr.ac.gachon.sw.gbro.setting;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -10,6 +11,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import kr.ac.gachon.sw.gbro.R;
+import kr.ac.gachon.sw.gbro.util.Auth;
 
 
 public class SettingPreferenceFragment extends PreferenceFragmentCompat {
@@ -39,9 +41,13 @@ public class SettingPreferenceFragment extends PreferenceFragmentCompat {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("로그아웃");
                 builder.setMessage("정말로 로그아웃하시겠습니까?");
-                builder.setPositiveButton("예",null);
+                builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Auth.signOut(getActivity());
+                    }
+                });
                 builder.setNegativeButton("아니오", null);
-                builder.setNeutralButton("취소",null);
                 builder.create().show();
                 return false;
             }
@@ -55,9 +61,13 @@ public class SettingPreferenceFragment extends PreferenceFragmentCompat {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("회원탈퇴");
                 builder.setMessage("정말로 회원을 탈퇴하시겠습니까?");
-                builder.setPositiveButton("예",null);
+                builder.setPositiveButton("예",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
                 builder.setNegativeButton("아니오", null);
-                builder.setNeutralButton("취소",null);
                 builder.create().show();
                 return false;
             }
