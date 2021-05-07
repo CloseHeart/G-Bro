@@ -28,6 +28,9 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.setting);
         }
+
+        getSupportFragmentManager().beginTransaction().replace(binding.flProfile.getId(), new ProfileFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(binding.flSetting.getId(), new SettingPreferenceFragment()).commit();
     }
 
     @Override

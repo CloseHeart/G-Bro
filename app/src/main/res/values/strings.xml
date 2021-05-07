@@ -7,6 +7,7 @@
     <string name="save">저장</string>
     <string name="write">글쓰기</string>
     <string name="setting">설정</string>
+    <string name="profile">프로필</string>
     <string name="backpressed">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
 
     <string name="login_invalid">가천대학교 구성원만 사용할 수 있습니다.</string>
@@ -17,6 +18,9 @@
     <string name="search_hint">게시물명 입력</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="profile_registerdate">가입일 :</string>
+    <string name="profile_changeinfo">정보 변경</string>
 
     <string name="setting_info">정보</string>
     <string name="setting_mypost">내가 작성한 게시물</string>
