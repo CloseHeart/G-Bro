@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityLoginBinding;
+import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 
 import static kr.ac.gachon.sw.gbro.util.Util.RC_SIGN_IN;
@@ -44,18 +45,11 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Google Login Builder
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
         // Google Login Client
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = Auth.getGoogleSignInClient(this);
 
         // Firebase Auth Instance
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = Auth.getFirebaseAuthInstance();
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
