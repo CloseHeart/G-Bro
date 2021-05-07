@@ -10,6 +10,7 @@
     <string name="profile">프로필</string>
     <string name="loading">로딩중</string>
     <string name="none">없음</string>
+    <string name="error">에러가 발생했습니다. 잠시 후 다시 시도해주세요.</string>
     <string name="backpressed">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
 
     <string name="login_invalid">가천대학교 구성원만 사용할 수 있습니다.</string>

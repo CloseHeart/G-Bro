@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -109,6 +110,7 @@ public class Auth {
                                                     }
                                                     // 실패시
                                                     else {
+                                                        Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show();
                                                         // 로그아웃 시킴
                                                         signOut(activity);
                                                     }
@@ -117,10 +119,14 @@ public class Auth {
                                 }
                                 // 데이터베이스 삭제 실패시
                                 else {
+                                    Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show();
                                     signOut(activity);
                                 }
                             }
                         });
+                    }
+                    else {
+                        Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
