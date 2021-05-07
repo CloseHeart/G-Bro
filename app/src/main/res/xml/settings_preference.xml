@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/setting_info">
-        <!-- 새로운 액티비티나 프래그먼트로 이동 필요 -->
+        <Preference
+            android:key="changeinfo"
+            android:title="@string/setting_changeinfo"
+            android:summary="@string/setting_changeinfo_summary" />
+
         <Preference
             android:key="check_my_board"
             android:title="@string/setting_mypost"
             android:summary="@string/setting_mypost_summary" />
-        <!-- <intent android:targetClass="com.~~" -->
 
         <Preference
             android:key="log_out"
-            android:title="로그아웃"/>
+            android:title="@string/setting_logout"/>
 
         <Preference
             android:key="withdraw_member"
-            android:title="회원탈퇴"/>
+            android:title="@string/setting_withdraw"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/setting_noti">
         <SwitchPreference
-            android:key="foundOnOff"
-            android:title="@string/setting_foundonoff"
-            android:summary="@string/setting_foundonoff_summary"
+            android:key="keyWordOnOff"
+            android:title="@string/setting_keywordnoti"
+            android:summary="@string/setting_keywordnoti_summary"
             android:defaultValue="false"/>
 
-        <ListPreference
-            android:entries="@array/product"
-            android:entryValues="@array/product_value"
-            android:key="found_list"
-            android:title="@string/setting_foundlist"
-            android:dependency="foundOnOff"/>
+        <EditTextPreference
+            android:key="notiKeyWord"
+            android:title="@string/setting_notikeyword"
+            android:dialogMessage="@string/setting_notikeyword_msg"
+            android:dependency="keyWordOnOff"/>
 
         <SwitchPreference
             android:key="nearbyOnOff"

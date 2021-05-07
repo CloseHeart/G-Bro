@@ -8,30 +8,38 @@
     <string name="write">글쓰기</string>
     <string name="setting">설정</string>
     <string name="profile">프로필</string>
+    <string name="loading">로딩중</string>
+    <string name="none">없음</string>
     <string name="backpressed">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
 
     <string name="login_invalid">가천대학교 구성원만 사용할 수 있습니다.</string>
     <string name="login_error">로그인에 실패했습니다.</string>
+    <string name="login_new">신규 가입을 환영합니다! </string>
     <string name="login_success">로그인에 성공했습니다.</string>
-    <string name="login_requireverify">메일 인증 절차 후 사용하실 수 있습니다! 클라우드 메일을 확인하셔서 인증 절차를 거치신 후 다시 접속해주세요!</string>
 
     <string name="search_hint">게시물명 입력</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="profile_registerdate">가입일 :</string>
-    <string name="profile_changeinfo">정보 변경</string>
 
     <string name="setting_info">정보</string>
     <string name="setting_mypost">내가 작성한 게시물</string>
     <string name="setting_mypost_summary">본인이 작성한 게시물을 확인합니다.</string>
+    <string name="setting_changeinfo">정보 변경</string>
+    <string name="setting_changeinfo_summary">프로필 사진 및 닉네임을 변경할 수 있습니다.</string>
+    <string name="setting_logout">로그아웃</string>
+    <string name="setting_logout_msg">정말로 로그아웃하시겠습니까? 다시 이용하시려면 로그인 하셔야 합니다.\n로그아웃 후 로그인 화면으로 돌아갑니다.</string>
+    <string name="setting_withdraw">회원 탈퇴</string>
+    <string name="setting_withdraw_msg">정말로 회원을 탈퇴하시겠습니까? 모든 정보는 복구할 수 없으며, 탈퇴가 완료되면 로그인 화면으로 돌아갑니다.</string>
 
     <string name="setting_noti">알림</string>
-    <string name="setting_foundonoff">습득물 등록 알림</string>
-    <string name="setting_foundonoff_summary">특정 습득물에 대한 게시글이 등록되면 알림을 받습니다.</string>
-    <string name="setting_foundlist">알림 받을 습득물 종류 선택</string>
+    <string name="setting_keywordnoti">키워드 알림</string>
+    <string name="setting_keywordnoti_summary">지정한 키워드가 있는 게시물이 등록되면 알림을 받습니다.</string>
+    <string name="setting_notikeyword">키워드 설정</string>
+    <string name="setting_notikeyword_msg">키워드는 ,로 구분되며 최대 3개까지 등록할 수 있습니다.\n(3개 이상일 경우 앞에서 3개만 적용되며, 키워드에 ,을 넣으면 제대로 작동하지 않습니다.)</string>
     <string name="setting_nearbyonoff">주변 분실물 알림</string>
-    <string name="setting_nearbyonoff_summary">가까운 위치에서 등록된 분실물이 있으면 알림을 받습니다.</string>
+    <string name="setting_nearbyonoff_summary">가까운 위치에 분실물이 있으면 알림을 받습니다.</string>
 
     <string name="post_title">제목</string>
     <string name="post_date">날짜</string>
