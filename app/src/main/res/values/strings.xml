@@ -1,15 +1,42 @@
 <resources>
     <string name="app_name">G-Bro</string>
-
+    <string name="yes">예</string>
+    <string name="no">아니오</string>
+    <string name="cancel">취소</string>
+    <string name="warning">경고</string>
+    <string name="save">저장</string>
+    <string name="write">글쓰기</string>
+    <string name="setting">설정</string>
     <string name="backpressed">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
+
     <string name="login_invalid">가천대학교 구성원만 사용할 수 있습니다.</string>
     <string name="login_error">로그인에 실패했습니다.</string>
     <string name="login_success">로그인에 성공했습니다.</string>
     <string name="login_requireverify">메일 인증 절차 후 사용하실 수 있습니다! 클라우드 메일을 확인하셔서 인증 절차를 거치신 후 다시 접속해주세요!</string>
 
-    <string name="fab_write">글쓰기</string>
-    <string name="fab_setting">설정</string>
-    <string name="search_hint">찾을 게시물 이름을 입력해주세요.</string>
+    <string name="search_hint">게시물명 입력</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="setting_info">정보</string>
+    <string name="setting_mypost">내가 작성한 게시물</string>
+    <string name="setting_mypost_summary">본인이 작성한 게시물을 확인합니다.</string>
+
+    <string name="setting_noti">알림</string>
+    <string name="setting_foundonoff">습득물 등록 알림</string>
+    <string name="setting_foundonoff_summary">특정 습득물에 대한 게시글이 등록되면 알림을 받습니다.</string>
+    <string name="setting_foundlist">알림 받을 습득물 종류 선택</string>
+    <string name="setting_nearbyonoff">주변 분실물 알림</string>
+    <string name="setting_nearbyonoff_summary">가까운 위치에서 등록된 분실물이 있으면 알림을 받습니다.</string>
+
+    <string name="post_title">제목</string>
+    <string name="post_date">날짜</string>
+    <string name="post_time">시각</string>
+    <string name="post_type">게시글 종류</string>
+    <string name="post_location">장소</string>
+    <string name="post_itemtype">물건 종류</string>
+    <string name="post_photo">관련 사진</string>
+    <string name="post_content">내용을 입력하세요.</string>
+    <string name="post_cancel_dialog_msg">취소하면 작성한 모든 정보가 삭제됩니다.\n글 작성을 정말 취소하시겠습니까?</string>
+    <string name="post_futureerror">미래의 일은 작성할 수 없습니다. 미래에 잃어버리지 않도록 조심하세요!</string>
 </resources>

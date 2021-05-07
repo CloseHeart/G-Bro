@@ -1,22 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="게시물분류">
+    <string-array name="boardtype">
         <item>전체</item>
         <item>분실물</item>
         <item>습득물</item>
     </string-array>
 
+    <string-array name="boardtype_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="posttype">
+        <item>분실물</item>
+        <item>습득물</item>
+    </string-array>
+
+    <string-array name="posttype_value">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <string-array name="product">
         <item>지갑</item>
         <item>핸드폰</item>
+        <item>노트북</item>
+        <item>태블릿PC</item>
+        <item>책</item>
+        <item>USB</item>
+        <item>강의자료</item>
         <item>돈</item>
         <item>장난감</item>
+        <item>기타</item>
     </string-array>
 
     <string-array name="product_value">
         <item>wallet</item>
         <item>phone</item>
+        <item>laptop</item>
+        <item>tabletpc</item>
+        <item>book</item>
+        <item>usb</item>
+        <item>lecture</item>
         <item>money</item>
         <item>toy</item>
+        <item>etc</item>
     </string-array>
 </resources>
