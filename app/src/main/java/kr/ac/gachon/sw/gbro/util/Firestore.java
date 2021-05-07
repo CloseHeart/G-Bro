@@ -55,6 +55,4 @@ public class Firestore {
     public static Task<DocumentSnapshot> getUserData(String userId) {
         return getFirestoreInstance().collection("user").document(userId).get();
     }
-
-
 }
