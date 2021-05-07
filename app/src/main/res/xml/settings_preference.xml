@@ -1,31 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="설정">
+    <PreferenceCategory android:title="@string/setting_info">
         <!-- 새로운 액티비티나 프래그먼트로 이동 필요 -->
         <Preference
             android:key="check_my_board"
-            android:summary="본인이 작성한 게시물을 확인합니다."
-            android:title="내가 작성한 게시물" />
+            android:title="@string/setting_mypost"
+            android:summary="@string/setting_mypost_summary" />
         <!-- <intent android:targetClass="com.~~" -->
-
-        <SwitchPreference
-            android:key="foundOnOff"
-            android:title="습득물 알림"
-            android:summary="특정 습득물에 대한 알림을 받습니다."
-            android:defaultValue="false"/>
-
-        <ListPreference
-            android:entries="@array/product"
-            android:entryValues="@array/product_value"
-            android:key="found_list"
-            android:summary="알람받을 습득물 지정"
-            android:title="습득물 선택"
-            android:dependency="foundOnOff"/>
-
-        <SwitchPreference
-            android:key="nearbyOnOff"
-            android:title="주변 분실물 알림"
-            android:summary="주변에 분실물이 있다면 알림 서비스를 제공합니다."/>
 
         <Preference
             android:key="log_out"
@@ -34,7 +15,26 @@
         <Preference
             android:key="withdraw_member"
             android:title="회원탈퇴"/>
+    </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/setting_noti">
+        <SwitchPreference
+            android:key="foundOnOff"
+            android:title="@string/setting_foundonoff"
+            android:summary="@string/setting_foundonoff_summary"
+            android:defaultValue="false"/>
+
+        <ListPreference
+            android:entries="@array/product"
+            android:entryValues="@array/product_value"
+            android:key="found_list"
+            android:title="@string/setting_foundlist"
+            android:dependency="foundOnOff"/>
+
+        <SwitchPreference
+            android:key="nearbyOnOff"
+            android:title="@string/setting_nearbyonoff"
+            android:summary="@string/setting_nearbyonoff_summary"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
