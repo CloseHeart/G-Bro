@@ -8,10 +8,12 @@ import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
+import com.google.firestore.v1.Write;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.board.BoardFragment;
+import kr.ac.gachon.sw.gbro.board.WriteActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
 import kr.ac.gachon.sw.gbro.setting.SettingActivity;
@@ -125,15 +127,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private void setFab() {
         // 글쓰기 버튼
         binding.fabWrite.setOnClickListener(v -> {
-            Toast.makeText(this, "글쓰기 버튼입니다", Toast.LENGTH_SHORT).show();
+            Intent writeIntent = new Intent(this, WriteActivity.class);
+            startActivity(writeIntent);
         });
 
         // 설정 버튼
         binding.fabSetting.setOnClickListener(v -> {
-
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(intent);
-            Toast.makeText(this, "설정 버튼입니다", Toast.LENGTH_SHORT).show();
         });
     }
 }

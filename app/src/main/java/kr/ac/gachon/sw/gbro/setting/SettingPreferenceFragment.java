@@ -1,79 +1,102 @@
 package kr.ac.gachon.sw.gbro.setting;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import kr.ac.gachon.sw.gbro.R;
+import kr.ac.gachon.sw.gbro.util.Auth;
 
 
 public class SettingPreferenceFragment extends PreferenceFragmentCompat {
     SharedPreferences prefs;
-    ListPreference productPreference;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings_preference);
 
-        productPreference = (ListPreference)findPreference("found_list");
-
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        if(!prefs.getString("found_list","").equals("")){
-            productPreference.setSummary(prefs.getString("found_list","습득물 선택"));
-        }
+        EditTextPreference notiKeyWordPref = findPreference("notiKeyWord");
+        notiKeyWordPref.setSummary(prefs.getString("notiKeyWord", ""));
+        notiKeyWordPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(newValue instanceof String) {
+                    notiKeyWordPref.setSummary((String) newValue);
+                }
+                else {
+                    notiKeyWordPref.setSummary("");
+                }
+                return true;
+            }
+        });
 
-        // 값 변경 시 바뀜 감지
-        prefs.registerOnSharedPreferenceChangeListener(prefLinstener);
+        Preference changeInfoPref = findPreference("changeinfo");
+        changeInfoPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(getContext(), "정보 변경", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        Preference myPostPref = findPreference("check_my_board");
+        myPostPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(getContext(), "게시글 확인", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
 
         // 로그아웃 이벤트 리스너
-        Preference myPref_logout = (Preference)findPreference("log_out");
+        Preference myPref_logout = (Preference) findPreference("log_out");
         myPref_logout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("로그아웃");
-                builder.setMessage("정말로 로그아웃하시겠습니까?");
-                builder.setPositiveButton("예",null);
-                builder.setNegativeButton("아니오", null);
-                builder.setNeutralButton("취소",null);
+                builder.setTitle(R.string.setting_logout);
+                builder.setMessage(R.string.setting_logout_msg);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Auth.signOut(getActivity());
+                    }
+                });
+                builder.setNegativeButton(R.string.no, null);
                 builder.create().show();
-                return false;
+                return true;
             }
         });
 
         // 회원탈퇴 이벤트 리스너
-        Preference myPref_withdraw_member = (Preference)findPreference("withdraw_member");
+        Preference myPref_withdraw_member = (Preference) findPreference("withdraw_member");
         myPref_withdraw_member.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("회원탈퇴");
-                builder.setMessage("정말로 회원을 탈퇴하시겠습니까?");
-                builder.setPositiveButton("예",null);
-                builder.setNegativeButton("아니오", null);
-                builder.setNeutralButton("취소",null);
+                builder.setTitle(R.string.setting_withdraw);
+                builder.setMessage(R.string.setting_withdraw_msg);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Auth.deleteAccount(getActivity());
+                    }
+                });
+                builder.setNegativeButton(R.string.no, null);
                 builder.create().show();
-                return false;
+                return true;
             }
         });
 
     }
-
-    // 값 변경 시 바뀜 감지 리스너 지정
-    SharedPreferences.OnSharedPreferenceChangeListener prefLinstener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if(key.equals("found_list")){
-                productPreference.setSummary(prefs.getString("found_list","습득물 선택"));
-            }
-        }
-    };
-
-
 }

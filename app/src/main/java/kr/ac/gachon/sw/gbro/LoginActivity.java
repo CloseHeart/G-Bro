@@ -17,6 +17,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AdditionalUserInfo;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +29,9 @@ import java.util.regex.Pattern;
 
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityLoginBinding;
+import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.Util;
 
 import static kr.ac.gachon.sw.gbro.util.Util.RC_SIGN_IN;
 
@@ -44,18 +47,11 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Google Login Builder
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
         // Google Login Client
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = Auth.getGoogleSignInClient(this);
 
         // Firebase Auth Instance
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = Auth.getFirebaseAuthInstance();
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +66,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onStart() {
         super.onStart();
-        checkUser();
     }
 
     @Override
@@ -98,7 +93,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     // 가천대 메일 맞으면
                     if(isGachonMail) {
                         // Firebase 로그인 절차로
-                        firebaseAuthWithGoogle(account.getIdToken());
+                        firebaseAuthWithGoogle(account);
                     }
                     // 아니라면
                     else {
@@ -114,7 +109,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     mGoogleSignInClient.signOut();
                 }
             } catch (ApiException e) {
-                Log.w(this.getLocalClassName(), "Google sign in failed", e);
+                Log.w(this.getClass().getSimpleName(), "Google sign in failed", e);
                 Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
             }
         }
@@ -126,101 +121,70 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
      * @param idToken Google Login Token
      * @return Void
      */
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
 
         // Credential 정보로 Firebase Auth
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                     // Task 성공이라면
                     if (task.isSuccessful()) {
-                        Log.d(LoginActivity.this.getLocalClassName(), "signInWithCredential:success");
-                        checkUser();
-                    // 실패라면
-                    } else {
-                        // 토스트 띄우고 로그아웃
-                        Log.w(LoginActivity.this.getLocalClassName(), "signInWithCredential:failure", task.getException());
-                        Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
-                        mGoogleSignInClient.signOut();
-                    }
+                        Log.d(LoginActivity.this.getLocalClassName(), "firebaseAuthWithGoogle:success");
+                        AdditionalUserInfo additionalUserInfo = task.getResult().getAdditionalUserInfo();
+
+                        // User 정보가 정상이고, 추가 UserInfo도 잘 가져와졌다면
+                        if(task.getResult().getUser() != null && additionalUserInfo != null) {
+                            // 신규 유저라면
+                            if (additionalUserInfo.isNewUser()) {
+                                Util.debugLog(LoginActivity.this, "New User Detected");
+
+                                // DB 생성 작업
+                                createNewUserDatabase(task.getResult().getUser());
+                            }
+                            // 아니라면
+                            else {
+                                Util.debugLog(LoginActivity.this, "Already Registered User");
+
+                                // MainActivity로
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            }
+                        }
+                        // 하나라도 Null이라면
+                        } else {
+                            // 토스트 띄우고 로그아웃
+                            Log.w(LoginActivity.this.getLocalClassName(), "firebaseAuthWithGoogle:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
+                            mAuth.signOut();
+                            mGoogleSignInClient.signOut();
+                        }
                 });
     }
 
-    /*
-     * 유저가 이미 회원가입 되었는지, 혹은 아닌지 체크한다
+    /**
+     * 새로운 사용자의 DB 정보를 생성한다
      * @author Suyeon Jung, Minjae Seon
-     * @return Void
      */
-    private void checkUser() {
-        FirebaseUser user = mAuth.getCurrentUser();
+    private void createNewUserDatabase(FirebaseUser user) {
+        // 새 유저 정보 작성
+        Firestore.writeNewUser(user.getUid(), user.getEmail(), user.getDisplayName())
+                .addOnCompleteListener(documentTask -> {
+                    // 성공했다면
+                    if(documentTask.isSuccessful()) {
+                        Log.d(LoginActivity.this.getLocalClassName(), "createNewUserDatabase:success");
+                        Toast.makeText(getApplicationContext(), R.string.login_success, Toast.LENGTH_LONG).show();
 
-        // 이미 로그인했다면
-        if(user != null) {
-            // 이메일 인증 절차가 됐다면
-            if(user.isEmailVerified()) {
-                Log.d(LoginActivity.this.getLocalClassName(), "checkUser:emailverified");
-                // 유저 데이터 가져오기
-                Firestore.getUserData(user.getUid())
-                        .addOnCompleteListener(userDataTask -> {
-                            // 데이터 가져오는데 성공했다면
-                            if(userDataTask.isSuccessful()) {
-                                // Result 가져오고
-                                DocumentSnapshot document = userDataTask.getResult();
-
-                                // Intent 미리 씀
-                                Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
-
-                                // 문서가 존재하지 않으면
-                                if(!document.exists()) {
-                                    Log.d(LoginActivity.this.getLocalClassName(), "getUserData:notexists");
-
-                                    // 새 유저 정보 작성
-                                    Firestore.writeNewUser(user.getUid(), user.getEmail(), user.getDisplayName())
-                                            .addOnCompleteListener(documentTask -> {
-                                                // 성공했다면
-                                                if(documentTask.isSuccessful()) {
-                                                    Log.d(LoginActivity.this.getLocalClassName(), "writeNewUser:success");
-                                                    Toast.makeText(getApplicationContext(), R.string.login_success, Toast.LENGTH_LONG).show();
-                                                    // MainActivity로
-                                                    startActivity(mainActivityIntent);
-                                                    finish();
-                                                }
-                                                // 실패했다면
-                                                else {
-                                                    Log.w(LoginActivity.this.getLocalClassName(), "writeNewUser:failure", documentTask.getException());
-                                                    // 에러 메시지 띄우고 로그아웃
-                                                    Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
-                                                    mAuth.signOut();
-                                                    mGoogleSignInClient.signOut();
-                                                }
-                                            });
-                                }
-                                // 문서가 존재하면
-                                else {
-                                    Log.d(LoginActivity.this.getLocalClassName(), "getUserData:exists");
-
-                                    // 바로 MainActivity
-                                    startActivity(mainActivityIntent);
-                                    finish();
-                                }
-                            }
-                            // 데이터 로드 실패라면
-                            else {
-                                Log.w(LoginActivity.this.getLocalClassName(), "getUserData:failure", userDataTask.getException());
-
-                                // 로그인 에러 토스트 및 로그아웃
-                                Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
-                                mAuth.signOut();
-                                mGoogleSignInClient.signOut();
-                            }
-                        });
-            }
-            else {
-                // 이메일 인증 전송 및 토스트
-                Log.d(LoginActivity.this.getLocalClassName(), "checkUser:needverifiy");
-                user.sendEmailVerification();
-                Toast.makeText(getApplicationContext(), R.string.login_requireverify, Toast.LENGTH_LONG).show();
-            }
-        }
+                        // MainActivity로
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    }
+                    // 실패했다면
+                    else {
+                        Log.w(LoginActivity.this.getLocalClassName(), "createNewUserDatabase:failure", documentTask.getException());
+                        // 에러 메시지 띄우고 로그아웃
+                        Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
+                        mAuth.signOut();
+                        mGoogleSignInClient.signOut();
+                    }
+                });
     }
 }

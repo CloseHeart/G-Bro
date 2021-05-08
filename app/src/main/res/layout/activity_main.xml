@@ -56,15 +56,13 @@
             android:id="@+id/fab_write"
             app:fab_icon="@drawable/ic_baseline_create_24"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_title="@string/fab_write" />
+            android:layout_height="wrap_content" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_setting"
             app:fab_icon="@drawable/ic_baseline_settings_24"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_title="@string/fab_setting" />
+            android:layout_height="wrap_content" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </FrameLayout>

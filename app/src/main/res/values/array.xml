@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="게시물분류">
+    <string-array name="boardtype">
         <item>전체</item>
         <item>분실물</item>
         <item>습득물</item>
     </string-array>
 
-    <string-array name="product">
-        <item>지갑</item>
-        <item>핸드폰</item>
-        <item>돈</item>
-        <item>장난감</item>
+    <string-array name="boardtype_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
-    <string-array name="product_value">
-        <item>wallet</item>
-        <item>phone</item>
-        <item>money</item>
-        <item>toy</item>
+    <string-array name="posttype">
+        <item>분실물</item>
+        <item>습득물</item>
+    </string-array>
+
+    <string-array name="posttype_value">
+        <item>0</item>
+        <item>1</item>
     </string-array>
 </resources>

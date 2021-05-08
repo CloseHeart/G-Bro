@@ -1,14 +1,15 @@
 package kr.ac.gachon.sw.gbro;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
 
+import kr.ac.gachon.sw.gbro.databinding.CustomactionbarBinding;
+
 public class CustomActionBar {
-    private Activity activity;
-    private ActionBar actionBar;
+    private CustomactionbarBinding binding;
+    private final Activity activity;
+    private final ActionBar actionBar;
 
     public CustomActionBar(Activity activity, ActionBar actionBar) {
         this.activity = activity;
@@ -21,9 +22,9 @@ public class CustomActionBar {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
 
-        View customView = LayoutInflater.from(activity)
-                .inflate(R.layout.customactionbar, null);
-        actionBar.setCustomView(customView);
+
+        binding = CustomactionbarBinding.inflate(activity.getLayoutInflater());
+        actionBar.setCustomView(binding.getRoot());
     }
 
     public void hide() {

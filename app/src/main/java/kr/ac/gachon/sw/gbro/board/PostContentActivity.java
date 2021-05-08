@@ -11,10 +11,10 @@ import android.widget.TextView;
 import kr.ac.gachon.sw.gbro.MainActivity;
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
-import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
+import kr.ac.gachon.sw.gbro.databinding.ActivityPostContentBinding;
 import me.relex.circleindicator.CircleIndicator;
 
-public class PostContentActivity extends BaseActivity<ActivityMainBinding> {
+public class PostContentActivity extends BaseActivity<ActivityPostContentBinding> {
 
         PostAdapter adapter;
         ViewPager viewPager;
@@ -22,21 +22,22 @@ public class PostContentActivity extends BaseActivity<ActivityMainBinding> {
         Button btn_ctc;
 
     @Override
-    protected ActivityMainBinding getBinding() {
-        return ActivityMainBinding.inflate(getLayoutInflater());
+    protected ActivityPostContentBinding getBinding() { return ActivityPostContentBinding.inflate(getLayoutInflater());
     }
 
     @Override
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_content);
+
         // 아까 만든 view
-        viewPager = (ViewPager) findViewById(R.id.view);
+        viewPager = binding.view;
+
         //adapter 초기화
         adapter = new PostAdapter(this);
         viewPager.setAdapter(adapter);
 
-        btn_ctm = (Button)findViewById(R.id.content_to_main);
+        btn_ctm = binding.contentToMain;
+
         btn_ctm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
@@ -60,7 +61,7 @@ public class PostContentActivity extends BaseActivity<ActivityMainBinding> {
         });
         */
 
-        CircleIndicator c_indicator = (CircleIndicator) findViewById(R.id.indicator);
+        CircleIndicator c_indicator = binding.indicator;
         c_indicator.setViewPager(viewPager);
 
         // 스크롤 뷰 시험해보려고 1~ 20까지 그냥 출력한거라 나중에 삭제하기.
