@@ -5,6 +5,8 @@ import android.content.Context;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.ArrayList;
+
 import kr.ac.gachon.sw.gbro.R;
 
 /*
@@ -12,7 +14,7 @@ import kr.ac.gachon.sw.gbro.R;
  * @author Minjae Seon
  */
 public class Post {
-    // 게시글 타입 (0 - 분실, 1 - 습득)
+    // 게시글 타입 (1 - 분실, 2 - 습득)
     private int type;
 
     // 게시글 제목
@@ -22,13 +24,13 @@ public class Post {
     private String content;
 
     // 사진 URL Array
-    private String[] photoUrls;
+    private ArrayList<String> photoUrls;
 
     // 건물 Type (values/building.xml 파일 참조)
     private int summaryBuildingType;
 
     // 경로 좌표 Array
-    private GeoPoint[] locationList;
+    private ArrayList<GeoPoint> locationList;
 
     // 게시자 ID
     private String writerId;
@@ -39,7 +41,9 @@ public class Post {
     // 완료 여부
     private boolean isFinished;
 
-    public Post(int type, String title, String content, String[] photoUrls, int summaryBuildingType, GeoPoint[] locationList, String writerId, Timestamp writeTime, boolean isFinished) {
+    public Post(){ }
+
+    public Post(int type, String title, String content, ArrayList<String> photoUrls, int summaryBuildingType, ArrayList<GeoPoint> locationList, String writerId, Timestamp writeTime, boolean isFinished) {
         this.type = type;
         this.title = title;
         this.content = content;
@@ -63,11 +67,11 @@ public class Post {
         return content;
     }
 
-    public String[] getPhotoUrls() {
+    public ArrayList<String> getPhotoUrls() {
         return photoUrls;
     }
 
-    public GeoPoint[] getLocationList() {
+    public ArrayList<GeoPoint> getLocationList() {
         return locationList;
     }
 
