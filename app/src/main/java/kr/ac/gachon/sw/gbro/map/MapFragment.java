@@ -10,21 +10,47 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.firebase.firestore.GeoPoint;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.widget.LocationButtonView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
 import kr.ac.gachon.sw.gbro.databinding.FragmentMapBinding;
 
 public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnMapReadyCallback {
+    private ArrayList<Integer> path = null;
+
     @Override
     protected FragmentMapBinding getBinding() {
         return FragmentMapBinding.inflate(getLayoutInflater());
+    }
+
+    public static MapFragment getPathInstance(ArrayList<Integer> path){
+        MapFragment mapFragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putIntegerArrayList("path", path);
+        mapFragment.setArguments(args);
+        return mapFragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null){
+            path = getArguments().getIntegerArrayList("path");
+        }
+
     }
 
     @Nullable
@@ -59,9 +85,34 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
                 naverMap.setMinZoom(16.0);
                 naverMap.setMaxZoom(0.0);
 
+                if (path != null && !path.isEmpty()) {
+                    drawPath(naverMap, path);
+                }
+
             });
         }
     }
+
+    public void drawPath(NaverMap naverMap, ArrayList<Integer> pathArr){
+        // Exception
+        if(pathArr.size() > 5) {
+
+        }
+
+        String [] str_coordinate = getResources().getStringArray(R.array.gachon_globalcampus_coordinate);
+        ArrayList<LatLng> coordinates = new ArrayList<>();
+
+        for (int i : pathArr){
+            String [] arr = str_coordinate[i].split(",");
+            coordinates.add(new LatLng(Double.parseDouble(arr[0]), Double.parseDouble(arr[1])));
+        }
+
+        PathOverlay path = new PathOverlay();
+        path.setCoords(coordinates);
+
+        path.setMap(naverMap);
+    }
+
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
