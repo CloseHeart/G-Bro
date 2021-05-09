@@ -19,9 +19,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.type.DateTime;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -29,6 +34,8 @@ import java.util.Locale;
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityWriteBinding;
+import kr.ac.gachon.sw.gbro.util.Auth;
+import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Util;
 
 public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
@@ -69,7 +76,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
 
         // 저장 버튼
         if (itemId == R.id.write_save) {
-            Toast.makeText(this, "저장", Toast.LENGTH_SHORT).show();
+            savePost();
             return true;
         }
         else if(itemId == android.R.id.home) {
@@ -199,5 +206,23 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
 
             }
         });
+    }
+
+    private void savePost(){
+        if(!binding.etTitle.getText().toString().isEmpty() && !binding.etContent.getText().toString().isEmpty()){
+            Firestore.writeNewPost(binding.spinnerPosttype.getSelectedItemPosition()+1, binding.etTitle.getText().toString(), binding.etContent.getText().toString(),
+                    new ArrayList<String>(), binding.spinnerBuilding.getSelectedItemPosition(), new ArrayList<GeoPoint>(), Auth.getCurrentUser().getUid(), new Timestamp(new Date()), false).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        finish();
+                    }else{
+                        Toast.makeText(getApplicationContext(),R.string.error,Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }else{
+            Toast.makeText(getApplicationContext(),R.string.post_empty,Toast.LENGTH_LONG).show();
+        }
     }
 }
