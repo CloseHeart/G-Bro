@@ -38,7 +38,9 @@
                 android:singleLine="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:importantForAutofill="no"
+                android:inputType="text" />
 
             <EditText
                 android:id="@+id/et_missingdate"
@@ -55,7 +57,9 @@
                 android:longClickable="false"
                 app:layout_constraintEnd_toStartOf="@+id/et_missingtime"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_title" />
+                app:layout_constraintTop_toBottomOf="@+id/et_title"
+                android:importantForAutofill="no"
+                android:inputType="date" />
 
             <EditText
                 android:id="@+id/et_missingtime"
@@ -72,7 +76,9 @@
                 android:longClickable="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/et_missingdate"
-                app:layout_constraintTop_toBottomOf="@+id/et_title" />
+                app:layout_constraintTop_toBottomOf="@+id/et_title"
+                android:importantForAutofill="no"
+                android:inputType="time" />
 
 
             <Spinner
@@ -130,7 +136,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
-                android:background="?android:attr/textColorPrimary"
+                android:background="@drawable/divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/spinner_building" />
@@ -156,7 +162,8 @@
                     android:hint="@string/post_content"
                     android:inputType="textLongMessage|textMultiLine|textNoSuggestions|text"
                     android:paddingBottom="8dp"
-                    android:textColor="?android:attr/textColorPrimary" />
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:importantForAutofill="no" />
 
             </androidx.core.widget.NestedScrollView>
 
@@ -168,7 +175,7 @@
         android:id="@+id/view_divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="?android:attr/textColorPrimary"
+        android:background="@drawable/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nestedScrollView" />
@@ -180,6 +187,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/post_photo"
         android:scaleType="fitCenter"
         android:tint="?android:attr/textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
