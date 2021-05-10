@@ -40,8 +40,7 @@ public class Firestore {
         User newUser = new User(userEmail, userNickName, null, new Timestamp(new Date()));
         return getFirestoreInstance().collection("user").document(userId).set(newUser);
     }
-
-
+    
     /**
      *
      * @param type
