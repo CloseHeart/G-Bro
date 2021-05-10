@@ -52,6 +52,8 @@ dependencies {
     implementation 'androidx.viewpager:viewpager:1.0.0'
     implementation "androidx.preference:preference:1.1.1"
     implementation "androidx.cardview:cardview:1.0.0"
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     // Test
     testImplementation 'junit:junit:4.+'

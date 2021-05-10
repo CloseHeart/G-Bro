@@ -20,9 +20,19 @@ public class Util {
      * @return Timestamp 정보 기반의 시간/날짜 정보 String
      */
     public static String timeStamptoString(Timestamp timestamp) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREAN);
-        Date date = timestamp.toDate();
-        return dateFormat.format(date);
+        Date currentDate = new Date();
+        Date targetDate = timestamp.toDate();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.KOREAN);
+
+        int compareValue = dateFormat.format(currentDate).compareTo(dateFormat.format(targetDate));
+        if(compareValue == 0) {
+            return timeFormat.format(targetDate);
+        }
+        else {
+            return dateFormat.format(targetDate);
+        }
     }
 
     /**

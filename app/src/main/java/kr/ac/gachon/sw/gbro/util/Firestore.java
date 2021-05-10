@@ -10,7 +10,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Queue;
 
 import kr.ac.gachon.sw.gbro.util.model.Post;
 import kr.ac.gachon.sw.gbro.util.model.User;
@@ -41,8 +40,7 @@ public class Firestore {
         User newUser = new User(userEmail, userNickName, null, new Timestamp(new Date()));
         return getFirestoreInstance().collection("user").document(userId).set(newUser);
     }
-
-
+    
     /**
      *
      * @param type
@@ -105,6 +103,4 @@ public class Firestore {
         else
             return getFirestoreInstance().collection("post").whereEqualTo("type",type).orderBy("writeTime",Query.Direction.ASCENDING).limit(20).get();
     }
-
-
 }

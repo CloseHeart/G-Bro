@@ -122,12 +122,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
      * @author Minjae Seon
      */
     private void setButtonEvent() {
-        binding.btnPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(WriteActivity.this, "사진", Toast.LENGTH_SHORT).show();
-            }
-        });
+
     }
 
     /**
@@ -209,7 +204,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
     }
 
     private void savePost(){
-        if(!binding.etTitle.getText().toString().isEmpty() && !binding.etContent.getText().toString().isEmpty()){
+        if(!binding.etTitle.getText().toString().replaceAll("\\s", "").isEmpty() && !binding.etContent.getText().toString().replaceAll("\\s", "").isEmpty()){
             Firestore.writeNewPost(binding.spinnerPosttype.getSelectedItemPosition()+1, binding.etTitle.getText().toString(), binding.etContent.getText().toString(),
                     new ArrayList<String>(), binding.spinnerBuilding.getSelectedItemPosition(), new ArrayList<GeoPoint>(), Auth.getCurrentUser().getUid(), new Timestamp(new Date()), false).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override

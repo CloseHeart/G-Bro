@@ -1,28 +1,13 @@
 package kr.ac.gachon.sw.gbro;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.firestore.v1.Write;
-import com.naver.maps.geometry.LatLng;
-import com.naver.maps.map.LocationTrackingMode;
-import com.naver.maps.map.NaverMap;
-import com.naver.maps.map.OnMapReadyCallback;
-import com.naver.maps.map.overlay.InfoWindow;
-import com.naver.maps.map.overlay.Marker;
-import com.naver.maps.map.overlay.Overlay;
-import com.naver.maps.map.overlay.OverlayImage;
-import com.naver.maps.map.util.FusedLocationSource;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
@@ -91,7 +76,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
         BoardFragment boardFragment = new BoardFragment();
         fragmentManager.beginTransaction().replace(binding.flBoard.getId(), boardFragment).commit();
 
-        MapFragment mapFragment = new MapFragment();
+        MapFragment mapFragment = MapFragment.getMainInstance();
         fragmentManager.beginTransaction().replace(binding.flMap.getId(), mapFragment).commit();
     }
 
