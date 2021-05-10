@@ -1,23 +1,37 @@
 package kr.ac.gachon.sw.gbro.map;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.firebase.firestore.GeoPoint;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.LocationTrackingMode;
+import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.InfoWindow;
+import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.Overlay;
+import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
+import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.widget.LocationButtonView;
 
 import java.util.ArrayList;
@@ -29,6 +43,7 @@ import kr.ac.gachon.sw.gbro.databinding.FragmentMapBinding;
 
 public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnMapReadyCallback {
     private ArrayList<Integer> path = null;
+    private Context context;
 
     @Override
     protected FragmentMapBinding getBinding() {
@@ -50,7 +65,6 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
         if (getArguments() != null){
             path = getArguments().getIntegerArrayList("path");
         }
-
     }
 
     @Nullable
@@ -89,9 +103,46 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
                     drawPath(naverMap, path);
                 }
 
+                drawMarker(naverMap);
+
             });
         }
     }
+
+    public void drawMarker(NaverMap naverMap){
+
+        Marker marker = new Marker();
+        marker.setPosition(new LatLng(37.45042729905536, 127.12978547393374));
+        marker.setMap(naverMap);
+        marker.setWidth(40);
+        marker.setHeight(60);
+        marker.setIcon(OverlayImage.fromResource(R.drawable.marker));
+
+        InfoWindow infoWindow = new InfoWindow();
+            marker.setOnClickListener(overlay -> {
+                    if (marker.getInfoWindow() == null) { // 마커를 클릭할 때 정보창을 엶
+                        infoWindow.open(marker);
+                    } else {
+                        // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
+                        infoWindow.close();
+                    }
+                return true;
+            });
+
+
+        infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getContext()) {
+            @NonNull
+            @Override
+            public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                return getString(R.string.Info_building_name,"가천관")
+                        +"\n"
+                        +getString(R.string.Info_get_cnt,3)
+                        +"\n"
+                        +getString(R.string.Info_get_cnt,4);
+            }
+        });
+    }
+
 
     public void drawPath(NaverMap naverMap, ArrayList<Integer> pathArr){
         // Exception
@@ -116,6 +167,5 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
-
     }
 }

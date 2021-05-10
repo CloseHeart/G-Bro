@@ -6,6 +6,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewbinding.ViewBinding;
 
+import kr.ac.gachon.sw.gbro.MainActivity;
+import kr.ac.gachon.sw.gbro.map.MapFragment;
+
 public abstract class BaseFragment<B extends ViewBinding> extends Fragment {
     protected B binding;
     protected abstract B getBinding();

@@ -53,4 +53,8 @@
     <string name="post_cancel_dialog_msg">취소하면 작성한 모든 정보가 삭제됩니다.\n글 작성을 정말 취소하시겠습니까?</string>
     <string name="post_futureerror">미래의 일은 작성할 수 없습니다. 미래에 잃어버리지 않도록 조심하세요!</string>
     <string name="post_empty">모든 내용을 다 입력해주세요!</string>
+
+    <string name ="Info_building_name"> 건물명 : %s</string>
+    <string name = "Info_lost_cnt">분실물 : %d 개</string>
+    <string name = "Info_get_cnt">습득물 : %d 개</string>
 </resources>
