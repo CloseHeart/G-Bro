@@ -7,10 +7,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.util.ArrayList;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemBoardBinding;
+import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
@@ -47,7 +52,14 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         binding.tvSummary.setText(currentPost.getContent());
         binding.tvUploadtime.setText(Util.timeStamptoString(currentPost.getWriteTime()));
         binding.tvLocation.setText(currentPost.getSummaryBuildingName(context));
-        binding.tvWriter.setText(currentPost.getWriterId());
+        Firestore.getUserData(currentPost.getWriterId()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    binding.tvWriter.setText((String) task.getResult().get("userNickName"));
+                }
+            }
+        });
     }
 
     @Override
@@ -55,14 +67,33 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         return postList.size();
     }
 
+    /**
+     * Post 객체를 Adapter List에 추가
+     * @author Minjae Seon
+     * @param post Post Object
+     */
     public void addItem(Post post) {
         postList.add(post);
         notifyDataSetChanged();
     }
 
+    /**
+     * ArrayList에 담긴 내용을 Adapter List에 전부 추가
+     * @author Minjae Seon
+     * @param post ArrayList<Post>
+     */
     public void addAll(ArrayList<Post> post) {
         postList.clear();
         postList.addAll(post);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 모든 List 정보 삭제
+     * @author Minjae Seon
+     */
+    public void clear() {
+        postList.clear();
         notifyDataSetChanged();
     }
 }

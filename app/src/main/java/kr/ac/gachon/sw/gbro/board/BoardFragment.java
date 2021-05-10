@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,11 +34,13 @@ import kr.ac.gachon.sw.gbro.databinding.FragmentBoardBinding;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
-public class BoardFragment extends BaseFragment<FragmentBoardBinding> {
+public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
     private BoardAdapter boardAdapter;
     private DocumentSnapshot last;
     private Boolean isScrolling = false;
     private Boolean isLastItemReached = false;
+    private ArrayList<Post> postList;
+
     @Override
     protected FragmentBoardBinding getBinding() {
         return FragmentBoardBinding.inflate(getLayoutInflater());
@@ -46,21 +50,94 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setAdapter();
+        setRefresh();
         return binding.getRoot();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getBoardData();
+    }
+
+    /**
+     * Adapter 설정
+     * @author Minjae Seon, Taehyun Park
+     */
     private void setAdapter() {
         Log.d("BoardFragment", "Set Adapter Run");
 
-        ArrayList<Post> postList = new ArrayList<>();
-
-        Log.d("BoardFragment", "postList Size : " + postList.size());
+        postList = new ArrayList<>();
         binding.rvBoard.setHasFixedSize(true);
         binding.rvBoard.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         boardAdapter = new BoardAdapter(getContext(), postList);
         binding.rvBoard.setAdapter(boardAdapter);
 
+        RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true;
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+                int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+                int visibleItemCount = linearLayoutManager.getChildCount();
+                int totalItemCount = linearLayoutManager.getItemCount();
+
+                if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
+                    isScrolling = false;
+                    Query nextQuery = Firestore.getFirestoreInstance().collection("post").orderBy("writeTime",Query.Direction.DESCENDING).limit(20).startAfter(last);
+                    nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                            if (t.isSuccessful()) {
+                                if(t.getResult().size() > 0){
+                                    for(DocumentSnapshot doc : t.getResult()){
+                                        Post post = doc.toObject(Post.class);
+                                        postList.add(post);
+                                    }
+                                    boardAdapter.notifyDataSetChanged();
+                                    last = t.getResult().getDocuments().get(t.getResult().size()-1);
+                                }
+
+                                if (t.getResult().size() < 20) {
+                                    isLastItemReached = true;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        };
+        binding.rvBoard.addOnScrollListener(onScrollListener);
+    }
+
+    /**
+     * Refresh 설정
+     * @author Minjae Seon
+     */
+    private void setRefresh() {
+        binding.swipeBoard.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getBoardData();
+            }
+        });
+    }
+
+    /**
+     * 게시판 Data 로드
+     * @author Minjae Seon
+     */
+    private void getBoardData() {
+        boardAdapter.clear();
         Firestore.getPostData(0).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -72,53 +149,14 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> {
                         }
                         boardAdapter.notifyDataSetChanged();
                         last = task.getResult().getDocuments().get(task.getResult().size()-1);
+
                     }
-
-                    RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                            super.onScrollStateChanged(recyclerView, newState);
-                            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                                isScrolling = true;
-                            }
-                        }
-
-                        @Override
-                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                            super.onScrolled(recyclerView, dx, dy);
-
-                            LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
-                            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-                            int visibleItemCount = linearLayoutManager.getChildCount();
-                            int totalItemCount = linearLayoutManager.getItemCount();
-
-                            if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
-                                isScrolling = false;
-                                Query nextQuery = Firestore.getFirestoreInstance().collection("post").orderBy("writeTime",Query.Direction.DESCENDING).limit(20).startAfter(last);
-                                nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> t) {
-                                        if (t.isSuccessful()) {
-                                            if(task.getResult().size() > 0){
-                                                for(DocumentSnapshot doc : task.getResult()){
-                                                    Post post = doc.toObject(Post.class);
-                                                    postList.add(post);
-                                                }
-                                                boardAdapter.notifyDataSetChanged();
-                                                last = task.getResult().getDocuments().get(task.getResult().size()-1);
-                                            }
-
-                                            if (t.getResult().size() < 20) {
-                                                isLastItemReached = true;
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    };
-                    binding.rvBoard.addOnScrollListener(onScrollListener);
                 }
+                else {
+                    Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
+                }
+
+                binding.swipeBoard.setRefreshing(false);
             }
         });
     }
