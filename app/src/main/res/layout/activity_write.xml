@@ -11,10 +11,10 @@
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toTopOf="@+id/btn_photo"
+        app:layout_constraintBottom_toTopOf="@+id/vp_photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -35,12 +35,12 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:hint="@string/post_title"
+                android:importantForAutofill="no"
+                android:inputType="text"
                 android:singleLine="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:importantForAutofill="no"
-                android:inputType="text" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/et_missingdate"
@@ -54,12 +54,12 @@
                 android:ems="10"
                 android:focusableInTouchMode="false"
                 android:hint="@string/post_date"
+                android:importantForAutofill="no"
+                android:inputType="date"
                 android:longClickable="false"
                 app:layout_constraintEnd_toStartOf="@+id/et_missingtime"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_title"
-                android:importantForAutofill="no"
-                android:inputType="date" />
+                app:layout_constraintTop_toBottomOf="@+id/et_title" />
 
             <EditText
                 android:id="@+id/et_missingtime"
@@ -73,12 +73,12 @@
                 android:ems="10"
                 android:focusableInTouchMode="false"
                 android:hint="@string/post_time"
+                android:importantForAutofill="no"
+                android:inputType="time"
                 android:longClickable="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/et_missingdate"
-                app:layout_constraintTop_toBottomOf="@+id/et_title"
-                android:importantForAutofill="no"
-                android:inputType="time" />
+                app:layout_constraintTop_toBottomOf="@+id/et_title" />
 
 
             <Spinner
@@ -160,10 +160,10 @@
                     android:background="@android:color/transparent"
                     android:gravity="start"
                     android:hint="@string/post_content"
+                    android:importantForAutofill="no"
                     android:inputType="textLongMessage|textMultiLine|textNoSuggestions|text"
                     android:paddingBottom="8dp"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:importantForAutofill="no" />
+                    android:textColor="?android:attr/textColorPrimary" />
 
             </androidx.core.widget.NestedScrollView>
 
@@ -180,18 +180,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nestedScrollView" />
 
-    <ImageButton
-        android:id="@+id/btn_photo"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="8dp"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp_photo"
+        android:layout_width="369dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="8dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/post_photo"
-        android:scaleType="fitCenter"
-        android:tint="?android:attr/textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_baseline_add_photo_24" />
+        app:layout_constraintTop_toBottomOf="@+id/view_divider" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
