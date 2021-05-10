@@ -160,7 +160,7 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
                     // TODO : DB에서 각 건물 별 데이터 가져오기
                     return getString(R.string.Info_building_name,buildingName[currentBuilding])
                             +"\n"
-                            +getString(R.string.Info_get_cnt,3)
+                            +getString(R.string.Info_lost_cnt,3)
                             +"\n"
                             +getString(R.string.Info_get_cnt,4);
                 }
