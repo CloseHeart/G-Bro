@@ -4,6 +4,10 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,12 +16,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,8 +48,11 @@ import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Util;
 
-public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
+public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements AddImageAdapter.OnImageAddItemClickListener {
     private ActionBar actionBar;
+    private AddImageAdapter addImageAdapter;
+    private RecyclerView addImageRecyclerView;
+
     @Override
     protected ActivityWriteBinding getBinding() {
         return ActivityWriteBinding.inflate(getLayoutInflater());
@@ -58,8 +71,8 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
         // 날짜 및 시간 관련 설정
         setDateTime();
 
-        // 버튼 이벤트 설정
-        setButtonEvent();
+        // 이미지 추가 RecyclerView 설정
+        setAddImageRecyclerView();
     }
 
     @Override
@@ -115,14 +128,6 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
         else {
             finish();
         }
-    }
-
-    /**
-     * 버튼 이벤트 설정
-     * @author Minjae Seon
-     */
-    private void setButtonEvent() {
-
     }
 
     /**
@@ -219,5 +224,40 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> {
         }else{
             Toast.makeText(getApplicationContext(),R.string.post_empty,Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Image 추가를 위한 RecyclerView를 설정한다
+     * @author Minjae Seon
+     */
+    private void setAddImageRecyclerView() {
+        Util.debugLog(this, "setAddImageRecyclerView()");
+        addImageAdapter = new AddImageAdapter(this);
+        addImageRecyclerView = binding.rvPhoto;
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        addImageRecyclerView.setHasFixedSize(true);
+        addImageRecyclerView.setLayoutManager(linearLayoutManager);
+        addImageRecyclerView.setAdapter(addImageAdapter);
+
+        // TEST CODE
+        Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.two);
+        Bitmap resizeBitmap = Bitmap.createScaledBitmap(originalBitmap, 500, 500, false);
+        addImageAdapter.addImage(resizeBitmap);
+        addImageAdapter.addImage(resizeBitmap);
+        addImageAdapter.addImage(resizeBitmap);
+        addImageAdapter.addImage(resizeBitmap);
+        addImageAdapter.addImage(resizeBitmap);
+        addImageAdapter.addImage(resizeBitmap);
+    }
+
+    @Override
+    public void onAddClick(View v) {
+        Toast.makeText(this, "추가 눌렀음", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRemoveClick(View v, int position) {
+        Toast.makeText(this, "제거 눌렀음 (pos : " + position + ")", Toast.LENGTH_SHORT).show();
     }
 }
