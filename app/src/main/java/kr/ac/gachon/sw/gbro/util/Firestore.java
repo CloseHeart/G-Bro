@@ -2,6 +2,7 @@ package kr.ac.gachon.sw.gbro.util;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -46,7 +47,6 @@ public class Firestore {
      * @param type
      * @param title
      * @param content
-     * @param photoUrls
      * @param summaryBuildingType
      * @param locationList
      * @param writerId
@@ -54,9 +54,9 @@ public class Firestore {
      * @param isFinished
      * @return
      */
-    public static Task<Void> writeNewPost(int type, String title, String content, ArrayList<String> photoUrls, int summaryBuildingType, ArrayList<GeoPoint> locationList, String writerId, Timestamp writeTime, boolean isFinished) {
-        Post newPost = new Post(type, title, content, photoUrls, summaryBuildingType, locationList, writerId, writeTime, isFinished);
-        return getFirestoreInstance().collection("post").document().set(newPost);
+    public static Task<DocumentReference> writeNewPost(int type, String title, String content, int photoNum, int summaryBuildingType, ArrayList<GeoPoint> locationList, String writerId, Timestamp writeTime, boolean isFinished) {
+        Post newPost = new Post(type, title, content, photoNum, summaryBuildingType, locationList, writerId, writeTime, isFinished);
+        return getFirestoreInstance().collection("post").add(newPost);
     }
 
     /*

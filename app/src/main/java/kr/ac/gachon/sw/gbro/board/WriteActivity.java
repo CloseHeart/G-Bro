@@ -1,13 +1,17 @@
 package kr.ac.gachon.sw.gbro.board;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -29,12 +33,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.storage.UploadTask;
 import com.google.type.DateTime;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,13 +53,16 @@ import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityWriteBinding;
 import kr.ac.gachon.sw.gbro.util.Auth;
+import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 import kr.ac.gachon.sw.gbro.util.Util;
 
 public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements AddImageAdapter.OnImageAddItemClickListener {
     private ActionBar actionBar;
     private AddImageAdapter addImageAdapter;
     private RecyclerView addImageRecyclerView;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected ActivityWriteBinding getBinding() {
@@ -67,6 +78,8 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.write);
         }
+
+        loadingDialog = new LoadingDialog(this);
 
         // 날짜 및 시간 관련 설정
         setDateTime();
@@ -209,20 +222,18 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
     }
 
     private void savePost(){
+        // 제목과 내용이 비어있지 않으면
         if(!binding.etTitle.getText().toString().replaceAll("\\s", "").isEmpty() && !binding.etContent.getText().toString().replaceAll("\\s", "").isEmpty()){
-            Firestore.writeNewPost(binding.spinnerPosttype.getSelectedItemPosition()+1, binding.etTitle.getText().toString(), binding.etContent.getText().toString(),
-                    new ArrayList<String>(), binding.spinnerBuilding.getSelectedItemPosition(), new ArrayList<GeoPoint>(), Auth.getCurrentUser().getUid(), new Timestamp(new Date()), false).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()){
-                        finish();
-                    }else{
-                        Toast.makeText(getApplicationContext(),R.string.error,Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        }else{
-            Toast.makeText(getApplicationContext(),R.string.post_empty,Toast.LENGTH_LONG).show();
+            // 사진이 1장 이상 있다면
+            if(addImageAdapter.getAllImageList().size() > 1) {
+                // 작성 Task
+                new WritePostTask().execute();
+            }
+            else {
+                Toast.makeText(this, R.string.post_nophoto, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(),R.string.post_empty,Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -239,25 +250,93 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         addImageRecyclerView.setHasFixedSize(true);
         addImageRecyclerView.setLayoutManager(linearLayoutManager);
         addImageRecyclerView.setAdapter(addImageAdapter);
-
-        // TEST CODE
-        Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.two);
-        Bitmap resizeBitmap = Bitmap.createScaledBitmap(originalBitmap, 500, 500, false);
-        addImageAdapter.addImage(resizeBitmap);
-        addImageAdapter.addImage(resizeBitmap);
-        addImageAdapter.addImage(resizeBitmap);
-        addImageAdapter.addImage(resizeBitmap);
-        addImageAdapter.addImage(resizeBitmap);
-        addImageAdapter.addImage(resizeBitmap);
     }
 
     @Override
     public void onAddClick(View v) {
-        Toast.makeText(this, "추가 눌렀음", Toast.LENGTH_SHORT).show();
+        ImagePicker.Companion.with(this)
+                .crop()
+                .galleryMimeTypes(new String[]{"image/png", "image/jpg", "image/jpeg"})
+                .compress(1024)
+                .maxResultSize(1080, 1080)
+                .start();
     }
 
     @Override
     public void onRemoveClick(View v, int position) {
-        Toast.makeText(this, "제거 눌렀음 (pos : " + position + ")", Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.warning))
+                .setMessage(getString(R.string.post_deletephoto_msg))
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        addImageAdapter.removeImage(position);
+                    }
+                })
+                .setNegativeButton(getString(R.string.no), null)
+                .create().show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == Activity.RESULT_OK) {
+            Bitmap fileBitmap = BitmapFactory.decodeFile(ImagePicker.Companion.getFilePath(data));
+            addImageAdapter.addImage(fileBitmap);
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class WritePostTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected void onPreExecute() {
+            loadingDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ArrayList<Bitmap> allImageList = addImageAdapter.getAllImageList();
+
+            // 포스트 작성
+            Firestore.writeNewPost(binding.spinnerPosttype.getSelectedItemPosition() + 1,
+                    binding.etTitle.getText().toString(),
+                    binding.etContent.getText().toString(),
+                    allImageList.size()-1,
+                    binding.spinnerBuilding.getSelectedItemPosition(),
+                    new ArrayList<GeoPoint>(),
+                    Auth.getCurrentUser().getUid(),
+                    new Timestamp(new Date()), false)
+                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if(task.isSuccessful()) {
+                                // 사진 업로드
+                                for(int i = 1; i < allImageList.size(); i++) {
+                                    int currentNum = i;
+                                    CloudStorage.uploadPostImg(task.getResult().getId(), String.valueOf(i), allImageList.get(i))
+                                            .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                    if(task.isSuccessful()) {
+                                                        Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Success");
+                                                    }
+                                                    else {
+                                                        Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Failed!");
+                                                    }
+
+                                                    if(currentNum == allImageList.size() - 1) loadingDialog.dismiss(); finish();
+                                                }
+                                            });
+                                }
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+            return null;
+        }
     }
 }

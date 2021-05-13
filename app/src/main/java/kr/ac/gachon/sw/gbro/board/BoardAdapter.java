@@ -1,7 +1,10 @@
 package kr.ac.gachon.sw.gbro.board;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -15,6 +18,7 @@ import java.util.ArrayList;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemBoardBinding;
+import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.Post;
@@ -23,17 +27,31 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
     private Context context;
     private ArrayList<Post> postList;
 
-    public BoardAdapter(Context context, ArrayList<Post> postList) {
-        this.context = context;
-        this.postList = postList;
+    public interface onItemClickListener {
+        void onClick(View v, Post post);
     }
 
-    public static class BoardViewHolder extends RecyclerView.ViewHolder {
+    private onItemClickListener listener = null;
+
+    public BoardAdapter(Context context, ArrayList<Post> postList, onItemClickListener listener) {
+        this.context = context;
+        this.postList = postList;
+        this.listener = listener;
+    }
+
+    public class BoardViewHolder extends RecyclerView.ViewHolder {
         private ItemBoardBinding itemBoardBinding;
 
         public BoardViewHolder(@NonNull ItemBoardBinding binding) {
             super(binding.getRoot());
             this.itemBoardBinding = binding;
+
+            itemBoardBinding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onClick(v, postList.get(getAdapterPosition()));
+                }
+            });
         }
     }
 
@@ -57,6 +75,19 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()) {
                     binding.tvWriter.setText((String) task.getResult().get("userNickName"));
+                }
+            }
+        });
+
+        CloudStorage.getPostImage(currentPost.getPostId(), "1").addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                if(task.isSuccessful()) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                    binding.ivThumbnail.setImageBitmap(bitmap);
+                }
+                else {
+                    binding.ivThumbnail.setImageResource(R.mipmap.ic_launcher);
                 }
             }
         });

@@ -99,4 +99,24 @@ public class AddImageAdapter extends RecyclerView.Adapter<AddImageAdapter.AddIma
         imageList.add(bitmap);
         notifyDataSetChanged();
     }
+
+    /**
+     * 지정한 Position의 Image를 제거한다
+     * @author Minjae Soen
+     * @param position Position
+     */
+    public void removeImage(int position) {
+        imageList.remove(position);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 모든 Bitmap 정보가 담긴 ArrayList를 반환한다.
+     * @author Minjae Seon
+     * @return ArrayList<Bitmap>
+     */
+    public ArrayList<Bitmap> getAllImageList() {
+        return imageList;
+    }
+
 }

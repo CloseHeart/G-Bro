@@ -1,5 +1,6 @@
 package kr.ac.gachon.sw.gbro.board;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,9 +33,11 @@ import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
 import kr.ac.gachon.sw.gbro.databinding.FragmentBoardBinding;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
-public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
+public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements BoardAdapter.onItemClickListener {
+    private LoadingDialog loadingDialog;
     private BoardAdapter boardAdapter;
     private DocumentSnapshot last;
     private Boolean isScrolling = false;
@@ -49,6 +52,7 @@ public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        loadingDialog = new LoadingDialog(getActivity());
         setAdapter();
         setRefresh();
         return binding.getRoot();
@@ -70,7 +74,7 @@ public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
         postList = new ArrayList<>();
         binding.rvBoard.setHasFixedSize(true);
         binding.rvBoard.setLayoutManager(new LinearLayoutManager(getActivity()));
-        boardAdapter = new BoardAdapter(getContext(), postList);
+        boardAdapter = new BoardAdapter(getContext(), postList, this);
         binding.rvBoard.setAdapter(boardAdapter);
 
         RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
@@ -92,6 +96,7 @@ public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
                 int totalItemCount = linearLayoutManager.getItemCount();
 
                 if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
+                    loadingDialog.show();
                     isScrolling = false;
                     Query nextQuery = Firestore.getFirestoreInstance().collection("post").orderBy("writeTime",Query.Direction.DESCENDING).limit(20).startAfter(last);
                     nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -111,6 +116,7 @@ public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
                                     isLastItemReached = true;
                                 }
                             }
+                            loadingDialog.dismiss();
                         }
                     });
                 }
@@ -137,6 +143,7 @@ public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
      * @author Minjae Seon
      */
     private void getBoardData() {
+        loadingDialog.show();
         boardAdapter.clear();
         Firestore.getPostData(0).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -145,6 +152,7 @@ public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
                     if(task.getResult().size() > 0){
                         for(DocumentSnapshot doc : task.getResult()){
                             Post post = doc.toObject(Post.class);
+                            post.setPostId(doc.getId());
                             postList.add(post);
                         }
                         boardAdapter.notifyDataSetChanged();
@@ -155,9 +163,16 @@ public class    BoardFragment extends BaseFragment<FragmentBoardBinding> {
                 else {
                     Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
                 }
-
+                loadingDialog.dismiss();
                 binding.swipeBoard.setRefreshing(false);
             }
         });
+    }
+
+    @Override
+    public void onClick(View v, Post post) {
+        Intent contentIntent = new Intent(getActivity(), PostContentActivity.class);
+        contentIntent.putExtra("post", post);
+        startActivity(contentIntent);
     }
 }
