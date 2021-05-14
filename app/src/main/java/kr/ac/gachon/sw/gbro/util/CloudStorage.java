@@ -73,4 +73,9 @@ public class CloudStorage {
         StorageReference postFile = postRef.child(postId + "/" + fileName + ".jpg");
         return postFile.getBytes(1500000);
     }
+
+    public static Task<byte[]> getImageFromURL(String URL) {
+        StorageReference profileReference = getStorageInstance().getReferenceFromUrl(URL);
+        return profileReference.getBytes(1500000);
+    }
 }

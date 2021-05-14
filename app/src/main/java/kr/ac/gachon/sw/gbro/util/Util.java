@@ -37,6 +37,29 @@ public class Util {
     }
 
     /**
+     * Firebase Timestamp 정보를 Format에 맞춰 String 형태로 반환 (Detail Version)
+     * @author Minjae Seon
+     * @param timestamp com.google.firebase.Timestamp
+     * @return Timestamp 정보 기반의 시간/날짜 정보 String
+     */
+    public static String timeStamptoDetailString(Timestamp timestamp) {
+        Date currentDate = new Date();
+        Date targetDate = timestamp.toDate();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN);
+        SimpleDateFormat detailDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREAN);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.KOREAN);
+
+        int compareValue = dateFormat.format(currentDate).compareTo(dateFormat.format(targetDate));
+        if(compareValue == 0) {
+            return timeFormat.format(targetDate);
+        }
+        else {
+            return detailDateFormat.format(targetDate);
+        }
+    }
+
+    /**
      * Debug Log 출력
      *      * @author Minjae Seon
      * @param activity 로그 띄울 Activity

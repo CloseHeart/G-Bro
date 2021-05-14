@@ -1,43 +1,38 @@
-package kr.ac.gachon.sw.gbro.board;
+package kr.ac.gachon.sw.gbro.setting;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Random;
 
-import kr.ac.gachon.sw.gbro.MainActivity;
 import kr.ac.gachon.sw.gbro.R;
-import kr.ac.gachon.sw.gbro.base.BaseFragment;
-import kr.ac.gachon.sw.gbro.databinding.FragmentBoardBinding;
-import kr.ac.gachon.sw.gbro.setting.MyPostActivity;
+import kr.ac.gachon.sw.gbro.base.BaseActivity;
+import kr.ac.gachon.sw.gbro.board.BoardAdapter;
+import kr.ac.gachon.sw.gbro.board.PostContentActivity;
+import kr.ac.gachon.sw.gbro.databinding.ActivityMypostBinding;
+import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
-public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements BoardAdapter.onItemClickListener {
+public class MyPostActivity extends BaseActivity<ActivityMypostBinding> implements BoardAdapter.onItemClickListener {
+    ActionBar actionBar;
     private LoadingDialog loadingDialog;
     private BoardAdapter boardAdapter;
     private DocumentSnapshot last;
@@ -46,17 +41,24 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     private ArrayList<Post> postList;
 
     @Override
-    protected FragmentBoardBinding getBinding() {
-        return FragmentBoardBinding.inflate(getLayoutInflater());
+    protected ActivityMypostBinding getBinding() {
+        return ActivityMypostBinding.inflate(getLayoutInflater());
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        loadingDialog = new LoadingDialog(getActivity());
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        loadingDialog = new LoadingDialog(this);
+
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.setting_mypost);
+        }
+
         setAdapter();
         setRefresh();
-        return binding.getRoot();
     }
 
     @Override
@@ -65,18 +67,13 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
         getBoardData();
     }
 
-    /**
-     * Adapter 설정
-     * @author Minjae Seon, Taehyun Park
-     */
     private void setAdapter() {
-        Log.d("BoardFragment", "Set Adapter Run");
-
+        RecyclerView myPostRecyclerView = binding.rvMypost;
         postList = new ArrayList<>();
-        binding.rvBoard.setHasFixedSize(true);
-        binding.rvBoard.setLayoutManager(new LinearLayoutManager(getActivity()));
-        boardAdapter = new BoardAdapter(getContext(), postList, this);
-        binding.rvBoard.setAdapter(boardAdapter);
+        myPostRecyclerView.setHasFixedSize(true);
+        myPostRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        boardAdapter = new BoardAdapter(this, postList, this);
+        myPostRecyclerView.setAdapter(boardAdapter);
 
         RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
             @Override
@@ -99,8 +96,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                 if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                     loadingDialog.show();
                     isScrolling = false;
-                    // TODO : TYPE 설정
-                    Query nextQuery = Firestore.getPostData(0).startAfter(last);
+                    Query nextQuery = Firestore.getMyPostData(Auth.getCurrentUser().getUid()).startAfter(last);
                     nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> t) {
@@ -119,7 +115,8 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                                 }
                             }
                             else {
-                                Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MyPostActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                                finish();
                             }
                             loadingDialog.dismiss();
                         }
@@ -127,20 +124,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                 }
             }
         };
-        binding.rvBoard.addOnScrollListener(onScrollListener);
-    }
-
-    /**
-     * Refresh 설정
-     * @author Minjae Seon
-     */
-    private void setRefresh() {
-        binding.swipeBoard.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBoardData();
-            }
-        });
+        myPostRecyclerView.addOnScrollListener(onScrollListener);
     }
 
     /**
@@ -150,8 +134,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     private void getBoardData() {
         loadingDialog.show();
         boardAdapter.clear();
-        // TODO : TYPE 설정
-        Firestore.getPostData(0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        Firestore.getMyPostData(Auth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
@@ -163,20 +146,35 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                         }
                         boardAdapter.notifyDataSetChanged();
                         last = task.getResult().getDocuments().get(task.getResult().size()-1);
+
                     }
                 }
                 else {
-                    Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyPostActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 loadingDialog.dismiss();
-                binding.swipeBoard.setRefreshing(false);
+                binding.swipeMypost.setRefreshing(false);
+            }
+        });
+    }
+
+    /**
+     * Refresh 설정
+     * @author Minjae Seon
+     */
+    private void setRefresh() {
+        binding.swipeMypost.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getBoardData();
             }
         });
     }
 
     @Override
     public void onClick(View v, Post post) {
-        Intent contentIntent = new Intent(getActivity(), PostContentActivity.class);
+        Intent contentIntent = new Intent(this, PostContentActivity.class);
         contentIntent.putExtra("post", post);
         startActivity(contentIntent);
     }
