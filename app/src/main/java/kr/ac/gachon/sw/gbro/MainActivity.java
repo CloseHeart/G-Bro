@@ -16,6 +16,7 @@ import kr.ac.gachon.sw.gbro.board.WriteActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
 import kr.ac.gachon.sw.gbro.setting.SettingActivity;
+import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding>{
     long lastPressedTime = 0;
@@ -53,15 +54,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
             } else {
                 super.onBackPressed();
             }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            binding.viewSwipeBar.setVisibility(View.VISIBLE);
         }
     }
 

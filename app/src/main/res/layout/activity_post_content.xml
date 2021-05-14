@@ -1,51 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".board.PostContentActivity"
-    android:background="@color/gbro_brighter_main">
+    tools:context=".board.PostContentActivity">
 
-    <!--  메인으로 돌아갈떄 누를 버튼 -->
-    <Button
-        android:id="@+id/content_to_main"
-        android:layout_width="25dp"
-        android:layout_height="15dp"
-        android:layout_gravity="start|top"
-        android:background="@drawable/arrow"
-        android:layout_margin="12dp" />
+    <FrameLayout
+        android:id="@+id/imageSlideFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!--  이미지 ( 습득자가 업로드 할 것 ) -->
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
-        tools:ignore="MissingConstraints"/>
+        <!--  이미지 ( 습득자가 업로드 할 것 ) -->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="450dp" />
 
-    <!--  사진 넘길때 밑에 있는 동그라미 -->
-    <me.relex.circleindicator.CircleIndicator
-        android:id="@+id/indicator"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_marginTop="415dp"
-        app:ci_drawable="@drawable/indicator"
-        app:ci_height="7dp"
-        app:ci_margin="4dp"
-        app:ci_width="7dp" />
+        <!--  사진 넘길때 밑에 있는 동그라미 -->
+        <me.relex.circleindicator.CircleIndicator
+            android:id="@+id/indicator"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_gravity="bottom|center_horizontal"
+            app:ci_drawable="@drawable/indicator"
+            app:ci_height="7dp"
+            app:ci_margin="4dp"
+            app:ci_width="7dp" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:fillViewport="true"
-        android:layout_marginTop="460dp"
-        android:id="@+id/scrollView">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageSlideFrame">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!--  채팅으로 넘어가는 버튼 -->
+            <!-- 버튼 예쁘게 제작해서 변경해야함 -->
+            <Button
+                android:id="@+id/content_to_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/postcontent_chat"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!--  프로필 사진 -->
             <ImageView
@@ -53,111 +69,97 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/profile"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <!--  작성자 닉넴 -->
-            <TextView
-                android:id="@+id/post_writer"
-                android:layout_width="150sp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="김수빈"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.143"
-                app:layout_constraintStart_toEndOf="@+id/post_profile"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!--  업로드 시간 -->
             <TextView
+                android:id="@+id/post_writer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/content_to_chat"
+                app:layout_constraintStart_toEndOf="@+id/post_profile"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="김수빈" />
+
+            <TextView
                 android:id="@+id/post_uploadtime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginBottom="8dp"
-                android:text="10:18"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="13sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/post_profile"
                 app:layout_constraintTop_toBottomOf="@+id/post_writer"
-                app:layout_constraintVertical_bias="0.0" />
+                tools:text="10:18" />
 
             <!--  습득 장소 -->
             <TextView
                 android:id="@+id/post_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="212dp"
-                android:text="IT융합대학"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="13sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/post_uploadtime" />
+                app:layout_constraintStart_toEndOf="@+id/post_profile"
+                app:layout_constraintTop_toBottomOf="@+id/post_uploadtime"
+                tools:text="IT융합대학" />
 
             <!--  제목 -->
             <TextView
                 android:id="@+id/post_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="236dp"
+                android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="에어팟 습득함.  "
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/post_profile" />
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view2"
+                tools:text="에어팟 습득함." />
 
-            <!--  채팅으로 넘어가는 버튼 -->
-            <!-- 버튼 예쁘게 제작해서 변경해야함 -->
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/content_to_chat"
-                android:text="chat"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:ignore="MissingConstraints" />
-
-            <!--  프로필 부분과 제목 구분선 -->
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="0.3dp"
-                android:background="@color/gray"
-                android:layout_marginTop="13dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/post_location" />
-
-            <!--  내용-->
             <TextView
                 android:id="@+id/post_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="340dp"
-                android:ellipsize="end"
-                android:textColor="@color/black"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/post_title" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post_title"
+                tools:text="@tools:sample/lorem/random" />
+
+
+            <!--  내용-->
+            <View
+                android:id="@+id/view2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.3dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post_location" />
+
+            <!--  프로필 부분과 제목 구분선 -->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

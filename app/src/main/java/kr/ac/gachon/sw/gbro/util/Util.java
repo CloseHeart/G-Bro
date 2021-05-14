@@ -1,6 +1,7 @@
 package kr.ac.gachon.sw.gbro.util;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
@@ -75,5 +76,37 @@ public class Util {
      */
     public static void infoLog(Activity activity, String msg) {
         Log.i(activity.getClass().getSimpleName(), msg);
+    }
+
+    /**
+     * Bitmap Image를 Resize한다
+     * 참조 Page : http://theeye.pe.kr/archives/1380
+     * @author Minjae Seon
+     * @param original 원본 Bitmap
+     * @param maxRes 최대 해상도
+     * @return Resize된 Bitmap Object
+     */
+    public static Bitmap resizeBitmap(Bitmap original, int maxRes) {
+        int w = original.getWidth();
+        int h = original.getHeight();
+        int newW = w;
+        int newH = h;
+        float rate = 0.0f;
+
+        if (w > h) {
+            if (maxRes < w) {
+                rate = maxRes / (float) w;
+                newH = (int) (h * rate);
+                newW = maxRes;
+            }
+        }
+        else {
+            if (maxRes < h) {
+                rate = maxRes / (float) h;
+                newW = (int) (w * rate);
+                newH = maxRes;
+            }
+        }
+        return Bitmap.createScaledBitmap(original, newW, newH, true);
     }
 }

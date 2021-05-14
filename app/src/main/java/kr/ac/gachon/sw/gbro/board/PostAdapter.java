@@ -1,24 +1,29 @@
 package kr.ac.gachon.sw.gbro.board;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.google.firebase.database.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import kr.ac.gachon.sw.gbro.R;
+import kr.ac.gachon.sw.gbro.databinding.PostSliderBinding;
 
 public class PostAdapter extends PagerAdapter {
-
-    // R.drawable.(사진파일이름)으로 images 배열 생성
-    private int[] images = {R.drawable.one, R.drawable.two,R.drawable.three};
+    private PostSliderBinding binding;
+    private ArrayList<Bitmap> bitmapList = new ArrayList<>();
     private LayoutInflater inflater;
     private Context context;
 
@@ -27,12 +32,9 @@ public class PostAdapter extends PagerAdapter {
         this.context = context;
     }
 
-    public PostAdapter(FragmentManager supportFragmentManager, List<Fragment> data) {
-    }
-
     @Override
     public int getCount() {
-        return images.length;
+        return bitmapList.size();
     }
 
     @Override
@@ -43,12 +45,13 @@ public class PostAdapter extends PagerAdapter {
     }
 
     // 각각의 item을 인스턴스 화
+    @NonNull
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        //초기화
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.post_slider, container, false);
-        ImageView imageView = (ImageView)v.findViewById(R.id.imageView);
+        binding = PostSliderBinding.inflate(inflater);
+        View v = binding.getRoot();
+        ImageView imageView = binding.imageView;
 
         /**
         //물품 사진에 라운딩 넣을까 했는데 유치해보여서 뺐습니다.
@@ -58,7 +61,8 @@ public class PostAdapter extends PagerAdapter {
         imageView.setBackground(drawable);
         imageView.setClipToOutline(true);
         **/
-        imageView.setImageResource(images[position]);
+
+        imageView.setImageBitmap(bitmapList.get(position));
         container.addView(v);
         return v;
     }
@@ -66,8 +70,16 @@ public class PostAdapter extends PagerAdapter {
     //할당을 해제
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        container.invalidate();
-//        super.destroyItem(container, position, object);
+        container.removeView((View) object);
+    }
+
+    /**
+     * 이미지 추가
+     * @param bitmap bitmap
+     */
+    public void addImage(Bitmap bitmap) {
+        bitmapList.add(bitmap);
+        notifyDataSetChanged();
     }
 }
 

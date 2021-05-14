@@ -71,6 +71,7 @@ dependencies {
     // Layout
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
     implementation 'com.getbase:floatingactionbutton:1.10.1'
+    implementation 'com.github.dhaval2404:imagepicker:1.8'
 
     // Naver Maps SDK
     implementation 'com.naver.maps:map-sdk:3.11.0'
@@ -80,11 +81,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     //circular indicator
-    implementation 'me.relex:circleindicator:1.2.2'
+    implementation 'me.relex:circleindicator:2.1.6'
 
     // material design
     implementation 'com.google.android.material:material:1.3.0'
-
-    // Permission
-    implementation 'gun0912.ted:tedpermission:2.2.3'
 }
