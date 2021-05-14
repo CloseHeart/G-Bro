@@ -1,41 +1,30 @@
 package kr.ac.gachon.sw.gbro.map;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.firebase.firestore.GeoPoint;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraPosition;
-import com.naver.maps.map.LocationTrackingMode;
-import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
-import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
-import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.widget.LocationButtonView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
@@ -44,6 +33,8 @@ import kr.ac.gachon.sw.gbro.util.Util;
 
 public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnMapReadyCallback {
     private ArrayList<Integer> path = null;
+    private ArrayList<Marker> markers = null;
+    private int openMakerIdx = -1;
     private boolean isMain = false;
     private Context context;
 
@@ -126,13 +117,11 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
      * @param naverMap NaverMap Object
      */
     public void drawMarker(NaverMap naverMap) {
-        String[] buildingName = getResources().getStringArray(R.array.gachon_globalcampus_building);
+        markers = new ArrayList<>();
         String[] buildingCoordinate = getResources().getStringArray(R.array.gachon_globalcampus_coordinate);
 
-        for(int i = 0; i < buildingName.length - 1; i++) {
+        for(int i = 0; i < buildingCoordinate.length - 1; i++) {
             String[] posArray = buildingCoordinate[i].split(",");
-
-            Util.debugLog(getActivity(), "Maker Added : " + buildingName[i] + " (" + Double.parseDouble(posArray[0]) + ", " + Double.parseDouble(posArray[1]) + ")");
 
             Marker marker = new Marker();
             marker.setPosition(new LatLng(Double.parseDouble(posArray[0]), Double.parseDouble(posArray[1])));
@@ -140,34 +129,9 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
             marker.setWidth(40);
             marker.setHeight(60);
             marker.setIcon(OverlayImage.fromResource(R.drawable.marker));
-
-            InfoWindow infoWindow = new InfoWindow();
-            marker.setOnClickListener(overlay -> {
-                if (marker.getInfoWindow() == null) { // 마커를 클릭할 때 정보창을 엶
-                    infoWindow.open(marker);
-                } else {
-                    // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                    infoWindow.close();
-                }
-                return true;
-            });
-
-            int currentBuilding = i;
-            infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getContext()) {
-                @NonNull
-                @Override
-                public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                    // TODO : DB에서 각 건물 별 데이터 가져오기
-                    return getString(R.string.Info_building_name,buildingName[currentBuilding])
-                            +"\n"
-                            +getString(R.string.Info_lost_cnt,3)
-                            +"\n"
-                            +getString(R.string.Info_get_cnt,4);
-                }
-            });
+            setInfoWindow(marker, i);
+            markers.add(marker);
         }
-
-
     }
 
     /**
@@ -199,5 +163,54 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
+    }
+
+    /**
+     * Marker의 InfoWindow 설정
+     * @author Subin Kim, Minjae Seon
+     * @param marker Marker
+     * @param buildingNum 건물 번호
+     */
+    private void setInfoWindow(Marker marker, int buildingNum) {
+        String[] buildingName = getResources().getStringArray(R.array.gachon_globalcampus_building);
+
+        InfoWindow infoWindow = new InfoWindow();
+        marker.setOnClickListener(overlay -> {
+            if (marker.getInfoWindow() == null) { // 마커를 클릭할 때 정보창을 엶
+                // 다른 열린 마커 닫기
+                closeOpenMarkers();
+                infoWindow.open(marker);
+            } else {
+                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
+                infoWindow.close();
+            }
+            return true;
+        });
+
+        infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getContext()) {
+            @NonNull
+            @Override
+            public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                // TODO : DB에서 각 건물 별 데이터 가져오기
+                return getString(R.string.Info_building_name, buildingName[buildingNum])
+                        +"\n"
+                        +getString(R.string.Info_lost_cnt,3)
+                        +"\n"
+                        +getString(R.string.Info_get_cnt,4);
+            }
+        });
+    }
+
+    /**
+     * 모든 열린 마커들을 닫음
+     * @author Minjae Seon
+     */
+    private void closeOpenMarkers() {
+        for (Marker marker : markers) {
+            InfoWindow infoWindow = marker.getInfoWindow();
+            if (infoWindow != null) {
+                infoWindow.close();
+            }
+        }
     }
 }
