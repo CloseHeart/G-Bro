@@ -36,6 +36,7 @@
         <activity android:name=".board.PostContentActivity" />
         <activity android:name=".board.WriteActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".setting.MyPostActivity" />
     </application>
 
 </manifest>

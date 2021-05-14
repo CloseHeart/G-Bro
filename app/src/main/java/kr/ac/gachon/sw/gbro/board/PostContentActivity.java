@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityPostContentBinding;
+import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
@@ -44,6 +46,7 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         loadingDialog = new LoadingDialog(this);
 
         actionBar = getSupportActionBar();
+
         // 포스트 정보 가져오기
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
@@ -85,6 +88,10 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         super.onBackPressed();
     }
 
+    /**
+     * 어댑터를 설정한다
+     * @author Subin Kim, Minjae Seon
+     */
     private void setAdapter() {
         // 아까 만든 view
         viewPager = binding.view;
@@ -111,6 +118,10 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         }
     }
 
+    /**
+     * 컨텐츠를 설정한다
+     * @author Minjae Seon
+     */
     private void setContent() {
         Firestore.getUserData(contentPost.getWriterId()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -123,8 +134,13 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
 
         binding.postTitle.setText(contentPost.getTitle());
         binding.postContent.setText(contentPost.getContent());
-        binding.postUploadtime.setText(Util.timeStamptoString(contentPost.getWriteTime()));
+        binding.postUploadtime.setText(Util.timeStamptoDetailString(contentPost.getWriteTime()));
         binding.postLocation.setText(contentPost.getSummaryBuildingName(getApplicationContext()));
+
+        // 본인이 작성자면 채팅 버튼이 안나오게
+        if(contentPost.getWriterId().equals(Auth.getCurrentUser().getUid())) {
+            binding.contentToChat.setVisibility(View.GONE);
+        }
     }
 
 }

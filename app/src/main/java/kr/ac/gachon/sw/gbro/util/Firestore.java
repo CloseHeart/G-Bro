@@ -89,18 +89,26 @@ public class Firestore {
         return getFirestoreInstance().collection("user").document(userId).get();
     }
 
-    /*
-     * 게시물을 가져온다
-     * @author Taehyun Park
-     * @param
-     * @param
-     * @param
-     * @return Task<DocumentSnapshot>
+    /**
+     * 게시글을 불러오는 Query를 생성한다
+     * @author Taehyun Park, Minjae Seon
+     * @param type 게시물 타입
+     * @return Query
      */
-    public static Task<QuerySnapshot> getPostData(int type) {
+    public static Query getPostData(int type) {
         if(type == 0)
-            return getFirestoreInstance().collection("post").orderBy("writeTime",Query.Direction.DESCENDING).limit(20).get();
+            return getFirestoreInstance().collection("post").orderBy("writeTime",Query.Direction.DESCENDING).limit(20);
         else
-            return getFirestoreInstance().collection("post").whereEqualTo("type",type).orderBy("writeTime",Query.Direction.ASCENDING).limit(20).get();
+            return getFirestoreInstance().collection("post").whereEqualTo("type",type).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
+    }
+
+    /**
+     * 자신이 작성한 게시글을 불러오는 Query를 생성한다
+     * @author Minjae Seon
+     * @param userId Firebase User ID
+     * @return Query
+     */
+    public static Query getMyPostData(String userId) {
+        return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
     }
 }

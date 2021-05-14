@@ -2,6 +2,7 @@ package kr.ac.gachon.sw.gbro.setting;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -53,7 +54,8 @@ public class SettingPreferenceFragment extends PreferenceFragmentCompat {
         myPostPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Toast.makeText(getContext(), "게시글 확인", Toast.LENGTH_SHORT).show();
+                Intent myPostIntent = new Intent(getActivity(), MyPostActivity.class);
+                startActivity(myPostIntent);
                 return true;
             }
         });
