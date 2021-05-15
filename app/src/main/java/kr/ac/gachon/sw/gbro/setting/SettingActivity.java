@@ -1,17 +1,26 @@
 package kr.ac.gachon.sw.gbro.setting;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.github.dhaval2404.imagepicker.ImagePicker;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivitySettingBinding;
 
-public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
+
+public class SettingActivity extends BaseActivity<ActivitySettingBinding> implements
+        PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private ActionBar actionBar;
 
     @Override
@@ -45,5 +54,30 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
+        // Instantiate the new Fragment
+        final Bundle args = pref.getExtras();
+        final Fragment fragment = getSupportFragmentManager().getFragmentFactory().instantiate(
+                getClassLoader(),
+                pref.getFragment());
+        fragment.setArguments(args);
+        fragment.setTargetFragment(caller, 0);
+        // Replace the existing Fragment with the new Fragment
+        getSupportFragmentManager().beginTransaction()
+                .replace(binding.flSetting.getId(), fragment)
+                .addToBackStack(null)
+                .commit();
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == ImagePicker.REQUEST_CODE){
+
+        }
     }
 }

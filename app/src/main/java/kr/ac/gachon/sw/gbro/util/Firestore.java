@@ -42,8 +42,9 @@ public class Firestore {
         return getFirestoreInstance().collection("user").document(userId).set(newUser);
     }
     
-    /**
-     *
+    /*
+     * 새로운 게시물의 정보를 DB에 추가하도록 요청한다.
+     * @author Taehyun Park
      * @param type
      * @param title
      * @param content
@@ -52,7 +53,7 @@ public class Firestore {
      * @param writerId
      * @param writeTime
      * @param isFinished
-     * @return
+     * @return Task<DocumentReference>
      */
     public static Task<DocumentReference> writeNewPost(int type, String title, String content, int photoNum, int summaryBuildingType, ArrayList<GeoPoint> locationList, String writerId, Timestamp writeTime, boolean isFinished) {
         Post newPost = new Post(type, title, content, photoNum, summaryBuildingType, locationList, writerId, writeTime, isFinished);
@@ -110,5 +111,27 @@ public class Firestore {
      */
     public static Query getMyPostData(String userId) {
         return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
+    }
+
+    /*
+     * 자신의 프로필에서 닉네임을 수정한다.
+     * @author Taehyun Park
+     * @param userId
+     * @param nickName
+     * @return Task<Void>
+     */
+    public static Task<Void> updateProfileNickName(String userId, String nickName){
+        return getFirestoreInstance().collection("user").document(userId).update("userNickName",nickName);
+    }
+
+    /*
+     * 자신의 프로필에서 사진을 수정한다.
+     * @author Taehyun Park
+     * @param userId
+     * @param userProfileImgURL
+     * @return Task<Void>
+     */
+    public static Task<Void> updateProfileImage(String userId, String userProfileImgURL){
+        return getFirestoreInstance().collection("user").document(userId).update("userProfileImgURL",userProfileImgURL);
     }
 }

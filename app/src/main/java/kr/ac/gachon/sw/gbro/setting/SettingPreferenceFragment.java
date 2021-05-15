@@ -1,20 +1,45 @@
 package kr.ac.gachon.sw.gbro.setting;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.IOException;
+
+import kr.ac.gachon.sw.gbro.LoginActivity;
+import kr.ac.gachon.sw.gbro.MainActivity;
+import kr.ac.gachon.sw.gbro.board.WriteActivity;
+import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.util.Auth;
+import kr.ac.gachon.sw.gbro.util.CloudStorage;
+import kr.ac.gachon.sw.gbro.util.Util;
+import kr.ac.gachon.sw.gbro.util.model.User;
+
+import static android.app.Activity.RESULT_OK;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 
 
 public class SettingPreferenceFragment extends PreferenceFragmentCompat {
@@ -41,14 +66,6 @@ public class SettingPreferenceFragment extends PreferenceFragmentCompat {
             }
         });
 
-        Preference changeInfoPref = findPreference("changeinfo");
-        changeInfoPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Toast.makeText(getContext(), "정보 변경", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
 
         Preference myPostPref = findPreference("check_my_board");
         myPostPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
