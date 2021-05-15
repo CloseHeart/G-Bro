@@ -29,6 +29,15 @@
     <string name="setting_mypost_summary">본인이 작성한 게시물을 확인합니다.</string>
     <string name="setting_changeinfo">정보 변경</string>
     <string name="setting_changeinfo_summary">프로필 사진 및 닉네임을 변경할 수 있습니다.</string>
+    <string name="setting_changeinfo_msg">변경할 닉네임을 입력해주세요.</string>
+    <string name="setting_changeinfo_nickname">닉네임 변경</string>
+    <string name="setting_changeinfo_summary_nickname"></string>
+    <string name="change_nickname_success">닉네임 변경이 완료되었습니다.</string>
+    <string name="change_nickname_error">닉네임 변경을 실패하였습니다.</string>
+    <string name="setting_changeinfo_image">사진 변경</string>
+    <string name="setting_changeinfo_summary_image"></string>
+    <string name="change_image_success">사진 변경을 성공하였습니다.</string>
+    <string name="change_image_error">사진 변경을 실패하였습니다.</string>
     <string name="setting_logout">로그아웃</string>
     <string name="setting_logout_msg">정말로 로그아웃하시겠습니까? 다시 이용하시려면 로그인 하셔야 합니다.\n로그아웃 후 로그인 화면으로 돌아갑니다.</string>
     <string name="setting_withdraw">회원 탈퇴</string>
@@ -58,7 +67,7 @@
 
     <string name="postcontent_chat">CHAT</string>
 
-    <string name ="Info_building_name"> 건물명 : %s</string>
-    <string name = "Info_lost_cnt">분실물 : %d 개</string>
-    <string name = "Info_get_cnt">습득물 : %d 개</string>
+    <string name="Info_building_name"> 건물명 : %s</string>
+    <string name="Info_lost_cnt">분실물 : %d 개</string>
+    <string name="Info_get_cnt">습득물 : %d 개</string>
 </resources>
