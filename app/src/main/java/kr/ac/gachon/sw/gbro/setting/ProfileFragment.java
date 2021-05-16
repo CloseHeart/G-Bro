@@ -14,10 +14,14 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Map;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
@@ -70,11 +74,61 @@ public class ProfileFragment extends BaseFragment<FragmentProfileBinding> {
                     else {
                         Log.d(ProfileFragment.this.getClass().getSimpleName(), "Profile Image NULL");
                     }
+
+                    setUserDataListener();
                 }
                 else {
                     Auth.signOut(getActivity());
                 }
             }
         });
+    }
+
+    /**
+     * UserData 변경 Listener를 등록한다
+     * @author Minjae Seon
+     */
+    private void setUserDataListener() {
+        Firestore.getFirestoreInstance().collection("user").document(Auth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if(error != null) {
+                            Log.e(ProfileFragment.this.getClass().getSimpleName(), "Listen Failed!", error);
+                        }
+
+                        if(value != null && value.exists()) {
+                            Map<String, Object> newProfileData = value.getData();
+
+                            if(newProfileData != null) {
+                                Log.d(ProfileFragment.this.getClass().getSimpleName(), "Snapshot Data : " + newProfileData);
+                                Object newNickname = newProfileData.get("userNickName");
+                                Object newProfileUrl = newProfileData.get("userProfileImgURL");
+
+                                if (newNickname != null) binding.tvName.setText(newNickname.toString());
+
+                                if (newProfileUrl != null) {
+                                    CloudStorage.getImageFromURL(newProfileUrl.toString()).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<byte[]> task) {
+                                            if (task.isSuccessful()) {
+                                                Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                                                binding.ivProfile.setImageBitmap(bitmap);
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    Log.d(ProfileFragment.this.getClass().getSimpleName(), "Profile Image NULL");
+                                }
+                            }
+                            else {
+                                Log.d(ProfileFragment.this.getClass().getSimpleName(), "Snapshot Data NULL");
+                            }
+                        }
+                        else {
+                            Log.d(ProfileFragment.this.getClass().getSimpleName(), "Snapshot Value NULL");
+                        }
+                    }
+                });
     }
 }
