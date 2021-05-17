@@ -21,6 +21,18 @@
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="@string/navermap_clientid" />
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/fcm_id" />
+        
+        <service
+            android:name=".fcm.FCMService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".SplashActivity"
             android:theme="@style/Theme.GBro.Splash">
