@@ -42,45 +42,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/et_missingdate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="4dp"
-                android:background="@android:color/transparent"
-                android:cursorVisible="false"
-                android:ems="10"
-                android:focusableInTouchMode="false"
-                android:hint="@string/post_date"
-                android:importantForAutofill="no"
-                android:inputType="date"
-                android:longClickable="false"
-                app:layout_constraintEnd_toStartOf="@+id/et_missingtime"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_title" />
-
-            <EditText
-                android:id="@+id/et_missingtime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:background="@android:color/transparent"
-                android:cursorVisible="false"
-                android:ems="10"
-                android:focusableInTouchMode="false"
-                android:hint="@string/post_time"
-                android:importantForAutofill="no"
-                android:inputType="time"
-                android:longClickable="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/et_missingdate"
-                app:layout_constraintTop_toBottomOf="@+id/et_title" />
-
-
             <Spinner
                 android:id="@+id/spinner_posttype"
                 android:layout_width="0dp"
@@ -92,7 +53,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/tv_posttype"
-                app:layout_constraintTop_toBottomOf="@+id/et_missingtime" />
+                app:layout_constraintTop_toBottomOf="@+id/et_title" />
 
             <Spinner
                 android:id="@+id/spinner_building"
@@ -117,7 +78,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="?android:attr/textColorPrimary"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_missingdate" />
+                app:layout_constraintTop_toBottomOf="@+id/et_title" />
 
             <TextView
                 android:id="@+id/tv_place"

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -158,5 +159,16 @@ public class Util {
      */
     public static Bitmap byteArrayToBitmap(byte[] bytesImage) {
         return BitmapFactory.decodeByteArray(bytesImage, 0, bytesImage.length);
+    }
+
+    /**
+     * Bitmap을 ByteArray로
+     * @param bitmap 바꿀 Bitmap
+     * @return ByteArray
+     */
+    public static byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
     }
 }

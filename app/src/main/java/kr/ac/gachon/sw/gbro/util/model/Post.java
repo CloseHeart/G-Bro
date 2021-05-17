@@ -67,12 +67,22 @@ public class Post implements Parcelable {
         return type;
     }
 
+    public void setType(int type) { this.type = type; }
+
     public String getTitle() {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public int getPhotoNum() {
@@ -98,6 +108,8 @@ public class Post implements Parcelable {
     public int getSummaryBuildingType() {
         return summaryBuildingType;
     }
+
+    public void setSummaryBuildingType(int summaryBuildingType) { this.summaryBuildingType = summaryBuildingType; }
 
     public String getSummaryBuildingName(Context context) {
         return context.getResources().getStringArray(R.array.gachon_globalcampus_building)[summaryBuildingType];

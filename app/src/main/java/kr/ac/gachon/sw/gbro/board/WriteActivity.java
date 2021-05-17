@@ -38,6 +38,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.UploadTask;
 import com.google.type.DateTime;
@@ -57,8 +58,11 @@ import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 import kr.ac.gachon.sw.gbro.util.Util;
+import kr.ac.gachon.sw.gbro.util.model.Post;
 
 public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements AddImageAdapter.OnImageAddItemClickListener {
+    private Post post;
+    private boolean isModify = false;
     private ActionBar actionBar;
     private AddImageAdapter addImageAdapter;
     private RecyclerView addImageRecyclerView;
@@ -81,17 +85,24 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
 
         loadingDialog = new LoadingDialog(this);
 
-        // 날짜 및 시간 관련 설정
-        setDateTime();
-
         // 이미지 추가 RecyclerView 설정
         setAddImageRecyclerView();
+
+        // 포스트 정보 가져오기
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null) {
+            isModify = true;
+            post = bundle.getParcelable("post");
+            binding.rvPhoto.setEnabled(false);
+            loadOriginalData();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.writemenu, menu);
+        if(isModify) inflater.inflate(R.menu.writemenu_modify, menu);
+        else inflater.inflate(R.menu.writemenu, menu);
         return true;
     }
 
@@ -103,6 +114,10 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         // 저장 버튼
         if (itemId == R.id.write_save) {
             savePost();
+            return true;
+        }
+        else if(itemId == R.id.write_remove) {
+            // TODO : 삭제 기능 구현
             return true;
         }
         else if(itemId == android.R.id.home) {
@@ -143,98 +158,41 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         }
     }
 
-    /**
-     * 날짜 및 시간 관련 설정
-     * @author Minjae Seon
-     */
-    private void setDateTime() {
-        // Calendar Instance
-        Calendar cal = Calendar.getInstance();
-
-        // Date & Time Format
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
-        SimpleDateFormat timeFormat = new SimpleDateFormat("a hh:mm", Locale.KOREA);
-
-        // Date & Time EditText
-        EditText etDate = binding.etMissingdate;
-        etDate.setText(dateFormat.format(cal.getTime()));
-
-        EditText etTime = binding.etMissingtime;
-        etTime.setText(timeFormat.format(cal.getTime()));
-
-        // DatePicker
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                Util.debugLog(WriteActivity.this, "onDateSet - " + year + "-" + month + "-" + dayOfMonth);
-                cal.set(year, month, dayOfMonth);
-                etDate.setText(dateFormat.format(cal.getTime()));
-            }
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
-
-        // Set Max Date
-        datePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
-
-        // TimePicker
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                Calendar currentCal = Calendar.getInstance();
-                Calendar checkCal = Calendar.getInstance();
-                checkCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                checkCal.set(Calendar.MINUTE, minute);
-
-                Util.debugLog(WriteActivity.this, "currentCal - " + currentCal.get(Calendar.YEAR) + "-" + (currentCal.get(Calendar.MONTH) + 1) + "-" + currentCal.get(Calendar.DAY_OF_MONTH) + " "
-                        + currentCal.get(Calendar.HOUR_OF_DAY) + ":" + currentCal.get(Calendar.MINUTE) + " / " + currentCal.getTimeInMillis() );
-                Util.debugLog(WriteActivity.this, "checkCal - " + checkCal.get(Calendar.YEAR) + "-" + (checkCal.get(Calendar.MONTH) + 1) + "-" + checkCal.get(Calendar.DAY_OF_MONTH) + " "
-                        + checkCal.get(Calendar.HOUR_OF_DAY) + ":" + checkCal.get(Calendar.MINUTE) + " / " + checkCal.getTimeInMillis());
-
-                // 현재 시간보다 미래가 아니면
-                if(currentCal.getTimeInMillis() >= checkCal.getTimeInMillis()) {
-                    // 설정
-                    cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
-                    etTime.setText(timeFormat.format(cal.getTime()));
-                }
-                else {
-                    // 미래면 토스트 출력
-                    Toast.makeText(WriteActivity.this, getString(R.string.post_futureerror), Toast.LENGTH_SHORT).show();
-
-                    view.setHour(currentCal.get(Calendar.HOUR_OF_DAY));
-                    view.setMinute(currentCal.get(Calendar.MINUTE));
-                }
-            }
-        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
-
-        binding.etMissingdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                datePickerDialog.show();
-            }
-        });
-
-        binding.etMissingtime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                timePickerDialog.show();
-
-            }
-        });
-    }
-
     private void savePost(){
         // 제목과 내용이 비어있지 않으면
         if(!binding.etTitle.getText().toString().replaceAll("\\s", "").isEmpty() && !binding.etContent.getText().toString().replaceAll("\\s", "").isEmpty()){
-            // 사진이 1장 이상 있다면
-            if(addImageAdapter.getAllImageList().size() > 1) {
-                // 작성 Task
-                new WritePostTask().execute();
+            // 수정이 아니라면
+            if(!isModify) {
+                // 사진이 1장 이상 있다면
+                if(addImageAdapter.getAllImageList().size() > 1) {
+                    // 작성 Task
+                    new WritePostTask().execute();
+                }
+                else {
+                    Toast.makeText(this, R.string.post_nophoto, Toast.LENGTH_SHORT).show();
+                }
             }
+            // 수정이면 바로 업로드
             else {
-                Toast.makeText(this, R.string.post_nophoto, Toast.LENGTH_SHORT).show();
+                post.setTitle(binding.etTitle.getText().toString());
+                post.setContent(binding.etContent.getText().toString());
+                post.setSummaryBuildingType(binding.spinnerBuilding.getSelectedItemPosition());
+                post.setType(binding.spinnerPosttype.getSelectedItemPosition() + 1);
+                new WritePostTask().execute();
             }
         } else {
             Toast.makeText(getApplicationContext(),R.string.post_empty,Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 원본 글 데이터를 불러온다
+     */
+    private void loadOriginalData() {
+        binding.etTitle.setText(post.getTitle());
+        binding.etContent.setText(post.getContent());
+        binding.spinnerBuilding.setSelection(post.getSummaryBuildingType());
+        binding.spinnerPosttype.setSelection(post.getType());
     }
 
     /**
@@ -254,27 +212,37 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
 
     @Override
     public void onAddClick(View v) {
-        ImagePicker.Companion.with(this)
-                .crop()
-                .galleryMimeTypes(new String[]{"image/png", "image/jpg", "image/jpeg"})
-                .compress(1024)
-                .maxResultSize(1080, 1080)
-                .start();
+        if(!isModify) {
+            ImagePicker.Companion.with(this)
+                    .crop()
+                    .galleryMimeTypes(new String[]{"image/png", "image/jpg", "image/jpeg"})
+                    .compress(1024)
+                    .maxResultSize(1080, 1080)
+                    .start();
+        }
+        else {
+            Toast.makeText(this, R.string.post_cantmodifyphoto, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onRemoveClick(View v, int position) {
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.warning))
-                .setMessage(getString(R.string.post_deletephoto_msg))
-                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        addImageAdapter.removeImage(position);
-                    }
-                })
-                .setNegativeButton(getString(R.string.no), null)
-                .create().show();
+        if(!isModify) {
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.warning))
+                    .setMessage(getString(R.string.post_deletephoto_msg))
+                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            addImageAdapter.removeImage(position);
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.no), null)
+                    .create().show();
+        }
+        else {
+            Toast.makeText(this, R.string.post_cantmodifyphoto, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -299,43 +267,65 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         protected Void doInBackground(Void... voids) {
             ArrayList<Bitmap> allImageList = addImageAdapter.getAllImageList();
 
-            // 포스트 작성
-            Firestore.writeNewPost(binding.spinnerPosttype.getSelectedItemPosition() + 1,
-                    binding.etTitle.getText().toString(),
-                    binding.etContent.getText().toString(),
-                    allImageList.size()-1,
-                    binding.spinnerBuilding.getSelectedItemPosition(),
-                    new ArrayList<GeoPoint>(),
-                    Auth.getCurrentUser().getUid(),
-                    new Timestamp(new Date()), false)
-                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                            if(task.isSuccessful()) {
-                                // 사진 업로드
-                                for(int i = 1; i < allImageList.size(); i++) {
-                                    int currentNum = i;
-                                    CloudStorage.uploadPostImg(task.getResult().getId(), String.valueOf(i), allImageList.get(i))
-                                            .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                                    if(task.isSuccessful()) {
-                                                        Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Success");
-                                                    }
-                                                    else {
-                                                        Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Failed!");
-                                                    }
+            // 수정 아니라면
+            if(!isModify) {
+                // 포스트 작성
+                Firestore.writeNewPost(binding.spinnerPosttype.getSelectedItemPosition() + 1,
+                        binding.etTitle.getText().toString(),
+                        binding.etContent.getText().toString(),
+                        allImageList.size() - 1,
+                        binding.spinnerBuilding.getSelectedItemPosition(),
+                        new ArrayList<GeoPoint>(),
+                        Auth.getCurrentUser().getUid(),
+                        new Timestamp(new Date()), false)
+                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                if (task.isSuccessful()) {
+                                    // 사진 업로드
+                                    for (int i = 1; i < allImageList.size(); i++) {
+                                        int currentNum = i;
+                                        CloudStorage.uploadPostImg(task.getResult().getId(), String.valueOf(i), allImageList.get(i))
+                                                .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                        if (task.isSuccessful()) {
+                                                            Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Success");
+                                                        } else {
+                                                            Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Failed!");
+                                                        }
 
-                                                    if(currentNum == allImageList.size() - 1) loadingDialog.dismiss(); finish();
-                                                }
-                                            });
+                                                        if (currentNum == allImageList.size() - 1) {
+                                                            loadingDialog.dismiss();
+                                                            Toast.makeText(getApplicationContext(), R.string.post_success, Toast.LENGTH_SHORT).show();
+                                                            finish();
+                                                        }
+                                                    }
+                                                });
+                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                                    loadingDialog.dismiss();
                                 }
                             }
-                            else {
-                                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
-                            }
+                        });
+            }
+            // 수정이면 UpdatePost
+            else {
+                Firestore.updatePost(post.getPostId(), post).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), R.string.post_success, Toast.LENGTH_SHORT).show();
+                            finish();
                         }
-                    });
+                        else {
+                            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                            loadingDialog.dismiss();
+                        }
+                    }
+                });
+            }
             return null;
         }
     }

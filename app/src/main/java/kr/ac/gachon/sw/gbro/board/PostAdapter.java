@@ -20,6 +20,7 @@ import java.util.List;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.PostSliderBinding;
+import kr.ac.gachon.sw.gbro.util.Util;
 
 public class PostAdapter extends PagerAdapter {
     private PostSliderBinding binding;
@@ -80,6 +81,26 @@ public class PostAdapter extends PagerAdapter {
     public void addImage(Bitmap bitmap) {
         bitmapList.add(bitmap);
         notifyDataSetChanged();
+    }
+
+    /**
+     * 모든 비트맵 리턴
+     * @return ArrayList<Bitmap>
+     */
+    public ArrayList<Bitmap> getBitmapList() {
+        return bitmapList;
+    }
+
+    /**
+     * 모든 Bitmap을 ByteArray로 바꾼 후 리턴
+     * @return ArrayList<byte[]>
+     */
+    public ArrayList<byte[]> getBitmapByteArrayList() {
+        ArrayList<byte[]> imgList = new ArrayList<>();
+        for(Bitmap i : bitmapList) {
+            imgList.add(Util.bitmapToByteArray(i));
+        }
+        return imgList;
     }
 }
 

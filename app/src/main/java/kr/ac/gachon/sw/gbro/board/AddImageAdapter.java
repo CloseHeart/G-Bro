@@ -111,6 +111,15 @@ public class AddImageAdapter extends RecyclerView.Adapter<AddImageAdapter.AddIma
     }
 
     /**
+     * ArrayList에 있는 모든 Bitmap 추가
+     * @param bitmaps ArrayList<Bitmap>
+     */
+    public void addImageList(ArrayList<Bitmap> bitmaps) {
+        imageList.addAll(bitmaps);
+        notifyDataSetChanged();
+    }
+
+    /**
      * 모든 Bitmap 정보가 담긴 ArrayList를 반환한다.
      * @author Minjae Seon
      * @return ArrayList<Bitmap>

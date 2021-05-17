@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -33,7 +36,6 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
     private ActionBar actionBar;
     private LoadingDialog loadingDialog;
     private Post contentPost;
-    private ArrayList<Bitmap> bitmapList = new ArrayList<>();
     private PostAdapter adapter;
     private ViewPager viewPager;
 
@@ -69,6 +71,18 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+
+        // 작성자 아이디가 현재 로그인 ID와 같으면
+        if(contentPost.getWriterId().equals(Auth.getCurrentUser().getUid())) {
+            // Menu 보이기
+            inflater.inflate(R.menu.postcontentmenu, menu);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Google 정책에 따라 MenuItem에 Switch 사용하지 않고 if문 사용
         int itemId = item.getItemId();
@@ -77,6 +91,13 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         if(itemId == android.R.id.home) {
             onBackPressed();
             return true;
+        }
+        else if(itemId == R.id.postcontent_modify) {
+            Intent writeModify = new Intent(this, WriteActivity.class);
+            writeModify.putExtra("post", contentPost);
+            writeModify.putExtra("image", adapter.getBitmapByteArrayList());
+            startActivity(writeModify);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
