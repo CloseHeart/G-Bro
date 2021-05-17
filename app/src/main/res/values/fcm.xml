@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fcm_id">FirebaseMsg</string>
+    <string name="fcm_name">서버 알람</string>
+</resources>
