@@ -60,6 +60,16 @@ public class Firestore {
         return getFirestoreInstance().collection("post").add(newPost);
     }
 
+    /**
+     * 기존의 Post를 수정한다
+     * @param postId 기존 Post ID
+     * @param post Post 객체
+     * @return Task<Void>
+     */
+    public static Task<Void> updatePost(String postId, Post post) {
+        return getFirestoreInstance().collection("post").document(postId).set(post);
+    }
+
     /*
      * 유저의 정보를 DB에서 제거하도록 요청한다
      * @author Minjae Seon
@@ -123,6 +133,15 @@ public class Firestore {
      */
     public static Query getMyPostData(String userId) {
         return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
+    }
+
+    /**
+     * 문서 ID를 통해 문서 정보를 불러온다
+     * @param docId 문서 ID
+     * @return Task<DocumentSnapshot>
+     */
+    public static Task<DocumentSnapshot> getPostDataFromId(String docId) {
+        return getFirestoreInstance().collection("post").document(docId).get();
     }
 
     /*

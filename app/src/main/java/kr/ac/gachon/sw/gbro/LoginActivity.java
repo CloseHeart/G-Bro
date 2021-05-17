@@ -66,6 +66,13 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // 현재 유저가 null 아니면
+        if(Auth.getCurrentUser() != null) {
+            // 메인으로
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }
     }
 
     @Override

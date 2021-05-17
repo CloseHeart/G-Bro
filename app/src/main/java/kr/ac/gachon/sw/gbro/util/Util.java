@@ -1,11 +1,15 @@
 package kr.ac.gachon.sw.gbro.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -13,6 +17,9 @@ import java.util.Locale;
 public class Util {
     // Google Login Request Code
     public static final int RC_SIGN_IN = 1000;
+
+    // FCM DEFAULT ID
+    public static final int FCM_DEFAULT_ID = 0;
 
     /**
      * Firebase Timestamp 정보를 Format에 맞춰 String 형태로 반환
@@ -131,5 +138,37 @@ public class Util {
             }
         }
         return Bitmap.createScaledBitmap(original, newW, newH, true);
+    }
+
+    /**
+     * Drawable Image를 Bitmap으로 변환한다
+     * @author Minjae Seon
+     * @param context Context
+     * @param drawable Drawable ID
+     * @return Drawable을 Bitmap으로 변환한 객체
+     */
+    public static Bitmap drawableToBitmap(Context context, int drawable) {
+        return BitmapFactory.decodeResource(context.getResources(), drawable);
+    }
+
+    /**
+     * ByteArray로 된 Image를 Bitmap으로 변환한다
+     * @author Minjae Seon
+     * @param bytesImage Image 정보가 담긴 Byte Array
+     * @return bytesImage로 넘어온 Image를 Bitmap으로 변환한 객체
+     */
+    public static Bitmap byteArrayToBitmap(byte[] bytesImage) {
+        return BitmapFactory.decodeByteArray(bytesImage, 0, bytesImage.length);
+    }
+
+    /**
+     * Bitmap을 ByteArray로
+     * @param bitmap 바꿀 Bitmap
+     * @return ByteArray
+     */
+    public static byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
     }
 }
