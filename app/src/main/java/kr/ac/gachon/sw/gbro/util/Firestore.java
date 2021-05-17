@@ -104,6 +104,18 @@ public class Firestore {
     }
 
     /**
+     * 찾고자 하는 게시글을 불러오는 Query를 생성한다
+     * @param type, title 게시물 타입, 게ㅅ물 이름
+     * @return Query
+     */
+    public static Query getSearchData(int type, String title) {
+        if(type == 0)
+            return getFirestoreInstance().collection("post").whereArrayContains("title", title).orderBy("writeTime",Query.Direction.DESCENDING).limit(20);
+        else
+            return getFirestoreInstance().collection("post").whereArrayContains("title", title).whereEqualTo("type",type).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
+    }
+
+    /**
      * 자신이 작성한 게시글을 불러오는 Query를 생성한다
      * @author Minjae Seon
      * @param userId Firebase User ID
