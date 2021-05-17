@@ -1,6 +1,10 @@
 package kr.ac.gachon.sw.gbro;
 
 import android.app.Activity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.AdapterView;
 
 import androidx.appcompat.app.ActionBar;
 
@@ -26,6 +30,8 @@ public class CustomActionBar {
         binding = CustomactionbarBinding.inflate(activity.getLayoutInflater());
         actionBar.setCustomView(binding.getRoot());
     }
+
+    public CustomactionbarBinding getBinding() { return this.binding; }
 
     public void hide() {
         actionBar.hide();

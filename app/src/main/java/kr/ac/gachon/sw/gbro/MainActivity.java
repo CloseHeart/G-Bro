@@ -2,8 +2,15 @@ package kr.ac.gachon.sw.gbro;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -14,13 +21,17 @@ import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.board.BoardFragment;
 import kr.ac.gachon.sw.gbro.board.WriteActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
+import kr.ac.gachon.sw.gbro.databinding.CustomactionbarBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
 import kr.ac.gachon.sw.gbro.setting.SettingActivity;
-import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding>{
     long lastPressedTime = 0;
     long backPressedTime = 2000;
+    private String searchName;
+    // arraylist 가져옴(전체, 분실물, 습득물)
+    private static String[] items = null;
+    private static int selectedPosition = 0;    // 0(전체)
 
     @Override
     protected ActivityMainBinding getBinding() {
@@ -30,10 +41,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        items = getResources().getStringArray(R.array.boardtype);
         setFragment();
         setSlidingPanel();
         setFab();
-
     }
 
     @Override
@@ -83,6 +94,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
         CustomActionBar customActionBar = new CustomActionBar(this, getSupportActionBar());
         customActionBar.setActionBar();
         customActionBar.hide();
+        CustomactionbarBinding customactionbarBinding = customActionBar.getBinding();
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -109,6 +121,42 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
                     binding.viewSwipeBar.setVisibility(View.GONE);
                 }
             }
+        });
+
+        // 액션바에서 게시물명 입력받음
+        customactionbarBinding.searchname.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE){
+                    searchName = customactionbarBinding.searchname.getText().toString().trim();
+                    if(searchName != null && searchName.length() != 0){
+                        BoardFragment boardFragment = BoardFragment.newInstance(searchName, items[selectedPosition]);
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "유효한 게시물 명을 입력해주세요.", Toast.LENGTH_LONG).show();
+                    }
+                    // 액션바 editTx 초기화
+                    customactionbarBinding.searchname.setText("");
+                }
+                return false;
+            }
+        });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
+        adapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
+        customactionbarBinding.spinner.setAdapter(adapter);
+
+        // 액션바의 Spinner 선택
+        customactionbarBinding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedPosition = position;
+                // TODO : SearchName이 NULL이면 전체 검색
+                BoardFragment boardFragment = BoardFragment.newInstance(searchName, items[selectedPosition]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
         });
     }
 
