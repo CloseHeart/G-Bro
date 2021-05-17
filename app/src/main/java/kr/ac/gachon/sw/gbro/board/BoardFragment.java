@@ -44,18 +44,47 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     private Boolean isScrolling = false;
     private Boolean isLastItemReached = false;
     private ArrayList<Post> postList;
+    private String searchName;
+    private String spinner;
 
     @Override
     protected FragmentBoardBinding getBinding() {
         return FragmentBoardBinding.inflate(getLayoutInflater());
     }
 
+    public static BoardFragment newInstance(String searchName, String spinner){
+        Log.d("searchName", "Search Name : " + searchName);
+        BoardFragment bf = new BoardFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("title", searchName);
+        bundle.putString("spinner", spinner);
+        bf.setArguments(bundle);
+        return bf;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(getArguments() != null){
+            searchName = getArguments().getString("title");
+            spinner = getArguments().getString("spinner");
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         loadingDialog = new LoadingDialog(getActivity());
+
+        if(searchName != null){
+
+        }
+
+        // 게시물 전체 검색
         setAdapter();
         setRefresh();
+
         return binding.getRoot();
     }
 
