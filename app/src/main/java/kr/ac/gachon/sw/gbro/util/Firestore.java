@@ -101,28 +101,27 @@ public class Firestore {
     }
 
     /**
-     * 게시글을 불러오는 Query를 생성한다
+     * 게시글을 불러오는 Task를 실행한다
      * @author Taehyun Park, Minjae Seon
      * @param type 게시물 타입
-     * @return Query
+     * @param startAfter 검색 시작점 Snapshot
+     * @return Task<QuerySnapshot>
      */
-    public static Query getPostData(int type) {
-        if(type == 0)
-            return getFirestoreInstance().collection("post").orderBy("writeTime",Query.Direction.DESCENDING).limit(20);
-        else
-            return getFirestoreInstance().collection("post").whereEqualTo("type",type).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
-    }
-
-    /**
-     * 찾고자 하는 게시글을 불러오는 Query를 생성한다
-     * @param type, title 게시물 타입, 게ㅅ물 이름
-     * @return Query
-     */
-    public static Query getSearchData(int type, String title) {
-        if(type == 0)
-            return getFirestoreInstance().collection("post").whereArrayContains("title", title).orderBy("writeTime",Query.Direction.DESCENDING).limit(20);
-        else
-            return getFirestoreInstance().collection("post").whereArrayContains("title", title).whereEqualTo("type",type).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
+    public static Task<QuerySnapshot> getPostData(int type, DocumentSnapshot startAfter) {
+        if(startAfter != null) {
+            if (type == 0)
+                return getFirestoreInstance().collection("post").orderBy("writeTime", Query.Direction.DESCENDING).limit(20).startAfter(startAfter).get();
+            else
+                return getFirestoreInstance().collection("post").whereEqualTo("type", type)
+                        .orderBy("writeTime", Query.Direction.DESCENDING).limit(20).startAfter(startAfter).get();
+        }
+        else {
+            if (type == 0)
+                return getFirestoreInstance().collection("post").orderBy("writeTime", Query.Direction.DESCENDING).limit(20).get();
+            else
+                return getFirestoreInstance().collection("post").whereEqualTo("type", type)
+                        .orderBy("writeTime", Query.Direction.DESCENDING).limit(20).get();
+        }
     }
 
     /**
@@ -131,8 +130,13 @@ public class Firestore {
      * @param userId Firebase User ID
      * @return Query
      */
-    public static Query getMyPostData(String userId) {
-        return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId).orderBy("writeTime", Query.Direction.DESCENDING).limit(20);
+    public static Task<QuerySnapshot> getMyPostData(String userId, DocumentSnapshot startAfter) {
+        if(startAfter != null)
+            return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId)
+                    .orderBy("writeTime", Query.Direction.DESCENDING).limit(20).startAfter(startAfter).get();
+        else
+            return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId)
+                    .orderBy("writeTime", Query.Direction.DESCENDING).limit(20).get();
     }
 
     /**

@@ -18,6 +18,7 @@
         android:lines="1"
         android:maxLines="1"
         android:singleLine="true"
+        android:imeOptions="actionDone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/spinner"

@@ -44,20 +44,20 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     private Boolean isScrolling = false;
     private Boolean isLastItemReached = false;
     private ArrayList<Post> postList;
-    private String searchName;
-    private String spinner;
+    private String searchName = null;
+    private int spinner = 0;
 
     @Override
     protected FragmentBoardBinding getBinding() {
         return FragmentBoardBinding.inflate(getLayoutInflater());
     }
 
-    public static BoardFragment newInstance(String searchName, String spinner){
+    public static BoardFragment newInstance(String searchName, int spinner){
         Log.d("searchName", "Search Name : " + searchName);
         BoardFragment bf = new BoardFragment();
         Bundle bundle = new Bundle();
         bundle.putString("title", searchName);
-        bundle.putString("spinner", spinner);
+        bundle.putInt("spinner", spinner);
         bf.setArguments(bundle);
         return bf;
     }
@@ -68,7 +68,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
 
         if(getArguments() != null){
             searchName = getArguments().getString("title");
-            spinner = getArguments().getString("spinner");
+            spinner = getArguments().getInt("spinner");
         }
     }
 
@@ -76,10 +76,6 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         loadingDialog = new LoadingDialog(getActivity());
-
-        if(searchName != null){
-
-        }
 
         // 게시물 전체 검색
         setAdapter();
@@ -128,31 +124,61 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                 if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                     loadingDialog.show();
                     isScrolling = false;
-                    // TODO : TYPE 설정
-                    Query nextQuery = Firestore.getPostData(0).startAfter(last);
-                    nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> t) {
-                            if (t.isSuccessful()) {
-                                if(t.getResult().size() > 0){
-                                    for(DocumentSnapshot doc : t.getResult()){
-                                        Post post = doc.toObject(Post.class);
-                                        postList.add(post);
-                                    }
-                                    boardAdapter.notifyDataSetChanged();
-                                    last = t.getResult().getDocuments().get(t.getResult().size()-1);
-                                }
 
-                                if (t.getResult().size() < 20) {
-                                    isLastItemReached = true;
+                    // searchName이 Null이라면
+                    if(searchName == null) {
+                        // 전체 가져오기
+                        Firestore.getPostData(spinner, last).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                                if (t.isSuccessful()) {
+                                    if (t.getResult().size() > 0) {
+                                        for (DocumentSnapshot doc : t.getResult()) {
+                                            Post post = doc.toObject(Post.class);
+                                            post.setPostId(doc.getId());
+                                            postList.add(post);
+                                        }
+                                        boardAdapter.notifyDataSetChanged();
+                                        last = t.getResult().getDocuments().get(t.getResult().size() - 1);
+                                    }
+
+                                    if (t.getResult().size() < 20) {
+                                        isLastItemReached = true;
+                                    }
+                                } else {
+                                    Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
                                 }
+                                loadingDialog.dismiss();
                             }
-                            else {
-                                Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                    // null 아니면
+                    else {
+                        // 그게 아니라면 특정 이름 검색
+                        Firestore.getPostData(spinner, last).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                                if (t.isSuccessful()) {
+                                    if (t.getResult().size() > 0) {
+                                        for (DocumentSnapshot doc : t.getResult()) {
+                                            Post post = doc.toObject(Post.class);
+                                            post.setPostId(doc.getId());
+                                            if(post.getTitle().contains(searchName)) postList.add(post);
+                                        }
+                                        boardAdapter.notifyDataSetChanged();
+                                        last = t.getResult().getDocuments().get(t.getResult().size() - 1);
+                                    }
+
+                                    if (t.getResult().size() < 20) {
+                                        isLastItemReached = true;
+                                    }
+                                } else {
+                                    Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                                }
+                                loadingDialog.dismiss();
                             }
-                            loadingDialog.dismiss();
-                        }
-                    });
+                        });
+                    }
                 }
             }
         };
@@ -179,28 +205,53 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     private void getBoardData() {
         loadingDialog.show();
         boardAdapter.clear();
-        // TODO : TYPE 설정
-        Firestore.getPostData(0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    if(task.getResult().size() > 0){
-                        for(DocumentSnapshot doc : task.getResult()){
-                            Post post = doc.toObject(Post.class);
-                            post.setPostId(doc.getId());
-                            postList.add(post);
+
+        // searchName이 Null이라면
+        if(searchName == null) {
+            Firestore.getPostData(spinner, null).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().size() > 0) {
+                            for (DocumentSnapshot doc : task.getResult()) {
+                                Post post = doc.toObject(Post.class);
+                                post.setPostId(doc.getId());
+                                postList.add(post);
+                            }
+                            boardAdapter.notifyDataSetChanged();
+                            last = task.getResult().getDocuments().get(task.getResult().size() - 1);
                         }
-                        boardAdapter.notifyDataSetChanged();
-                        last = task.getResult().getDocuments().get(task.getResult().size()-1);
+                    } else {
+                        Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
                     }
+                    loadingDialog.dismiss();
+                    binding.swipeBoard.setRefreshing(false);
                 }
-                else {
-                    Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
+            });
+        }
+        else {
+            // 그게 아니라면 특정 이름 검색
+            Firestore.getPostData(spinner, null).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().size() > 0) {
+                            for (DocumentSnapshot doc : task.getResult()) {
+                                Post post = doc.toObject(Post.class);
+                                post.setPostId(doc.getId());
+                                if(post.getTitle().contains(searchName)) postList.add(post);
+                            }
+                            boardAdapter.notifyDataSetChanged();
+                            last = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
+                    }
+                    loadingDialog.dismiss();
+                    binding.swipeBoard.setRefreshing(false);
                 }
-                loadingDialog.dismiss();
-                binding.swipeBoard.setRefreshing(false);
-            }
-        });
+            });
+        }
     }
 
     @Override

@@ -96,8 +96,7 @@ public class MyPostActivity extends BaseActivity<ActivityMypostBinding> implemen
                 if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                     loadingDialog.show();
                     isScrolling = false;
-                    Query nextQuery = Firestore.getMyPostData(Auth.getCurrentUser().getUid()).startAfter(last);
-                    nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    Firestore.getMyPostData(Auth.getCurrentUser().getUid(), last).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> t) {
                             if (t.isSuccessful()) {
@@ -134,7 +133,7 @@ public class MyPostActivity extends BaseActivity<ActivityMypostBinding> implemen
     private void getBoardData() {
         loadingDialog.show();
         boardAdapter.clear();
-        Firestore.getMyPostData(Auth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        Firestore.getMyPostData(Auth.getCurrentUser().getUid(), null).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
