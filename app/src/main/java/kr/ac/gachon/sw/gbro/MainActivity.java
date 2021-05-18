@@ -27,10 +27,8 @@ import kr.ac.gachon.sw.gbro.setting.SettingActivity;
 public class MainActivity extends BaseActivity<ActivityMainBinding>{
     long lastPressedTime = 0;
     long backPressedTime = 2000;
-    private String searchName;
-    // arraylist 가져옴(전체, 분실물, 습득물)
-    private static String[] items = null;
-    private static int selectedPosition = 0;    // 0(전체)
+    private String searchName = null;
+    private static int selectedPosition = 0;
 
     @Override
     protected ActivityMainBinding getBinding() {
@@ -40,7 +38,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        items = getResources().getStringArray(R.array.boardtype);
         setFragment();
         setSlidingPanel();
         setFab();
@@ -127,21 +124,21 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId == EditorInfo.IME_ACTION_DONE){
-                    searchName = customactionbarBinding.searchname.getText().toString().trim();
-                    if(searchName != null && searchName.length() != 0){
-                        BoardFragment boardFragment = BoardFragment.newInstance(searchName, items[selectedPosition]);
+                    searchName = customactionbarBinding.searchname.getText().toString();
+                    if(!searchName.equals("") && searchName.length() != 0){
+                        BoardFragment boardFragment = BoardFragment.newInstance(searchName, selectedPosition);
+                        getSupportFragmentManager().beginTransaction().replace(binding.flBoard.getId(), boardFragment).commit();
                     }
-                    else{
-                        Toast.makeText(getApplicationContext(), "유효한 게시물 명을 입력해주세요.", Toast.LENGTH_LONG).show();
+                    else {
+                        BoardFragment boardFragment = new BoardFragment();
+                        getSupportFragmentManager().beginTransaction().replace(binding.flBoard.getId(), boardFragment).commit();
                     }
-                    // 액션바 editTx 초기화
-                    customactionbarBinding.searchname.setText("");
                 }
                 return false;
             }
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.boardtype));
         adapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
         customactionbarBinding.spinner.setAdapter(adapter);
 
@@ -150,8 +147,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedPosition = position;
-                // TODO : SearchName이 NULL이면 전체 검색
-                BoardFragment boardFragment = BoardFragment.newInstance(searchName, items[selectedPosition]);
+                BoardFragment boardFragment = BoardFragment.newInstance(searchName, selectedPosition);
+                getSupportFragmentManager().beginTransaction().replace(binding.flBoard.getId(), boardFragment).commit();
             }
 
             @Override
