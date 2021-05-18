@@ -3,6 +3,7 @@ package kr.ac.gachon.sw.gbro.board;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,8 +17,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityPostContentBinding;
+import kr.ac.gachon.sw.gbro.map.MapFragment;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
@@ -32,14 +35,11 @@ import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 import kr.ac.gachon.sw.gbro.util.model.User;
-import me.relex.circleindicator.CircleIndicator;
 
 public class PostContentActivity extends BaseActivity<ActivityPostContentBinding>{
     private ActionBar actionBar;
     private LoadingDialog loadingDialog;
     private Post contentPost;
-    private PostAdapter adapter;
-    private ViewPager viewPager;
 
     @Override
     protected ActivityPostContentBinding getBinding() { return ActivityPostContentBinding.inflate(getLayoutInflater()); }
@@ -97,7 +97,6 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         else if(itemId == R.id.postcontent_modify) {
             Intent writeModify = new Intent(this, WriteActivity.class);
             writeModify.putExtra("post", contentPost);
-            writeModify.putExtra("image", adapter.getBitmapByteArrayList());
             startActivity(writeModify);
             finish();
         }
@@ -116,15 +115,19 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
      * @author Subin Kim, Minjae Seon
      */
     private void setAdapter() {
-        // 아까 만든 view
-        viewPager = binding.view;
+        ViewPager2 vpImageSlide = binding.vpImageSlide;
+        TabLayout tlImageSlide = binding.tlImageSlide;
+        PostContentAdapter postContentAdapter = new PostContentAdapter(this);
+        vpImageSlide.setAdapter(postContentAdapter);
+        new TabLayoutMediator(tlImageSlide, vpImageSlide, ((tab, position) -> {})).attach();
 
-        //adapter 초기화
-        adapter = new PostAdapter(this);
-        viewPager.setAdapter(adapter);
-
-        CircleIndicator c_indicator = binding.indicator;
-        c_indicator.setViewPager(viewPager);
+        // TODO : MapFragment 추가 - 아래는 TEST CODE
+        ArrayList<Integer> testMapPath = new ArrayList<>();
+        testMapPath.add(0);
+        testMapPath.add(1);
+        testMapPath.add(2);
+        MapFragment fragment = MapFragment.getPathInstance(testMapPath);
+        postContentAdapter.addNewFragment(fragment);
 
         for(int i = 1; i <= contentPost.getPhotoNum(); i++) {
             int currentIndex = i;
@@ -133,7 +136,7 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                 public void onComplete(@NonNull Task<byte[]> task) {
                     if(task.isSuccessful()) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                        adapter.addImage(bitmap);
+                        postContentAdapter.addNewFragment(ImageViewFragment.newInstance(bitmap));
                     }
                     if(currentIndex == contentPost.getPhotoNum()) loadingDialog.dismiss();
                 }
