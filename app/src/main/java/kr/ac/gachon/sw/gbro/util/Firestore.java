@@ -132,7 +132,7 @@ public class Firestore {
      * @return Query
      */
     public static Query getMyPostData(String userId) {
-        return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId).orderBy("writeTime",Query.Direction.ASCENDING).limit(20);
+        return getFirestoreInstance().collection("post").whereEqualTo("writerId", userId).orderBy("writeTime", Query.Direction.DESCENDING).limit(20);
     }
 
     /**

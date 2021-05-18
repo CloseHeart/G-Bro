@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.Post;
+import kr.ac.gachon.sw.gbro.util.model.User;
 import me.relex.circleindicator.CircleIndicator;
 
 public class PostContentActivity extends BaseActivity<ActivityPostContentBinding>{
@@ -148,7 +150,30 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()) {
-                    binding.postWriter.setText((String) task.getResult().get("userNickName"));
+                    User chatUser = task.getResult().toObject(User.class);
+                    binding.postWriter.setText(chatUser.getUserNickName());
+
+                    // 이미지
+                    if(chatUser.getUserProfileImgURL() != null) {
+                        CloudStorage.getImageFromURL(chatUser.getUserProfileImgURL()).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                            @Override
+                            public void onComplete(@NonNull Task<byte[]> imgTask) {
+                                if (imgTask.isSuccessful()) {
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(imgTask.getResult(), 0, imgTask.getResult().length);
+                                    binding.postProfile.setImageBitmap(bitmap);
+                                }
+                                // 프로필 사진 가져오는데 실패하면 기본 사진
+                                else {
+                                    binding.postProfile.setImageResource(R.drawable.profile);
+                                }
+                            }
+                        });
+                    }
+                    // 프로필사진 NULL 이면
+                    else {
+                        // 기본 사진
+                        binding.postProfile.setImageResource(R.drawable.profile);
+                    }
                 }
             }
         });

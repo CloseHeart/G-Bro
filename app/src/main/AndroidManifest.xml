@@ -51,6 +51,8 @@
         <activity android:name=".board.WriteActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".setting.MyPostActivity" />
+        <activity android:name=".chat.ChatListActivity" />
+        <activity android:name=".chat.ChatActivity" />
     </application>
 
 </manifest>
