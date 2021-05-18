@@ -1,21 +1,24 @@
 package kr.ac.gachon.sw.gbro.util.model;
 
+import com.google.firebase.Timestamp;
+
 public class ChatData {
 
+    // 메시지를 보낸 User ID
     private String userId;
-    private String userName;
+
+    // 메시지 내용
     private String message;
-    private String date;
-    private String profileUrl;
+
+    // 시간 정보
+    private Timestamp date;
 
     public ChatData () {}
 
-    public ChatData(String userId, String userName, String message, String date, String profileUrl) {
+    public ChatData(String userId, String message, Timestamp date) {
         this.userId = userId;
-        this.userName = userName;
         this.message = message;
         this.date = date;
-        this.profileUrl = profileUrl;
     }
 
     public ChatData(String userId, String message){
@@ -24,8 +27,6 @@ public class ChatData {
     }
 
     public String getUserId(){ return userId; }
-    public String getUserName(){ return userName; }
     public String getMessage(){ return message; }
-    public String getDate() { return date; }
-    public String getProfileUrl() { return profileUrl; }
+    public Timestamp getDate() { return date; }
 }

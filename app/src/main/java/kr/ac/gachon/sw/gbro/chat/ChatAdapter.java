@@ -22,6 +22,7 @@ import kr.ac.gachon.sw.gbro.databinding.OtherChatMessageBinding;
 import java.util.ArrayList;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;
 
+// TODO : ViewBinding으로 전환
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private ArrayList<ChatData> items = new ArrayList<ChatData>();
@@ -86,6 +87,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final ChatData model = items.get(position);
 
+        /*
         if(model.getUserId().equals(mUid)){
             ChatMyViewHolder chatMyViewHolder = (ChatMyViewHolder) holder;
             ((ChatMyViewHolder) holder).messageTextView.setText(model.getMessage());
@@ -95,15 +97,19 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ChatOtherViewHolder otherViewHolder = (ChatOtherViewHolder) holder;
             ((ChatOtherViewHolder) holder).nicknameTextView.setText(model.getUserName());
 
+
             // TODO : 프로필 사진 담아야함
             if(model.getProfileUrl().equals("basic") || model.getProfileUrl().equals("")){  // 프로필 사진 default
             }
             else{
                 // TODO : 프로필 사진 있으면, URL 설정
             }
+
+
             ((ChatOtherViewHolder) holder).messageTextView.setText(model.getMessage());
             ((ChatOtherViewHolder) holder).dateTextView.setText(model.getDate());
         }
+        */
     }
 
     /**

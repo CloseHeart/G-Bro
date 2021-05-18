@@ -2,8 +2,6 @@ package kr.ac.gachon.sw.gbro;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,6 +18,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.board.BoardFragment;
 import kr.ac.gachon.sw.gbro.board.WriteActivity;
+import kr.ac.gachon.sw.gbro.chat.ChatListActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
 import kr.ac.gachon.sw.gbro.databinding.CustomactionbarBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
@@ -170,6 +169,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
         binding.fabWrite.setOnClickListener(v -> {
             Intent writeIntent = new Intent(this, WriteActivity.class);
             startActivity(writeIntent);
+        });
+
+        // 채팅 버튼
+        binding.fabChat.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
+            startActivity(intent);
         });
 
         // 설정 버튼
