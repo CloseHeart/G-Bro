@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
             binding.fabmenu.collapse();
         }
         // Panel이 열려있다면
-        if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+        else if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             // 닫기
             binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             binding.viewSwipeBar.setVisibility(View.VISIBLE);
