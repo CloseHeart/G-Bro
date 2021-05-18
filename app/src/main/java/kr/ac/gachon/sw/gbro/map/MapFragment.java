@@ -2,6 +2,7 @@ package kr.ac.gachon.sw.gbro.map;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,11 +33,11 @@ import kr.ac.gachon.sw.gbro.databinding.FragmentMapBinding;
 import kr.ac.gachon.sw.gbro.util.Util;
 
 public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnMapReadyCallback {
-    private ArrayList<Integer> path = null;
     private ArrayList<Marker> markers = null;
-    private int openMakerIdx = -1;
+
+    private com.naver.maps.map.MapFragment mapFragment;
+    private ArrayList<Integer> path = null;
     private boolean isMain = false;
-    private Context context;
 
     @Override
     protected FragmentMapBinding getBinding() {
@@ -74,13 +75,26 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setMap();
-
         return getBinding().getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapFragment.getMapAsync(naverMap -> {
+            if (path != null && !path.isEmpty()) {
+                Log.d("MapFragment", "Path Map");
+                String firstPos = getResources().getStringArray(R.array.gachon_globalcampus_coordinate)[path.get(0)];
+                String[] posArray = firstPos.split(",");
+                naverMap.setCameraPosition(new CameraPosition(new LatLng(Double.parseDouble(posArray[0]), Double.parseDouble(posArray[1])), 14.5));
+                drawPath(naverMap, path);
+            }
+        });
     }
 
     private void setMap() {
         FragmentManager fragmentManager = getChildFragmentManager();
-        com.naver.maps.map.MapFragment mapFragment = (com.naver.maps.map.MapFragment) fragmentManager.findFragmentById(binding.map.getId());
+        mapFragment = (com.naver.maps.map.MapFragment) fragmentManager.findFragmentById(binding.map.getId());
 
         if(mapFragment == null) {
             NaverMapOptions options = new NaverMapOptions()
@@ -95,18 +109,14 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
             fragmentManager.beginTransaction().add(binding.map.getId(), mapFragment).commit();
 
             mapFragment.getMapAsync(naverMap -> {
-                LocationButtonView locationButtonView = binding.mapwidgetLocation;
-                locationButtonView.setMap(naverMap);
-
                 naverMap.setExtent(new LatLngBounds(new LatLng(37.44792028734633, 127.12628356183701), new LatLng(37.4570968690434, 127.13723061921826)));
                 naverMap.setMinZoom(14.0);
                 naverMap.setMaxZoom(0.0);
 
-                if (path != null && !path.isEmpty()) {
-                    drawPath(naverMap, path);
+                if(isMain) {
+                    Log.d("MapFragment", "Main Map");
+                    drawMarker(naverMap);
                 }
-
-                if(isMain) drawMarker(naverMap);
             });
         }
     }

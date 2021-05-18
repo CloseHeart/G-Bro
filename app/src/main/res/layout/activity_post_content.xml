@@ -8,28 +8,28 @@
 
     <FrameLayout
         android:id="@+id/imageSlideFrame"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="256dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!--  이미지 ( 습득자가 업로드 할 것 ) -->
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/view"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_ImageSlide"
             android:layout_width="match_parent"
-            android:layout_height="450dp" />
+            android:layout_height="match_parent" />
 
-        <!--  사진 넘길때 밑에 있는 동그라미 -->
-        <me.relex.circleindicator.CircleIndicator
-            android:id="@+id/indicator"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tl_ImageSlide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            app:ci_drawable="@drawable/indicator"
-            app:ci_height="7dp"
-            app:ci_margin="4dp"
-            app:ci_width="7dp" />
+            android:background="@android:color/transparent"
+            app:tabBackground="@drawable/tab"
+            app:tabGravity="center"
+            app:tabMode="fixed"
+            app:tabIndicatorHeight="0dp" />
+
 
     </FrameLayout>
 

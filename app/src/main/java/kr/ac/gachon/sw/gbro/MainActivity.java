@@ -45,13 +45,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
 
     @Override
     public void onBackPressed() {
-        // 열려있다면
-        if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+
+        // Fab Menu가 열려있다면
+        if(binding.fabmenu.isExpanded()) {
+            // 닫기
+            binding.fabmenu.collapse();
+        }
+        // Panel이 열려있다면
+        else if(binding.mainpanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             // 닫기
             binding.mainpanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             binding.viewSwipeBar.setVisibility(View.VISIBLE);
         }
-
         // 그게 아니라면
         else {
             // 두 번 눌러서 종료할 수 있도록 함
