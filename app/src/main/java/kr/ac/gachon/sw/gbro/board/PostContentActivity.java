@@ -51,6 +51,13 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
 
         actionBar = getSupportActionBar();
 
+        binding.contentToChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Firestore.createChatRoom(Auth.getCurrentUser().getUid(), contentPost.getWriterId());
+            }
+        });
+
         // 포스트 정보 가져오기
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
