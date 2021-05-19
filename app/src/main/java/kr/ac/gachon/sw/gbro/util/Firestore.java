@@ -10,8 +10,11 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
+import kr.ac.gachon.sw.gbro.util.model.ChatData;
+import kr.ac.gachon.sw.gbro.util.model.ChatRoom;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 import kr.ac.gachon.sw.gbro.util.model.User;
 
@@ -169,4 +172,25 @@ public class Firestore {
     public static Task<Void> updateProfileImage(String userId, String userProfileImgURL){
         return getFirestoreInstance().collection("user").document(userId).update("userProfileImgURL",userProfileImgURL);
     }
+
+    public static Task<DocumentReference> createChatRoom(String myId, String targetId){
+        ArrayList<String> userList= new ArrayList<>(Arrays.asList(myId,targetId));
+        ChatRoom chatRoom = new ChatRoom(userList);
+        return getFirestoreInstance().collection("chatRoom").add(chatRoom);
+    }
+
+    public static Task<DocumentReference> sendChat(String chatId, ChatData chatData){
+        return getFirestoreInstance().collection("chatRoom").document(chatId).collection("chatData").add(chatData);
+    }
+
+    public static Task<QuerySnapshot> getChatData(String chatId){
+        return getFirestoreInstance().collection("chatRoom").document(chatId).collection("chatData").get();
+    }
+
+    public static Task<QuerySnapshot> searchChatRoom (String myId, String targetId){
+        ArrayList<String> userList1= new ArrayList<>(Arrays.asList(myId,targetId));
+        ArrayList<String> userList2= new ArrayList<>(Arrays.asList(targetId,myId));
+        return getFirestoreInstance().collection("chatRoom").whereIn("chatUserId", Arrays.asList(userList1,userList2)).get();
+    }
+
 }

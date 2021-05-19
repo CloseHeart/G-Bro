@@ -10,28 +10,29 @@ public class ChatRoom {
     private String roomId;
 
     // 채팅 상대 User ID
-    private String chatUserId;
+    private ArrayList<String> chatUserId;
 
     // 채팅 Data List
+    @Exclude
     private ArrayList<ChatData> chatData;
 
     public ChatRoom() {
 
     }
 
-    public ChatRoom(String chatUserId, ArrayList<ChatData> chatData) {
+    public ChatRoom(ArrayList<String> chatUserId) {
         this.chatUserId = chatUserId;
-        this.chatData = chatData;
     }
 
-    public String getChatUserId() {
+    public ArrayList<String> getChatUserId() {
         return chatUserId;
     }
 
-    public void setChatUserId(String chatUserId) {
+    public void setChatUserId(ArrayList<String> chatUserId) {
         this.chatUserId = chatUserId;
     }
 
+    @Exclude
     public ArrayList<ChatData> getChatData() {
         return chatData;
     }
@@ -40,6 +41,7 @@ public class ChatRoom {
         this.chatData = chatData;
     }
 
+    @Exclude
     public String getRoomId() {
         return roomId;
     }

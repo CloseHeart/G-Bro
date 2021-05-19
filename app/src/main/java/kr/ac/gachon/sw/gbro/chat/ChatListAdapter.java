@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemChatlistBinding;
+import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.model.ChatRoom;
@@ -67,8 +68,17 @@ public class ChatListViewHolder extends RecyclerView.ViewHolder {
     public void onBindViewHolder(@NonNull ChatListAdapter.ChatListViewHolder holder, int position) {
         ItemChatlistBinding binding = holder.binding;
 
+        String targetId;
+        ArrayList<String> userList = chatRoomList.get(position).getChatUserId();
+        if(userList.indexOf(Auth.getCurrentUser().getUid()) == 0){
+           targetId = userList.get(1);
+        }else{
+            targetId = userList.get(0);
+        }
+
+
         // 유저 데이터 가져와서 닉네임 및 이미지 설정
-        Firestore.getUserData(chatRoomList.get(position).getChatUserId()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        Firestore.getUserData(targetId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 // 성공했다면
