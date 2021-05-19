@@ -179,8 +179,7 @@ public class Firestore {
         return getFirestoreInstance().collection("chatRoom").add(chatRoom);
     }
 
-    public static Task<DocumentReference> sendChat(String chatId, String message, String myId){
-        ChatData chatData = new ChatData(myId, message, new Timestamp(new Date()));
+    public static Task<DocumentReference> sendChat(String chatId, ChatData chatData){
         return getFirestoreInstance().collection("chatRoom").document(chatId).collection("chatData").add(chatData);
     }
 
@@ -191,7 +190,7 @@ public class Firestore {
     public static Task<QuerySnapshot> searchChatRoom (String myId, String targetId){
         ArrayList<String> userList1= new ArrayList<>(Arrays.asList(myId,targetId));
         ArrayList<String> userList2= new ArrayList<>(Arrays.asList(targetId,myId));
-        return getFirestoreInstance().collection("chatRoom").whereArrayContains("chatUserId", Arrays.asList(userList1,userList2)).get();
+        return getFirestoreInstance().collection("chatRoom").whereIn("chatUserId", Arrays.asList(userList1,userList2)).get();
     }
 
 }

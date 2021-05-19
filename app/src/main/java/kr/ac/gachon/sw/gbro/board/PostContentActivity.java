@@ -20,12 +20,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
+import kr.ac.gachon.sw.gbro.chat.ChatActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityPostContentBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
 import kr.ac.gachon.sw.gbro.util.Auth;
@@ -33,6 +37,7 @@ import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
 import kr.ac.gachon.sw.gbro.util.Util;
+import kr.ac.gachon.sw.gbro.util.model.ChatRoom;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 import kr.ac.gachon.sw.gbro.util.model.User;
 
@@ -40,6 +45,7 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
     private ActionBar actionBar;
     private LoadingDialog loadingDialog;
     private Post contentPost;
+    private Bitmap userImage;
 
     @Override
     protected ActivityPostContentBinding getBinding() { return ActivityPostContentBinding.inflate(getLayoutInflater()); }
@@ -50,13 +56,6 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         loadingDialog = new LoadingDialog(this);
 
         actionBar = getSupportActionBar();
-
-        binding.contentToChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Firestore.createChatRoom(Auth.getCurrentUser().getUid(), contentPost.getWriterId());
-            }
-        });
 
         // 포스트 정보 가져오기
         Bundle bundle = getIntent().getExtras();
@@ -169,12 +168,12 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                             @Override
                             public void onComplete(@NonNull Task<byte[]> imgTask) {
                                 if (imgTask.isSuccessful()) {
-                                    Bitmap bitmap = BitmapFactory.decodeByteArray(imgTask.getResult(), 0, imgTask.getResult().length);
-                                    binding.postProfile.setImageBitmap(bitmap);
+                                    userImage = Util.byteArrayToBitmap(imgTask.getResult());
                                 }
                                 // 프로필 사진 가져오는데 실패하면 기본 사진
                                 else {
-                                    binding.postProfile.setImageResource(R.drawable.profile);
+                                    userImage = Util.drawableToBitmap(PostContentActivity.this, R.drawable.profile);
+
                                 }
                             }
                         });
@@ -182,8 +181,9 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                     // 프로필사진 NULL 이면
                     else {
                         // 기본 사진
-                        binding.postProfile.setImageResource(R.drawable.profile);
+                        userImage = Util.drawableToBitmap(PostContentActivity.this, R.drawable.profile);
                     }
+                    binding.postProfile.setImageBitmap(userImage);
                 }
             }
         });
@@ -193,10 +193,58 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         binding.postUploadtime.setText(Util.timeStamptoDetailString(contentPost.getWriteTime()));
         binding.postLocation.setText(contentPost.getSummaryBuildingName(getApplicationContext()));
 
-        // 본인이 작성자면 채팅 버튼이 안나오게
+        // 본인이 작성자면
         if(contentPost.getWriterId().equals(Auth.getCurrentUser().getUid())) {
+            // 채팅버튼 삭제
             binding.contentToChat.setVisibility(View.GONE);
+        }
+        else {
+            // 채팅 설정
+            setChat();
         }
     }
 
+    /**
+     * 채팅 설정
+     */
+    private void setChat() {
+        binding.contentToChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 이미 방 있는지 검색
+                Firestore.searchChatRoom(Auth.getCurrentUser().getUid(), contentPost.getWriterId())
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if(task.isSuccessful()) {
+                                    Intent chatActivity = new Intent(PostContentActivity.this, ChatActivity.class);
+                                    chatActivity.putExtra("targetid", contentPost.getWriterId());
+
+                                    List<DocumentSnapshot> documents = task.getResult().getDocuments();
+
+                                    // 채팅방이 하나도 없으면
+                                    if(documents.size() <= 0) {
+                                        // 새 채팅방 생성
+                                        Firestore.createChatRoom(Auth.getCurrentUser().getUid(), contentPost.getWriterId())
+                                                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<DocumentReference> createTask) {
+                                                        if(createTask.isSuccessful()) {
+                                                            chatActivity.putExtra("chatid", createTask.getResult().getId());
+                                                            startActivity(chatActivity);
+                                                        }
+                                                    }
+                                                });
+                                    }
+                                    // 있다면
+                                    else {
+                                        chatActivity.putExtra("chatid", documents.get(0).getId());
+                                        startActivity(chatActivity);
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
+    }
 }

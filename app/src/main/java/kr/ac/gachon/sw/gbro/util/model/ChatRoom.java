@@ -13,6 +13,7 @@ public class ChatRoom {
     private ArrayList<String> chatUserId;
 
     // 채팅 Data List
+    @Exclude
     private ArrayList<ChatData> chatData;
 
     public ChatRoom() {
@@ -23,7 +24,6 @@ public class ChatRoom {
         this.chatUserId = chatUserId;
     }
 
-    @Exclude
     public ArrayList<String> getChatUserId() {
         return chatUserId;
     }
@@ -32,6 +32,7 @@ public class ChatRoom {
         this.chatUserId = chatUserId;
     }
 
+    @Exclude
     public ArrayList<ChatData> getChatData() {
         return chatData;
     }
@@ -40,6 +41,7 @@ public class ChatRoom {
         this.chatData = chatData;
     }
 
+    @Exclude
     public String getRoomId() {
         return roomId;
     }

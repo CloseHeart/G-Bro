@@ -2,6 +2,7 @@ package kr.ac.gachon.sw.gbro.board;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +21,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import kr.ac.gachon.sw.gbro.MainActivity;
@@ -35,6 +40,7 @@ import kr.ac.gachon.sw.gbro.databinding.FragmentBoardBinding;
 import kr.ac.gachon.sw.gbro.setting.MyPostActivity;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
+import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
 public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements BoardAdapter.onItemClickListener {
@@ -45,6 +51,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     private Boolean isLastItemReached = false;
     private ArrayList<Post> postList;
     private String searchName = null;
+    private SwipeRefreshLayout swipeBoard = null;
     private int spinner = 0;
 
     @Override
@@ -76,18 +83,22 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         loadingDialog = new LoadingDialog(getActivity());
-
-        // 게시물 전체 검색
         setAdapter();
         setRefresh();
-
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        swipeBoard = binding.swipeBoard;
         getBoardData();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        swipeBoard = null;
     }
 
     /**
@@ -102,6 +113,8 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
         binding.rvBoard.setLayoutManager(new LinearLayoutManager(getActivity()));
         boardAdapter = new BoardAdapter(getContext(), postList, this);
         binding.rvBoard.setAdapter(boardAdapter);
+
+        getBoardData();
 
         RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
             @Override
@@ -190,7 +203,8 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
      * @author Minjae Seon
      */
     private void setRefresh() {
-        binding.swipeBoard.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeBoard = binding.swipeBoard;
+        swipeBoard.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 getBoardData();
@@ -225,7 +239,8 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                         Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
                     }
                     loadingDialog.dismiss();
-                    binding.swipeBoard.setRefreshing(false);
+
+                    if(swipeBoard != null && binding.swipeBoard.isRefreshing()) swipeBoard.setRefreshing(false);
                 }
             });
         }

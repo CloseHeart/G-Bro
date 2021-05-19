@@ -1,6 +1,7 @@
 package kr.ac.gachon.sw.gbro.chat;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,28 +14,34 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import kr.ac.gachon.sw.gbro.R;
-import kr.ac.gachon.sw.gbro.databinding.MyChatMessageBinding;
-import kr.ac.gachon.sw.gbro.databinding.OtherChatMessageBinding;
 
 import java.util.ArrayList;
+
+import kr.ac.gachon.sw.gbro.util.CloudStorage;
+import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;
+import kr.ac.gachon.sw.gbro.util.model.User;
 
 // TODO : ViewBinding으로 전환
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private Context context;
     private ArrayList<ChatData> items = new ArrayList<ChatData>();
+    private Context context;
+    private User targetUser = null;
+    public Bitmap targetUserProfile = null;
     private String mUid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // 내 uid
 
-    public ChatAdapter(Context context, ArrayList<ChatData> items){
+    public ChatAdapter(Context context, User targetUser) {
         this.context = context;
-        addItems(items);
+        this.targetUser = targetUser;
     }
 
     // 내 채팅 홀더
-    public class ChatMyViewHolder extends RecyclerView.ViewHolder {
+    public static class ChatMyViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
         TextView dateTextView;
 
@@ -46,7 +53,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     // 다른 사람 채팅 홀더
-    public class ChatOtherViewHolder extends  RecyclerView.ViewHolder{
+    public static class ChatOtherViewHolder extends  RecyclerView.ViewHolder{
         LinearLayout linearLayout;
         CardView profileCardView;
         TextView nicknameTextView;
@@ -61,6 +68,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             nicknameTextView = itemView.findViewById(R.id.other_chatmessage_tv_nickname);
             dateTextView = itemView.findViewById(R.id.other_chatmessage_tv_date);
             messageTextView = itemView.findViewById(R.id.other_chatmessage_tv_message);
+            profileUrl = itemView.findViewById(R.id.other_profile_url);
         }
     }
 
@@ -87,29 +95,43 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final ChatData model = items.get(position);
 
-        /*
         if(model.getUserId().equals(mUid)){
             ChatMyViewHolder chatMyViewHolder = (ChatMyViewHolder) holder;
             ((ChatMyViewHolder) holder).messageTextView.setText(model.getMessage());
-            ((ChatMyViewHolder) holder).dateTextView.setText(model.getDate());
+            ((ChatMyViewHolder) holder).dateTextView.setText(Util.timeStamptoDetailString(model.getDate()));
         }
-        else{
+        else {
             ChatOtherViewHolder otherViewHolder = (ChatOtherViewHolder) holder;
-            ((ChatOtherViewHolder) holder).nicknameTextView.setText(model.getUserName());
+            ((ChatOtherViewHolder) holder).nicknameTextView.setText(targetUser.getUserNickName());
 
-
-            // TODO : 프로필 사진 담아야함
-            if(model.getProfileUrl().equals("basic") || model.getProfileUrl().equals("")){  // 프로필 사진 default
+            if(targetUserProfile != null) {
+                ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
             }
-            else{
-                // TODO : 프로필 사진 있으면, URL 설정
+            else {
+                if(targetUser.getUserProfileImgURL() != null) {
+                    CloudStorage.getImageFromURL(targetUser.getUserProfileImgURL())
+                            .addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                                @Override
+                                public void onComplete(@NonNull Task<byte[]> task) {
+                                    if (task.isSuccessful()) {
+                                        targetUserProfile = Util.byteArrayToBitmap(task.getResult());
+                                        ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
+                                    } else {
+                                        targetUserProfile = Util.drawableToBitmap(context, R.drawable.profile);
+                                        ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
+                                    }
+
+                                }
+                            });
+                }
+                else {
+                    targetUserProfile = Util.drawableToBitmap(context, R.drawable.profile);
+                    ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
+                }
             }
-
-
             ((ChatOtherViewHolder) holder).messageTextView.setText(model.getMessage());
-            ((ChatOtherViewHolder) holder).dateTextView.setText(model.getDate());
+            ((ChatOtherViewHolder) holder).dateTextView.setText(Util.timeStamptoDetailString(model.getDate()));
         }
-        */
     }
 
     /**
@@ -139,6 +161,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // 한꺼번에 추가
     public void addItems(ArrayList<ChatData> items){
         this.items = items;
+        notifyDataSetChanged();
     }
 
     public void clear() {
