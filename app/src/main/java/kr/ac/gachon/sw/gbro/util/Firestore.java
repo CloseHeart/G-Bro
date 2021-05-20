@@ -40,8 +40,8 @@ public class Firestore {
      * @param userNickName 유저 닉네임
      * @return Task<Void>
      */
-    public static Task<Void> writeNewUser(String userId, String userEmail, String userNickName) {
-        User newUser = new User(userEmail, userNickName, null, new Timestamp(new Date()));
+    public static Task<Void> writeNewUser(String userId, String userEmail, String userNickName, String fcmToken) {
+        User newUser = new User(userEmail, userNickName, null, new Timestamp(new Date()), fcmToken);
         return getFirestoreInstance().collection("user").document(userId).set(newUser);
     }
     
@@ -200,6 +200,19 @@ public class Firestore {
     }
 
     /**
+     * 사용자의 채팅방 목록을 불러오는 Query를 생성한다
+     * @param userId 사용자 ID
+     * @return Query
+     */
+    public static Query getMyChatRoom(String userId) {
+        return getFirestoreInstance().collection("chatRoom").whereArrayContains("chatUserId", userId);
+    }
+
+    public static Query getChatDataQuery(String chatRoomId) {
+        return getFirestoreInstance().collection("chatRoom").document(chatRoomId).collection("chatData");
+    }
+
+    /**
      * 완료되지 않은 모든 Post를 불러온다
      * @param postType Post Type
      *                 0 - 전체
@@ -217,5 +230,15 @@ public class Firestore {
                     .whereEqualTo("type", postType)
                     .whereEqualTo("finished", false).get();
         }
+    }
+
+    /**
+     * 유저의 FCM 토큰을 DB에 등록한다
+     * @param userId 사용자 ID
+     * @param token FCM Token
+     * @return Task<Void>
+     */
+    public static Task<Void> setUserFCMToken(String userId, String token) {
+        return getFirestoreInstance().collection("user").document(userId).update("fcmToken", token);
     }
 }

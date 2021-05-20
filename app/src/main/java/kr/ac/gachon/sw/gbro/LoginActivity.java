@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.regex.Pattern;
 
@@ -172,26 +173,45 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
      * @author Suyeon Jung, Minjae Seon
      */
     private void createNewUserDatabase(FirebaseUser user) {
-        // 새 유저 정보 작성
-        Firestore.writeNewUser(user.getUid(), user.getEmail(), user.getDisplayName())
-                .addOnCompleteListener(documentTask -> {
-                    // 성공했다면
-                    if(documentTask.isSuccessful()) {
-                        Log.d(LoginActivity.this.getLocalClassName(), "createNewUserDatabase:success");
-                        Toast.makeText(getApplicationContext(), R.string.login_success, Toast.LENGTH_LONG).show();
+        // FCM Token 얻기
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> tokenTask) {
+                        // 토큰 가져오는데 성공했다면
+                        if(tokenTask.isSuccessful()) {
+                            // 새 유저 정보 작성
+                            Firestore.writeNewUser(user.getUid(), user.getEmail(), user.getDisplayName(), tokenTask.getResult())
+                                    .addOnCompleteListener(documentTask -> {
+                                        // 성공했다면
+                                        if (documentTask.isSuccessful()) {
+                                            Log.d(LoginActivity.this.getLocalClassName(), "createNewUserDatabase:success");
+                                            Toast.makeText(getApplicationContext(), R.string.login_success, Toast.LENGTH_LONG).show();
 
-                        // MainActivity로
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        finish();
-                    }
-                    // 실패했다면
-                    else {
-                        Log.w(LoginActivity.this.getLocalClassName(), "createNewUserDatabase:failure", documentTask.getException());
-                        // 에러 메시지 띄우고 로그아웃
-                        Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
-                        mAuth.signOut();
-                        mGoogleSignInClient.signOut();
+                                            // MainActivity로
+                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                            finish();
+                                        }
+                                        // 실패했다면
+                                        else {
+                                            Log.w(LoginActivity.this.getLocalClassName(), "createNewUserDatabase:failure", documentTask.getException());
+                                            // 에러 메시지 띄우고 로그아웃
+                                            Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
+                                            mAuth.signOut();
+                                            mGoogleSignInClient.signOut();
+                                        }
+                                    });
+                        }
+                        // 실패했다면
+                        else {
+                            Log.w(LoginActivity.this.getLocalClassName(), "createNewUserDatabase:failure", tokenTask.getException());
+                            // 에러 메시지 띄우고 로그아웃
+                            Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
+                            mAuth.signOut();
+                            mGoogleSignInClient.signOut();
+                        }
                     }
                 });
+
     }
 }
