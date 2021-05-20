@@ -30,8 +30,8 @@ public class Post implements Parcelable {
     // 게시글 내용
     private String content;
 
-    // 사진 갯수
-    private int photoNum;
+    // 사진 URL 리스트
+    private ArrayList<String> photoUrlList;
 
     // 건물 Type (values/building.xml 파일 참조)
     private int summaryBuildingType;
@@ -48,14 +48,13 @@ public class Post implements Parcelable {
     // 완료 여부
     private boolean finished;
 
-    public Post() {
-    }
+    public Post() {}
 
-    public Post(int type, String title, String content, int photoNum, int summaryBuildingType, ArrayList<GeoPoint> locationList, String writerId, Timestamp writeTime, boolean isFinished) {
+    public Post(int type, String title, String content, ArrayList<String> photoUrlList, int summaryBuildingType, ArrayList<GeoPoint> locationList, String writerId, Timestamp writeTime, boolean isFinished) {
         this.type = type;
         this.title = title;
         this.content = content;
-        this.photoNum = photoNum;
+        this.photoUrlList = photoUrlList;
         this.summaryBuildingType = summaryBuildingType;
         this.locationList = locationList;
         this.writerId = writerId;
@@ -63,11 +62,21 @@ public class Post implements Parcelable {
         this.finished = isFinished;
     }
 
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
     public int getType() {
         return type;
     }
 
-    public void setType(int type) { this.type = type; }
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public String getTitle() {
         return title;
@@ -85,43 +94,57 @@ public class Post implements Parcelable {
         this.content = content;
     }
 
-    public int getPhotoNum() {
-        return photoNum;
+    public ArrayList<String> getPhotoUrlList() {
+        return photoUrlList;
     }
 
-    public ArrayList<GeoPoint> getLocationList() {
-        return locationList;
-    }
-
-    public String getWriterId() {
-        return writerId;
-    }
-
-    public Timestamp getWriteTime() {
-        return writeTime;
-    }
-
-    public boolean isFinished() {
-        return finished;
+    public void setPhotoUrlList(ArrayList<String> photoUrlList) {
+        this.photoUrlList = photoUrlList;
     }
 
     public int getSummaryBuildingType() {
         return summaryBuildingType;
     }
 
-    public void setSummaryBuildingType(int summaryBuildingType) { this.summaryBuildingType = summaryBuildingType; }
+    public void setSummaryBuildingType(int summaryBuildingType) {
+        this.summaryBuildingType = summaryBuildingType;
+    }
 
+    @Exclude
     public String getSummaryBuildingName(Context context) {
         return context.getResources().getStringArray(R.array.gachon_globalcampus_building)[summaryBuildingType];
     }
 
-    @Exclude
-    public String getPostId() {
-        return postId;
+    public ArrayList<GeoPoint> getLocationList() {
+        return locationList;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setLocationList(ArrayList<GeoPoint> locationList) {
+        this.locationList = locationList;
+    }
+
+    public String getWriterId() {
+        return writerId;
+    }
+
+    public void setWriterId(String writerId) {
+        this.writerId = writerId;
+    }
+
+    public Timestamp getWriteTime() {
+        return writeTime;
+    }
+
+    public void setWriteTime(Timestamp writeTime) {
+        this.writeTime = writeTime;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 
     @Override
@@ -135,7 +158,7 @@ public class Post implements Parcelable {
         dest.writeInt(this.type);
         dest.writeString(this.title);
         dest.writeString(this.content);
-        dest.writeInt(this.photoNum);
+        dest.writeList(this.photoUrlList);
         dest.writeInt(this.summaryBuildingType);
         dest.writeList(this.locationList);
         dest.writeString(this.writerId);
@@ -144,11 +167,11 @@ public class Post implements Parcelable {
     }
 
     protected Post(Parcel in) {
-        this.setPostId(in.readString());
+        this.postId = in.readString();
         this.type = in.readInt();
         this.title = in.readString();
         this.content = in.readString();
-        this.photoNum = in.readInt();
+        this.photoUrlList = in.readArrayList(String.class.getClassLoader());
         this.summaryBuildingType = in.readInt();
         this.locationList = in.readArrayList(GeoPoint.class.getClassLoader());
         this.writerId = in.readString();

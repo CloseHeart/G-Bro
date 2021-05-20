@@ -269,46 +269,58 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
 
             // 수정 아니라면
             if(!isModify) {
-                // 포스트 작성
-                Firestore.writeNewPost(binding.spinnerPosttype.getSelectedItemPosition() + 1,
-                        binding.etTitle.getText().toString(),
-                        binding.etContent.getText().toString(),
-                        allImageList.size() - 1,
-                        binding.spinnerBuilding.getSelectedItemPosition(),
-                        new ArrayList<GeoPoint>(),
-                        Auth.getCurrentUser().getUid(),
-                        new Timestamp(new Date()), false)
-                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                if (task.isSuccessful()) {
-                                    // 사진 업로드
-                                    for (int i = 1; i < allImageList.size(); i++) {
-                                        int currentNum = i;
-                                        CloudStorage.uploadPostImg(task.getResult().getId(), String.valueOf(i), allImageList.get(i))
-                                                .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                // 사진 업로드
+                ArrayList<String> photoUrl = new ArrayList<>();
+                for (int i = 1; i < allImageList.size(); i++) {
+                    int currentNum = i;
+                    CloudStorage.uploadPostImg(allImageList.get(i))
+                            .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        task.getResult().getStorage().getDownloadUrl()
+                                                .addOnCompleteListener(new OnCompleteListener<Uri>() {
                                                     @Override
-                                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                    public void onComplete(@NonNull Task<Uri> task) {
                                                         if (task.isSuccessful()) {
-                                                            Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Success");
-                                                        } else {
-                                                            Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Failed!");
-                                                        }
+                                                            photoUrl.add(task.getResult().toString());
 
-                                                        if (currentNum == allImageList.size() - 1) {
-                                                            loadingDialog.dismiss();
-                                                            Toast.makeText(getApplicationContext(), R.string.post_success, Toast.LENGTH_SHORT).show();
-                                                            finish();
+                                                            // 마지막 사진이면
+                                                            if(currentNum == allImageList.size() - 1) {
+                                                                // 포스트 작성
+                                                                Post post = new Post(binding.spinnerPosttype.getSelectedItemPosition() + 1,
+                                                                        binding.etTitle.getText().toString(),
+                                                                        binding.etContent.getText().toString(),
+                                                                        photoUrl,
+                                                                        binding.spinnerBuilding.getSelectedItemPosition(),
+                                                                        new ArrayList<GeoPoint>(),
+                                                                        Auth.getCurrentUser().getUid(),
+                                                                        new Timestamp(new Date()), false);
+
+                                                                Firestore.writeNewPost(post)
+                                                                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                                                                if (task.isSuccessful()) {
+                                                                                    loadingDialog.dismiss();
+                                                                                    Toast.makeText(getApplicationContext(), R.string.post_success, Toast.LENGTH_SHORT).show();
+                                                                                    finish();
+                                                                                } else {
+                                                                                    Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                                                                                    loadingDialog.dismiss();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                            }
                                                         }
                                                     }
                                                 });
+                                    } else {
+                                        Util.debugLog(WriteActivity.this, "Photo #" + String.valueOf(currentNum) + " Upload Failed!");
                                     }
-                                } else {
-                                    Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
-                                    loadingDialog.dismiss();
                                 }
-                            }
-                        });
+                            });
+                }
             }
             // 수정이면 UpdatePost
             else {
