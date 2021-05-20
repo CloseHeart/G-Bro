@@ -24,7 +24,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.List;
@@ -45,6 +48,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
     private EditText edit_chat;
     private Button btn_chat;
     private Bitmap userImage;
+    private User myUserdata;
 
     @Override
     protected ActivityChattingBinding getBinding() {
@@ -63,6 +67,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
         if(bundle != null) {
             chatId = bundle.getString("chatid");
             targetId = bundle.getString("targetid");
+            getMyData();
             setAdapter();
         }
         else {
@@ -107,8 +112,20 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                                                             Toast.makeText(ChatActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
                                                             Log.w(this.getClass().getSimpleName(), "Chat Send Error!", task.getException());
                                                         } else {
+                                                            JSONObject notification = new JSONObject();
+                                                            JSONObject notificationBody = new JSONObject();
+
+                                                            try {
+                                                                notificationBody.put("title", myUserdata.getUserNickName());
+                                                                notificationBody.put("message", edit_chat.getText().toString());
+
+                                                            } catch (Exception e) {
+
+                                                            }
+
                                                             // 채팅 입력창 비우기
                                                             edit_chat.setText("");
+
                                                         }
                                                     }
                                                 });
@@ -130,7 +147,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
      * 채팅 실시간 업데이트
      */
     private void setChatUpdate() {
-        Firestore.getFirestoreInstance().collection("chatRoom").document(chatId).collection("chatData")
+        Firestore.getFirestoreInstance().collection("chatRoom").document(chatId).collection("chatData").orderBy("date", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, FirebaseFirestoreException error) {
@@ -145,21 +162,41 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                             List<DocumentChange> changeList = value.getDocumentChanges();
                             // 변경 리스트 전체 반복
                             for(DocumentChange change : changeList) {
-                                // ChatData로 변환
-                                ChatData chatData = change.getDocument().toObject(ChatData.class);
+                                // 추가된 경우
+                                if(change.getType() == DocumentChange.Type.ADDED) {
+                                    // ChatData로 변환
+                                    ChatData chatData = change.getDocument().toObject(ChatData.class);
 
-                                // 어댑터에 추가하고 Refresh
-                                chatAdapter.addItem(chatData);
-                                chatAdapter.notifyDataSetChanged();
+                                    // 어댑터에 추가하고 Refresh
+                                    chatAdapter.addItem(chatData);
+                                    chatAdapter.notifyDataSetChanged();
 
-                                // 자동 스크롤
-                                binding.recycleViewChat.scrollToPosition(chatAdapter.getItemCount() - 1);
+                                    // 자동 스크롤
+                                    binding.recycleViewChat.scrollToPosition(chatAdapter.getItemCount() - 1);
+                                }
                             }
                         }
                         // Snapshot에서 넘어온 데이터가 NULL이라면
                         else {
                             // 에러 로그
                             Log.w(this.getClass().getSimpleName(), "Snapshot Data NULL!");
+                        }
+                    }
+                });
+    }
+
+    private void getMyData() {
+        Firestore.getUserData(Auth.getCurrentUser().getUid())
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()) {
+                            myUserdata = task.getResult().toObject(User.class);
+                        }
+                        else {
+                            Log.w(this.getClass().getSimpleName(), "Snapshot Data NULL!");
+                            Toast.makeText(ChatActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     }
                 });

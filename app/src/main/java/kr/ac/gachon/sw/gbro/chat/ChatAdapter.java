@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,7 +54,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // 다른 사람 채팅 홀더
     public static class ChatOtherViewHolder extends  RecyclerView.ViewHolder{
         LinearLayout linearLayout;
-        CardView profileCardView;
         TextView nicknameTextView;
         TextView dateTextView;
         TextView messageTextView;
@@ -64,7 +62,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public ChatOtherViewHolder (@NonNull final View itemView) {
             super(itemView);
             linearLayout = itemView.findViewById(R.id.other_chat_message_item_linear);
-            profileCardView = itemView.findViewById(R.id.other_chatmessage_iv_profile);
             nicknameTextView = itemView.findViewById(R.id.other_chatmessage_tv_nickname);
             dateTextView = itemView.findViewById(R.id.other_chatmessage_tv_date);
             messageTextView = itemView.findViewById(R.id.other_chatmessage_tv_message);
