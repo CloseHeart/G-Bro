@@ -181,7 +181,7 @@ public class Firestore {
      * 채팅을 전송한다
      * @param chatId 채팅방 ID
      * @param chatData ChatData
-     * @return
+     * @return Task<DocumentReference>
      */
     public static Task<DocumentReference> sendChat(String chatId, ChatData chatData){
         return getFirestoreInstance().collection("chatRoom").document(chatId).collection("chatData").add(chatData);
@@ -191,7 +191,7 @@ public class Firestore {
      * 기존에 채팅방이 존재하는지 검색한다
      * @param myId 사용자 ID
      * @param targetId 상대방 ID
-     * @return
+     * @return Task<QuerySnapshot>
      */
     public static Task<QuerySnapshot> searchChatRoom (String myId, String targetId){
         ArrayList<String> userList1= new ArrayList<>(Arrays.asList(myId,targetId));
@@ -199,4 +199,23 @@ public class Firestore {
         return getFirestoreInstance().collection("chatRoom").whereIn("chatUserId", Arrays.asList(userList1,userList2)).get();
     }
 
+    /**
+     * 완료되지 않은 모든 Post를 불러온다
+     * @param postType Post Type
+     *                 0 - 전체
+     *                 1 - 분실물
+     *                 2 - 습득물
+     * @return Task<QuerySnapshot>
+     */
+    public static Task<QuerySnapshot> getUnfinishedPost(int postType) {
+        if(postType == 0) {
+            return getFirestoreInstance().collection("post")
+                    .whereEqualTo("finished", false).get();
+        }
+        else {
+            return getFirestoreInstance().collection("post")
+                    .whereEqualTo("type", postType)
+                    .whereEqualTo("finished", false).get();
+        }
+    }
 }
