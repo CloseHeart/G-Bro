@@ -8,17 +8,15 @@ public class User {
     private String userProfileImgURL;
     private boolean isAdmin;
     private Timestamp registerTime;
-    private String fcmToken;
 
     public User() { }
 
-    public User(String userEmail, String userNickName, String userProfileImgURL, Timestamp registerTime, String fcmToken) {
+    public User(String userEmail, String userNickName, String userProfileImgURL, Timestamp registerTime) {
         this.userEmail = userEmail;
         this.userNickName = userNickName;
         this.userProfileImgURL = userProfileImgURL;
         this.isAdmin = false;
         this.registerTime =  registerTime;
-        this.fcmToken = fcmToken;
     }
 
     public String getUserNickName() {
@@ -59,13 +57,5 @@ public class User {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
-    }
-
-    public String getFcmToken() {
-        return fcmToken;
-    }
-
-    public void setFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
     }
 }

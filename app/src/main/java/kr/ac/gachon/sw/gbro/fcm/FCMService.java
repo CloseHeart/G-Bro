@@ -23,9 +23,7 @@ import java.util.Map;
 
 import kr.ac.gachon.sw.gbro.LoginActivity;
 import kr.ac.gachon.sw.gbro.R;
-import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
-import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Util;
 
 public class FCMService extends FirebaseMessagingService {
@@ -45,23 +43,8 @@ public class FCMService extends FirebaseMessagingService {
     }
 
     @Override
-    public void onNewToken(@NonNull String token) {
-        Log.d(LOG_TAG, "Refreshed token: " + token);
-
-        if(Auth.getCurrentUser() != null) {
-            Firestore.setUserFCMToken(Auth.getCurrentUser().getUid(), token)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                Log.d(LOG_TAG, "Success to Write FCM Token to Firestore");
-                            }
-                            else {
-                                Log.d(LOG_TAG, "Failed to Write FCM Token to Firestore", task.getException());
-                            }
-                        }
-                    });
-        }
+    public void onNewToken(@NonNull String s) {
+        Log.d(LOG_TAG, "Refreshed token: " + s);
     }
 
     private void showNotification(RemoteMessage remoteMessage) {
