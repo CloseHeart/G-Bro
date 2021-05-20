@@ -64,22 +64,33 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!--  프로필 사진 -->
-            <ImageView
-                android:id="@+id/post_profile"
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/post_profile_cardview"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/profile"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:cardCornerRadius="75dp"
+                app:cardElevation="0dp" >
+
+                <ImageView
+                    android:id="@+id/post_profile"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/profile"
+                    tools:srcCompat="@tools:sample/avatars" />
+            </androidx.cardview.widget.CardView>
+
 
             <!--  업로드 시간 -->
             <TextView
                 android:id="@+id/post_writer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
@@ -87,7 +98,7 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toStartOf="@+id/content_to_chat"
-                app:layout_constraintStart_toEndOf="@+id/post_profile"
+                app:layout_constraintStart_toEndOf="@+id/post_profile_cardview"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="김수빈" />
 
@@ -95,11 +106,11 @@
                 android:id="@+id/post_uploadtime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="13sp"
-                app:layout_constraintStart_toEndOf="@+id/post_profile"
+                app:layout_constraintStart_toEndOf="@+id/post_profile_cardview"
                 app:layout_constraintTop_toBottomOf="@+id/post_writer"
                 tools:text="10:18" />
 
@@ -108,11 +119,11 @@
                 android:id="@+id/post_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="13sp"
-                app:layout_constraintStart_toEndOf="@+id/post_profile"
+                app:layout_constraintStart_toEndOf="@+id/post_profile_cardview"
                 app:layout_constraintTop_toBottomOf="@+id/post_uploadtime"
                 tools:text="IT융합대학" />
 

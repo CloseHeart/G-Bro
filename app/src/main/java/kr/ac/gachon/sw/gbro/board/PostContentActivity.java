@@ -135,19 +135,25 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         MapFragment fragment = MapFragment.getPathInstance(testMapPath);
         postContentAdapter.addNewFragment(fragment);
 
-        for(int i = 1; i <= contentPost.getPhotoNum(); i++) {
-            int currentIndex = i;
-            CloudStorage.getPostImage(contentPost.getPostId(), String.valueOf(i)).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                @Override
-                public void onComplete(@NonNull Task<byte[]> task) {
-                    if(task.isSuccessful()) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                        postContentAdapter.addNewFragment(ImageViewFragment.newInstance(bitmap));
-                    }
-                    if(currentIndex == contentPost.getPhotoNum()) loadingDialog.dismiss();
-                }
-            });
+        // 사진 가져오기
+        for(String photoUrl : contentPost.getPhotoUrlList()) {
+            CloudStorage.getImageFromURL(photoUrl)
+                    .addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                        @Override
+                        public void onComplete(@NonNull Task<byte[]> task) {
+                            if(task.isSuccessful()) {
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                                postContentAdapter.addNewFragment(ImageViewFragment.newInstance(bitmap));
+                            }
+                            else {
+                                Log.e(PostContentActivity.this.getClass().getSimpleName(), "Get Post Photo Error!", task.getException());
+                                Toast.makeText(PostContentActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        }
+                    });
         }
+
     }
 
     /**
@@ -173,8 +179,8 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                                 // 프로필 사진 가져오는데 실패하면 기본 사진
                                 else {
                                     userImage = Util.drawableToBitmap(PostContentActivity.this, R.drawable.profile);
-
                                 }
+                                binding.postProfile.setImageBitmap(userImage);
                             }
                         });
                     }
@@ -185,6 +191,12 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                     }
                     binding.postProfile.setImageBitmap(userImage);
                 }
+                else {
+                    Log.e(PostContentActivity.this.getClass().getSimpleName(), "Get User Data Error!", task.getException());
+                    Toast.makeText(PostContentActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                loadingDialog.dismiss();
             }
         });
 

@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemBoardBinding;
@@ -67,7 +68,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         Post currentPost = postList.get(position);
         binding.ivThumbnail.setImageResource(R.mipmap.ic_launcher);
         binding.tvTitle.setText(currentPost.getTitle());
-        binding.tvSummary.setText(currentPost.getContent());
+        binding.tvSummary.setText(currentPost.getContent().replaceAll("\n", ""));
         binding.tvUploadtime.setText(Util.timeStamptoString(currentPost.getWriteTime()));
         binding.tvLocation.setText(currentPost.getSummaryBuildingName(context));
         Firestore.getUserData(currentPost.getWriterId()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -79,7 +80,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
             }
         });
 
-        CloudStorage.getPostImage(currentPost.getPostId(), "1").addOnCompleteListener(new OnCompleteListener<byte[]>() {
+        CloudStorage.getImageFromURL(currentPost.getPhotoUrlList().get(0)).addOnCompleteListener(new OnCompleteListener<byte[]>() {
             @Override
             public void onComplete(@NonNull Task<byte[]> task) {
                 if(task.isSuccessful()) {
@@ -104,7 +105,10 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
      * @param post Post Object
      */
     public void addItem(Post post) {
-        postList.add(post);
+        if(postList.size() > 0 && post.getWriteTime().compareTo(postList.get(0).getWriteTime()) >= 0) {
+            postList.add(0, post);
+        } else postList.add(post);
+
         notifyDataSetChanged();
     }
 

@@ -12,6 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraPosition;
@@ -25,12 +30,15 @@ import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.widget.LocationButtonView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
 import kr.ac.gachon.sw.gbro.databinding.FragmentMapBinding;
+import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Util;
+import kr.ac.gachon.sw.gbro.util.model.Post;
 
 public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnMapReadyCallback {
     private ArrayList<Marker> markers = null;
@@ -130,18 +138,54 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
         markers = new ArrayList<>();
         String[] buildingCoordinate = getResources().getStringArray(R.array.gachon_globalcampus_coordinate);
 
-        for(int i = 0; i < buildingCoordinate.length - 1; i++) {
-            String[] posArray = buildingCoordinate[i].split(",");
+        Firestore.getUnfinishedPost(0)
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()) {
+                            HashMap<Integer, Integer> lostNumList = new HashMap<>();
+                            HashMap<Integer, Integer> foundNumList = new HashMap<>();
 
-            Marker marker = new Marker();
-            marker.setPosition(new LatLng(Double.parseDouble(posArray[0]), Double.parseDouble(posArray[1])));
-            marker.setMap(naverMap);
-            marker.setWidth(40);
-            marker.setHeight(60);
-            marker.setIcon(OverlayImage.fromResource(R.drawable.marker));
-            setInfoWindow(marker, i);
-            markers.add(marker);
-        }
+                            for(DocumentSnapshot doc : task.getResult().getDocuments()) {
+                                Post post = doc.toObject(Post.class);
+                                if(post.getType() == 1) {
+                                    if(lostNumList.get(post.getSummaryBuildingType()) != null) {
+                                        lostNumList.put(post.getSummaryBuildingType(), lostNumList.get(post.getSummaryBuildingType()) + 1);
+                                    }
+                                    else {
+                                        lostNumList.put(post.getSummaryBuildingType(), 1);
+                                    }
+                                }
+                                else if(post.getType() == 2) {
+                                    if(foundNumList.get(post.getSummaryBuildingType()) != null) {
+                                        foundNumList.put(post.getSummaryBuildingType(), foundNumList.get(post.getSummaryBuildingType()) + 1);
+                                    }
+                                    else {
+                                        foundNumList.put(post.getSummaryBuildingType(), 1);
+                                    }
+                                }
+                            }
+
+                            for(int i = 0; i < buildingCoordinate.length - 1; i++) {
+                                String[] posArray = buildingCoordinate[i].split(",");
+
+                                Marker marker = new Marker();
+                                marker.setPosition(new LatLng(Double.parseDouble(posArray[0]), Double.parseDouble(posArray[1])));
+                                marker.setMap(naverMap);
+                                marker.setWidth(40);
+                                marker.setHeight(60);
+                                marker.setIcon(OverlayImage.fromResource(R.drawable.marker));
+                                setInfoWindow(marker, i,
+                                        lostNumList.get(i) == null ? 0 : lostNumList.get(i),
+                                        foundNumList.get(i) == null ? 0 : foundNumList.get(i));
+                                markers.add(marker);
+                            }
+                        }
+                        else {
+                            Log.e("MapFragment", "Get Unfinished Post Error!", task.getException());
+                        }
+                    }
+                });
     }
 
     /**
@@ -181,7 +225,7 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
      * @param marker Marker
      * @param buildingNum 건물 번호
      */
-    private void setInfoWindow(Marker marker, int buildingNum) {
+    private void setInfoWindow(Marker marker, int buildingNum, int lost, int found) {
         String[] buildingName = getResources().getStringArray(R.array.gachon_globalcampus_building);
 
         InfoWindow infoWindow = new InfoWindow();
@@ -201,12 +245,11 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
             @NonNull
             @Override
             public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                // TODO : DB에서 각 건물 별 데이터 가져오기
                 return getString(R.string.Info_building_name, buildingName[buildingNum])
                         +"\n"
-                        +getString(R.string.Info_lost_cnt,3)
+                        +getString(R.string.Info_lost_cnt,lost)
                         +"\n"
-                        +getString(R.string.Info_get_cnt,4);
+                        +getString(R.string.Info_get_cnt,found);
             }
         });
     }
