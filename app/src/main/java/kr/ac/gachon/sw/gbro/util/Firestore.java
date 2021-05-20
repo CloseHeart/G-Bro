@@ -38,10 +38,11 @@ public class Firestore {
      * @param userId Firebase UID
      * @param userEmail 유저 이메일
      * @param userNickName 유저 닉네임
+     * @param fcmToken FCM Token
      * @return Task<Void>
      */
-    public static Task<Void> writeNewUser(String userId, String userEmail, String userNickName) {
-        User newUser = new User(userEmail, userNickName, null, new Timestamp(new Date()));
+    public static Task<Void> writeNewUser(String userId, String userEmail, String userNickName, String fcmToken) {
+        User newUser = new User(userEmail, userNickName, null, new Timestamp(new Date()), fcmToken);
         return getFirestoreInstance().collection("user").document(userId).set(newUser);
     }
     
@@ -217,5 +218,19 @@ public class Firestore {
                     .whereEqualTo("type", postType)
                     .whereEqualTo("finished", false).get();
         }
+    }
+
+    public static Query getMyChatRoom(String userId) {
+         return getFirestoreInstance().collection("chatRoom").whereArrayContains("chatUserId", userId);
+    }
+
+    /**
+     * 유저의 FCM Token 정보를 업데이트 한다
+     * @param userId User UID
+     * @param fcmToken Token
+     * @return Task<Void>
+     */
+    public static Task<Void> setUserFcmToken(String userId, String fcmToken) {
+        return getFirestoreInstance().collection("user").document(userId).update("fcmToken", fcmToken);
     }
 }

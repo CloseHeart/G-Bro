@@ -18,3 +18,4 @@ google-services.json
 credentials.json
 app/src/main/res/values/naverapi.xml
 /.idea/runConfigurations.xml
+/app/src/main/res/values/fcmkey.xml

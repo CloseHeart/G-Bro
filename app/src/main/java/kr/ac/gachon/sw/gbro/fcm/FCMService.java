@@ -23,7 +23,9 @@ import java.util.Map;
 
 import kr.ac.gachon.sw.gbro.LoginActivity;
 import kr.ac.gachon.sw.gbro.R;
+import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
+import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Util;
 
 public class FCMService extends FirebaseMessagingService {
@@ -43,8 +45,23 @@ public class FCMService extends FirebaseMessagingService {
     }
 
     @Override
-    public void onNewToken(@NonNull String s) {
-        Log.d(LOG_TAG, "Refreshed token: " + s);
+    public void onNewToken(@NonNull String token) {
+        Log.d(LOG_TAG, "Refreshed token: " + token);
+
+        if(Auth.getCurrentUser() != null) {
+            Firestore.setUserFcmToken(Auth.getCurrentUser().getUid(), token)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()) {
+                                Log.d(LOG_TAG, "New Token Write Success");
+                            }
+                            else {
+                                Log.e(LOG_TAG, "New Token Write Failed", task.getException());
+                            }
+                        }
+                    });
+        }
     }
 
     private void showNotification(RemoteMessage remoteMessage) {
@@ -72,8 +89,8 @@ public class FCMService extends FirebaseMessagingService {
 
         // Type이 NULL이 아니라면 - 필수
         if(data.get("type") != null) {
-            // Type이 chat이라면
-            if(data.get("type").equals("chat")) {
+            // Type이 chat이고 사용자가 null이 아니라면
+            if(data.get("type").equals("chat") && Auth.getCurrentUser() != null) {
                 String userId = data.get("userId");
                 if(!msgList.containsKey(userId)) {
                     msgList.put(userId, lastMsgNum);
