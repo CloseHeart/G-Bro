@@ -11,8 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
@@ -23,6 +29,9 @@ import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
 import kr.ac.gachon.sw.gbro.databinding.CustomactionbarBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
 import kr.ac.gachon.sw.gbro.setting.SettingActivity;
+import kr.ac.gachon.sw.gbro.util.Auth;
+import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.model.User;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding>{
     long lastPressedTime = 0;
@@ -41,11 +50,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
         setFragment();
         setSlidingPanel();
         setFab();
+        checkFCMToken();
     }
 
     @Override
     public void onBackPressed() {
-
         // Fab Menu가 열려있다면
         if(binding.fabmenu.isExpanded()) {
             // 닫기
@@ -161,10 +170,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
         });
     }
 
-    /*
+    /**
      * FloatingActionButton을 설정한다
      * @author Minjae Seon
-     * @return Voidㅔ
+     * @return Void
      */
     private void setFab() {
         // 글쓰기 버튼
@@ -184,5 +193,46 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void checkFCMToken() {
+        if(Auth.getCurrentUser() != null) {
+            Firestore.getUserData(Auth.getCurrentUser().getUid())
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()) {
+                                User user = task.getResult().toObject(User.class);
+
+                                if(user.getFcmToken() == null) {
+                                    FirebaseMessaging.getInstance().getToken()
+                                            .addOnCompleteListener(new OnCompleteListener<String>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<String> tokenTask) {
+                                                    if(task.isSuccessful()) {
+                                                        Firestore.setUserFcmToken(Auth.getCurrentUser().getUid(), tokenTask.getResult())
+                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> setTask) {
+                                                                        if(!setTask.isSuccessful()) {
+                                                                            Log.e(MainActivity.this.getClass().getSimpleName(), "Set Token Error", setTask.getException());
+                                                                        }
+                                                                    }
+                                                                });
+                                                    }
+                                                    else {
+                                                        Log.e(MainActivity.this.getClass().getSimpleName(), "Get Token Error", tokenTask.getException());
+                                                    }
+                                                }
+                                            });
+                                }
+                            }
+                            else {
+                                Log.e(MainActivity.this.getClass().getSimpleName(), "Get User Data Error", task.getException());
+                            }
+                        }
+                    });
+
+        }
     }
 }
