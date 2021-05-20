@@ -62,6 +62,7 @@ public class Post implements Parcelable {
         this.finished = isFinished;
     }
 
+    @Exclude
     public String getPostId() {
         return postId;
     }
