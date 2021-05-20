@@ -191,13 +191,16 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                         // Post로 변환
                         Post postData = change.getDocument().toObject(Post.class);
 
-                        if(searchName != null && !searchName.trim().isEmpty()) {
-                            if (postData.getTitle().contains(searchName)) {
+                        // 추가된 경우
+                        if(change.getType() == DocumentChange.Type.ADDED) {
+                            // boardAdapter에 추가
+                            if (searchName != null && !searchName.trim().isEmpty()) {
+                                if (postData.getTitle().contains(searchName)) {
+                                    boardAdapter.addItem(postData);
+                                }
+                            } else {
                                 boardAdapter.addItem(postData);
                             }
-                        }
-                        else {
-                            boardAdapter.addItem(postData);
                         }
                     }
 
