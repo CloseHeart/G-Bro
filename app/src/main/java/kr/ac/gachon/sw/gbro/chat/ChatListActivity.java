@@ -1,8 +1,6 @@
 package kr.ac.gachon.sw.gbro.chat;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -13,23 +11,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.board.BoardAdapter;
-import kr.ac.gachon.sw.gbro.board.PostContentActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityChatlistBinding;
-import kr.ac.gachon.sw.gbro.util.Auth;
-import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.model.ChatRoom;
-import kr.ac.gachon.sw.gbro.util.model.Post;
 
 public class ChatListActivity extends BaseActivity<ActivityChatlistBinding> implements ChatListAdapter.onItemClickListener {
     ActionBar actionBar;
@@ -52,6 +40,7 @@ public class ChatListActivity extends BaseActivity<ActivityChatlistBinding> impl
         }
 
         setAdapter();
+        setRefresh();
     }
 
     @Override
@@ -79,56 +68,25 @@ public class ChatListActivity extends BaseActivity<ActivityChatlistBinding> impl
         chatListAdapter = new ChatListAdapter(this, chatRoomList, this);
         rvChatList.setAdapter(chatListAdapter);
 
-        Firestore.getMyChatRoom(Auth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        // 에러 존재시
-                        if(error != null) {
-                            // Snapshot 에러 로그 출력
-                            Log.w(this.getClass().getSimpleName(), "Snapshot Error!", error);
-                        }
+        // TODO : 채팅방 목록 가져온 다음 각 채팅방 ID를 ChatRoom의 setRoomId로 설정하고 onClick에서 이에 따라 제어
+    }
 
-                        if(value != null) {
-
-                            // 변경된 리스트 가져옴
-                            List<DocumentChange> changeList = value.getDocumentChanges();
-                            // 변경 리스트 전체 반복
-                            for(DocumentChange change : changeList) {
-
-                                // Post로 변환
-                                ChatRoom chatRoom = change.getDocument().toObject(ChatRoom.class);
-                                chatRoom.setRoomId(change.getDocument().getId());
-                                chatListAdapter.addItem(chatRoom);
-                            }
-
-                            // Refresh
-                            chatListAdapter.notifyDataSetChanged();
-                        }
-                        // Snapshot에서 넘어온 데이터가 NULL이라면
-                        else {
-                            // 에러 로그
-                            Log.w(this.getClass().getSimpleName(), "Snapshot Data NULL!");
-                        }
-                    }
-                });
+    /**
+     * 새로고침 설정
+     * @author Minjae Seon
+     */
+    private void setRefresh() {
+        binding.swipeChatlist.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // TODO : 새로 고침 반영
+                binding.swipeChatlist.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     public void onClick(View v, ChatRoom chatRoom) {
-        Intent chatActivity = new Intent(ChatListActivity.this, ChatActivity.class);
-
-        String targetId;
-        ArrayList<String> userList = chatRoom.getChatUserId();
-        if(userList.get(0).equals(Auth.getCurrentUser().getUid())) {
-            targetId = userList.get(1);
-        }
-        else {
-            targetId = userList.get(0);
-        }
-
-        chatActivity.putExtra("chatid", chatRoom.getRoomId());
-        chatActivity.putExtra("targetid", targetId);
-        startActivity(chatActivity);
+        // TODO : 채팅방 연결
     }
 }
