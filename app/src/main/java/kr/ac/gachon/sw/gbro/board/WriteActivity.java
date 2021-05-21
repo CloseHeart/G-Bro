@@ -117,7 +117,8 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             return true;
         }
         else if(itemId == R.id.write_remove) {
-            // TODO : 삭제 기능 구현
+            // TODO : 삭제 기능 구현, 현재 postId
+            removePost();
             return true;
         }
         else if(itemId == android.R.id.home) {
@@ -158,6 +159,24 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         }
     }
 
+    /**
+     * 게시물을 삭제할 것인지 Dialog로 마지막으로 물어본다
+     */
+    public void removeDialog(){
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.warning))
+                .setMessage(getString(R.string.post_remove_dialog_msg))
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        removeRealPost();
+                        finish();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no), null)
+                .create().show();
+    }
+
     private void savePost(){
         // 제목과 내용이 비어있지 않으면
         if(!binding.etTitle.getText().toString().replaceAll("\\s", "").isEmpty() && !binding.etContent.getText().toString().replaceAll("\\s", "").isEmpty()){
@@ -184,6 +203,30 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             Toast.makeText(getApplicationContext(),R.string.post_empty,Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void removePost(){
+        removeDialog();
+    }
+
+    /**
+     * Firestore에 있는 post 삭제
+     */
+    private void removeRealPost(){
+        Log.d(getLocalClassName(), "postId : " + post.getPostId());
+            Firestore.removePost(post.getPostId()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(getApplicationContext(), R.string.post_remove_fail, Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), R.string.post_remove_fail, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+    }
+
 
     /**
      * 원본 글 데이터를 불러온다
