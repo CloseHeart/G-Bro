@@ -128,7 +128,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
       */
     public void removeItem(Post post) {
         for(Post p : postList) {
-            if(p.getPostId() == post.getPostId()) {
+            if(p.getPostId().equals(post.getPostId())) {
                 int removedIdx = postList.indexOf(p);
                 postList.remove(p);
                 notifyItemRemoved(removedIdx);
