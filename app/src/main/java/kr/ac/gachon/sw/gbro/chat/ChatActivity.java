@@ -235,7 +235,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
      */
     private void sendNotification(String token, String userNick, String userMsg) {
         NotificationModel notificationModel = new NotificationModel(userNick, userMsg);
-        ChatFCMData chatFCMData = new ChatFCMData("chat", chatId, targetUser.getUserProfileImgURL(), targetUser.getUserId());
+        ChatFCMData chatFCMData = new ChatFCMData("chat", chatId, myUserdata.getUserProfileImgURL(), myUserdata.getUserId());
         ChatFCMModel chatFCMModel = new ChatFCMModel(token, notificationModel, chatFCMData);
 
         FCMApi sendChat = FCMRetrofit.getClient(this).create(FCMApi.class);
