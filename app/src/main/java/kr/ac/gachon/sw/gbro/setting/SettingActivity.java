@@ -10,7 +10,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
 

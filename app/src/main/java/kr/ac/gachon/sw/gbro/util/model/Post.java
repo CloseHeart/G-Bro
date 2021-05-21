@@ -8,7 +8,6 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import kr.ac.gachon.sw.gbro.R;
@@ -159,7 +158,7 @@ public class Post implements Parcelable {
         dest.writeInt(this.type);
         dest.writeString(this.title);
         dest.writeString(this.content);
-        dest.writeList(this.photoUrlList);
+        dest.writeSerializable(this.photoUrlList);
         dest.writeInt(this.summaryBuildingType);
         dest.writeList(this.locationList);
         dest.writeString(this.writerId);
@@ -172,9 +171,9 @@ public class Post implements Parcelable {
         this.type = in.readInt();
         this.title = in.readString();
         this.content = in.readString();
-        this.photoUrlList = in.readArrayList(String.class.getClassLoader());
+        this.photoUrlList = (ArrayList<String>) in.readSerializable();
         this.summaryBuildingType = in.readInt();
-        this.locationList = in.readArrayList(GeoPoint.class.getClassLoader());
+        in.readList(locationList, GeoPoint.class.getClassLoader());
         this.writerId = in.readString();
         this.writeTime = in.readParcelable(Timestamp.class.getClassLoader());
         this.finished = (boolean) in.readValue(Boolean.class.getClassLoader());

@@ -17,10 +17,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-import kr.ac.gachon.sw.gbro.R;
-
 import java.util.ArrayList;
 
+import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;

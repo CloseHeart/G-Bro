@@ -80,6 +80,7 @@
                     android:id="@+id/post_profile"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
                     app:srcCompat="@drawable/profile"
                     tools:srcCompat="@tools:sample/avatars" />
             </androidx.cardview.widget.CardView>

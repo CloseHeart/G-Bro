@@ -2,14 +2,10 @@ package kr.ac.gachon.sw.gbro.board;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,37 +14,24 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.MarginPageTransformer;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.UploadTask;
-import com.google.type.DateTime;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
@@ -217,7 +200,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
-                        Toast.makeText(getApplicationContext(), R.string.post_remove_fail, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.post_remove_success, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                     else{
@@ -235,7 +218,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         binding.etTitle.setText(post.getTitle());
         binding.etContent.setText(post.getContent());
         binding.spinnerBuilding.setSelection(post.getSummaryBuildingType());
-        binding.spinnerPosttype.setSelection(post.getType());
+        binding.spinnerPosttype.setSelection(post.getType() - 1);
     }
 
     /**

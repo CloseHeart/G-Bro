@@ -34,7 +34,6 @@ import kr.ac.gachon.sw.gbro.fcm.FCMApi;
 import kr.ac.gachon.sw.gbro.fcm.FCMRetrofit;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
-import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMModel;

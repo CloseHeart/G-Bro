@@ -2,7 +2,6 @@ package kr.ac.gachon.sw.gbro.board;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,36 +11,26 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
-import kr.ac.gachon.sw.gbro.MainActivity;
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseFragment;
 import kr.ac.gachon.sw.gbro.databinding.FragmentBoardBinding;
-import kr.ac.gachon.sw.gbro.setting.MyPostActivity;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
-import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
 public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements BoardAdapter.onItemClickListener {
@@ -191,13 +180,21 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                         // Post로 변환
                         Post postData = change.getDocument().toObject(Post.class);
                         postData.setPostId(change.getDocument().getId());
-                        if(searchName != null && !searchName.trim().isEmpty()) {
-                            if (postData.getTitle().contains(searchName)) {
+
+                        // 추가된 경우라면
+                        if(change.getType() == DocumentChange.Type.ADDED) {
+                            postData.setPostId(change.getDocument().getId());
+                            if (searchName != null && !searchName.trim().isEmpty()) {
+                                if (postData.getTitle().contains(searchName)) {
+                                    boardAdapter.addItem(postData);
+                                }
+                            } else {
                                 boardAdapter.addItem(postData);
                             }
                         }
-                        else {
-                            boardAdapter.addItem(postData);
+                        else if(change.getType() == DocumentChange.Type.REMOVED) {
+                            Log.d(BoardFragment.this.getClass().getSimpleName(), "Removed Item " + postData.getPostId());
+                            boardAdapter.removeItem(postData);
                         }
                     }
 
@@ -209,7 +206,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                 // Snapshot에서 넘어온 데이터가 NULL이라면
                 else {
                     // 에러 로그
-                    Log.w(this.getClass().getSimpleName(), "Snapshot Data NULL!");
+                    Log.w(BoardFragment.this.getClass().getSimpleName(), "Snapshot Data NULL!");
                 }
             }
         });
