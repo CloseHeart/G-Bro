@@ -10,6 +10,7 @@
     <color name="gbro_second">#7b94f5</color>
     <color name="gbro_dark_main">#6c61c9</color>
     <color name="gbro_dark_second">#3C3C3C</color>
+    <color name="gbro_path_select">#E0E0E0</color>
 
     <color name = "gbro_brighter_main">#DBE6FF</color>
     <color name="black">#FF000000</color>
