@@ -158,7 +158,7 @@ public class Post implements Parcelable {
         dest.writeString(this.content);
         dest.writeSerializable(this.photoUrlList);
         dest.writeInt(this.summaryBuildingType);
-        dest.writeList(this.locationList);
+        dest.writeSerializable(this.savePath);
         dest.writeString(this.writerId);
         dest.writeParcelable(this.writeTime, 0);
         dest.writeValue(this.finished);
@@ -171,7 +171,7 @@ public class Post implements Parcelable {
         this.content = in.readString();
         this.photoUrlList = (ArrayList<String>) in.readSerializable();
         this.summaryBuildingType = in.readInt();
-        in.readList(locationList, GeoPoint.class.getClassLoader());
+        this.savePath = (ArrayList<Integer>) in.readSerializable();
         this.writerId = in.readString();
         this.writeTime = in.readParcelable(Timestamp.class.getClassLoader());
         this.finished = (boolean) in.readValue(Boolean.class.getClassLoader());
