@@ -35,8 +35,8 @@ public class Post implements Parcelable {
     // 건물 Type (values/building.xml 파일 참조)
     private int summaryBuildingType;
 
-    // 경로 좌표 Array
-    private ArrayList<GeoPoint> locationList;
+    // 경로 저장
+    private ArrayList<Integer> savePath;
 
     // 게시자 ID
     private String writerId;
@@ -49,13 +49,13 @@ public class Post implements Parcelable {
 
     public Post() {}
 
-    public Post(int type, String title, String content, ArrayList<String> photoUrlList, int summaryBuildingType, ArrayList<GeoPoint> locationList, String writerId, Timestamp writeTime, boolean isFinished) {
+    public Post(int type, String title, String content, ArrayList<String> photoUrlList, int summaryBuildingType, ArrayList<Integer> savePath, String writerId, Timestamp writeTime, boolean isFinished) {
         this.type = type;
         this.title = title;
         this.content = content;
         this.photoUrlList = photoUrlList;
         this.summaryBuildingType = summaryBuildingType;
-        this.locationList = locationList;
+        this.savePath = savePath;
         this.writerId = writerId;
         this.writeTime = writeTime;
         this.finished = isFinished;
@@ -110,17 +110,15 @@ public class Post implements Parcelable {
         this.summaryBuildingType = summaryBuildingType;
     }
 
+    public ArrayList<Integer> getSavePath(){ return savePath; }
+
+    public void setSavePath(ArrayList<Integer> savePath){
+        this.savePath = savePath;
+    }
+
     @Exclude
     public String getSummaryBuildingName(Context context) {
         return context.getResources().getStringArray(R.array.gachon_globalcampus_building)[summaryBuildingType];
-    }
-
-    public ArrayList<GeoPoint> getLocationList() {
-        return locationList;
-    }
-
-    public void setLocationList(ArrayList<GeoPoint> locationList) {
-        this.locationList = locationList;
     }
 
     public String getWriterId() {
