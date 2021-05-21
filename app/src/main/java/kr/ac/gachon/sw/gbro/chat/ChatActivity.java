@@ -163,6 +163,12 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                         }
                     }
                 });
+
+        binding.recycleViewChat.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                binding.recycleViewChat.scrollBy(0, oldBottom - bottom);
+            }
+        });
     }
 
     /**
