@@ -23,13 +23,11 @@ public class PathDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);  // 타이틀 제거
         viewBinding = DialogPathSelectionBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
-        /*
-        Dialog mDialog = new Dialog(context);
-        WindowManager.LayoutParams params = mDialog.getWindow().getAttributes();
+
+        WindowManager.LayoutParams params = this.getWindow().getAttributes();
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
-        mDialog.getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
-        */
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        this.getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
     }
 
 }

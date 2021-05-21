@@ -17,6 +17,7 @@ import android.view.View;
 
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -74,7 +75,6 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         btn_path = binding.btnPath;
         loadingDialog = new LoadingDialog(this);  // Dialog 초기화
         pathDialog = new PathDialog(this);        // Dialog 초기화
-        pathList = new ArrayList<>();
 
         // 이미지 추가 RecyclerView 설정
         setAddImageRecyclerView();
@@ -87,6 +87,10 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             binding.rvPhoto.setEnabled(false);
             loadOriginalData();
         }
+        else {
+            post = new Post();
+        }
+
         // 경로 선택 버튼을 누른다면
         btn_path.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -359,29 +363,28 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         pathDialog.viewBinding.btnPathFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 각 스피너의 값을 받아온다
-                if(!pathDialog.viewBinding.spinnerBuildingFirst.getSelectedItem().toString().equals("없음")
-                        && pathDialog.viewBinding.spinnerBuildingFirst.isEnabled()){
-                        pathList.add(pathDialog.viewBinding.spinnerBuildingFirst.getSelectedItemPosition());}
+                pathList = new ArrayList<>();
 
-                if(!pathDialog.viewBinding.spinnerBuildingSecond.getSelectedItem().toString().equals("없음")
-                        && pathDialog.viewBinding.spinnerBuildingSecond.isEnabled()){
-                    pathList.add(pathDialog.viewBinding.spinnerBuildingSecond.getSelectedItemPosition());}
+                Spinner[] spinnerItem = { pathDialog.viewBinding.spinnerBuildingFirst,
+                        pathDialog.viewBinding.spinnerBuildingSecond,
+                        pathDialog.viewBinding.spinnerBuildingThird,
+                        pathDialog.viewBinding.spinnerBuildingFourth,
+                        pathDialog.viewBinding.spinnerBuildingFifth};
 
-                if(!pathDialog.viewBinding.spinnerBuildingThird.getSelectedItem().toString().equals("없음")
-                        && pathDialog.viewBinding.spinnerBuildingThird.isEnabled()){
-                    pathList.add(pathDialog.viewBinding.spinnerBuildingThird.getSelectedItemPosition());}
+                for(Spinner item : spinnerItem) {
+                    // 없음 선택한거 아니면
+                    if(item.getSelectedItemPosition() != 25) {
+                        Log.d(WriteActivity.this.getClass().getSimpleName(), "Added " + item.getSelectedItemPosition());
+                        pathList.add(item.getSelectedItemPosition());
+                    }
+                    // 없음 선택시
+                    else {
+                        break;
+                    }
+                }
 
-                if(!pathDialog.viewBinding.spinnerBuildingFourth.getSelectedItem().toString().equals("없음")
-                        && pathDialog.viewBinding.spinnerBuildingFourth.isEnabled()){
-                    pathList.add(pathDialog.viewBinding.spinnerBuildingFourth.getSelectedItemPosition());}
-
-                if(!pathDialog.viewBinding.spinnerBuildingFifth.getSelectedItem().toString().equals("없음")
-                        && pathDialog.viewBinding.spinnerBuildingFifth.isEnabled()){
-                    pathList.add(pathDialog.viewBinding.spinnerBuildingFifth.getSelectedItemPosition());}
-
-                showPathTextView(pathList);
                 post.setSavePath(pathList);
+                showPathTextView(pathList);
                 pathDialog.dismiss(); // 다이얼로그 닫기
             }
         });
@@ -389,42 +392,20 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
 
     private void showPathTextView(ArrayList<Integer> savePath){
         // 기존 5개 동선 데이터 그대로 보여주기
-        switch (savePath.size()){
-            case 1:
-                pathDialog.viewBinding.spinnerBuildingFirst.setSelection(post.getSavePath().get(0));
-                binding.tvPath.setText(pathDialog.viewBinding.spinnerBuildingFirst.getSelectedItem().toString());
-                break;
-            case 2:
-                pathDialog.viewBinding.spinnerBuildingFirst.setSelection(post.getSavePath().get(0));
-                pathDialog.viewBinding.spinnerBuildingSecond.setSelection(post.getSavePath().get(1));
-                binding.tvPath.setText(pathDialog.viewBinding.spinnerBuildingFirst.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingSecond.getSelectedItem().toString());
-                break;
-            case 3:
-                pathDialog.viewBinding.spinnerBuildingFirst.setSelection(post.getSavePath().get(0));
-                pathDialog.viewBinding.spinnerBuildingSecond.setSelection(post.getSavePath().get(1));
-                pathDialog.viewBinding.spinnerBuildingThird.setSelection(post.getSavePath().get(2));
-                binding.tvPath.setText(pathDialog.viewBinding.spinnerBuildingFirst.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingSecond.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingThird.getSelectedItem().toString());
-                break;
-            case 4:
-                pathDialog.viewBinding.spinnerBuildingFirst.setSelection(post.getSavePath().get(0));
-                pathDialog.viewBinding.spinnerBuildingSecond.setSelection(post.getSavePath().get(1));
-                pathDialog.viewBinding.spinnerBuildingThird.setSelection(post.getSavePath().get(2));
-                pathDialog.viewBinding.spinnerBuildingFourth.setSelection(post.getSavePath().get(3));
-                binding.tvPath.setText(pathDialog.viewBinding.spinnerBuildingFirst.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingSecond.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingThird.getSelectedItem().toString()
-                        +"-"+pathDialog.viewBinding.spinnerBuildingFourth.getSelectedItem().toString());
-                break;
-            case 5:
-                pathDialog.viewBinding.spinnerBuildingFirst.setSelection(post.getSavePath().get(0));
-                pathDialog.viewBinding.spinnerBuildingSecond.setSelection(post.getSavePath().get(1));
-                pathDialog.viewBinding.spinnerBuildingThird.setSelection(post.getSavePath().get(2));
-                pathDialog.viewBinding.spinnerBuildingFourth.setSelection(post.getSavePath().get(3));
-                pathDialog.viewBinding.spinnerBuildingFifth.setSelection(post.getSavePath().get(4));
-                binding.tvPath.setText(pathDialog.viewBinding.spinnerBuildingFirst.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingSecond.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingThird.getSelectedItem().toString()
-                        +"-"+pathDialog.viewBinding.spinnerBuildingFourth.getSelectedItem().toString()+"-"+pathDialog.viewBinding.spinnerBuildingFifth.getSelectedItem().toString());
-                break;
-            default:
-                break;
+        String[] nameList = getResources().getStringArray(R.array.gachon_globalcampus_building2);
+        StringBuilder pathStr = new StringBuilder();
+
+        int i = 0;
+        for(int path : savePath) {
+            if(i != savePath.size() - 1) {
+                pathStr.append(nameList[path] + " - ");
+            }
+            else {
+                pathStr.append(nameList[path]);
+            }
+            i++;
         }
+        binding.tvPath.setText(pathStr.toString());
     }
 
     @Override
