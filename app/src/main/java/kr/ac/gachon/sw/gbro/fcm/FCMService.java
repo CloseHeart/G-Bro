@@ -98,7 +98,7 @@ public class FCMService extends FirebaseMessagingService {
                 // 채팅 Intent
                 Intent chatIntent = new Intent(FCMService.this, ChatActivity.class);
                 chatIntent.putExtra("chatid", data.get("chatId"));
-                chatIntent.putExtra("targetid", data.get("userId"));
+                chatIntent.putExtra("targetid", userId);
                 PendingIntent chatPIntent = PendingIntent.getActivity(this, 0, chatIntent, PendingIntent.FLAG_ONE_SHOT);
 
                 // Profile이 NULL이 아니라면

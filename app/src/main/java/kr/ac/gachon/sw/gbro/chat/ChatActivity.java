@@ -217,6 +217,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()) {
                             myUserdata = task.getResult().toObject(User.class);
+                            myUserdata.setUserId(task.getResult().getId());
                         }
                         else {
                             Log.w(this.getClass().getSimpleName(), "Snapshot Data NULL!");
@@ -244,12 +245,12 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
         responseBodyCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                Log.d(this.getClass().getSimpleName(),"Succcess");
+                Log.d(ChatActivity.this.getClass().getSimpleName(),"Success");
             }
 
             @Override
             public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
-                Log.e(this.getClass().getSimpleName(), "Failed!", t);
+                Log.e(ChatActivity.this.getClass().getSimpleName(), "Failed!", t);
             }
         });
     }
