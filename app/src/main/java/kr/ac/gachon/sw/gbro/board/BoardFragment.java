@@ -190,7 +190,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                     for(DocumentChange change : changeList) {
                         // Post로 변환
                         Post postData = change.getDocument().toObject(Post.class);
-
+                        postData.setPostId(change.getDocument().getId());
                         if(searchName != null && !searchName.trim().isEmpty()) {
                             if (postData.getTitle().contains(searchName)) {
                                 boardAdapter.addItem(postData);
