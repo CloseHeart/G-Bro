@@ -52,7 +52,8 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".setting.MyPostActivity" />
         <activity android:name=".chat.ChatListActivity" />
-        <activity android:name=".chat.ChatActivity" />
+        <activity android:name=".chat.ChatActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

@@ -2,14 +2,10 @@ package kr.ac.gachon.sw.gbro.board;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,37 +14,27 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TimePicker;
+
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.MarginPageTransformer;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.UploadTask;
-import com.google.type.DateTime;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
@@ -57,6 +43,7 @@ import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
+import kr.ac.gachon.sw.gbro.util.PathDialog;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
@@ -67,6 +54,9 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
     private AddImageAdapter addImageAdapter;
     private RecyclerView addImageRecyclerView;
     private LoadingDialog loadingDialog;
+    private PathDialog pathDialog; // 커스텀 다이얼로그
+    private Button btn_path;
+    private ArrayList<Integer> pathList;
 
     @Override
     protected ActivityWriteBinding getBinding() {
@@ -82,8 +72,9 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.write);
         }
-
-        loadingDialog = new LoadingDialog(this);
+        btn_path = binding.btnPath;
+        loadingDialog = new LoadingDialog(this);  // Dialog 초기화
+        pathDialog = new PathDialog(this);        // Dialog 초기화
 
         // 이미지 추가 RecyclerView 설정
         setAddImageRecyclerView();
@@ -96,6 +87,18 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             binding.rvPhoto.setEnabled(false);
             loadOriginalData();
         }
+        else {
+            post = new Post();
+        }
+
+        // 경로 선택 버튼을 누른다면
+        btn_path.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 경로 선택 dialog 띄움.
+                showPathDialog();
+            }
+        });
     }
 
     @Override
@@ -217,7 +220,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
-                        Toast.makeText(getApplicationContext(), R.string.post_remove_fail, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.post_remove_success, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                     else{
@@ -235,7 +238,8 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         binding.etTitle.setText(post.getTitle());
         binding.etContent.setText(post.getContent());
         binding.spinnerBuilding.setSelection(post.getSummaryBuildingType());
-        binding.spinnerPosttype.setSelection(post.getType());
+        binding.spinnerPosttype.setSelection(post.getType() - 1);
+        showPathTextView(post.getSavePath());
     }
 
     /**
@@ -288,6 +292,122 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         }
     }
 
+    /**
+     * 경로 선택을 위한 path dialog를 보여준다
+     * @author Taehyun Park
+     */
+    public void showPathDialog(){
+        pathDialog.show();
+        // 없음을 선택한다면 아래 스피너는 선택 못하게
+        pathDialog.viewBinding.spinnerBuildingFirst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+                if(parent.getItemAtPosition(position).toString().equals("없음")){
+                    pathDialog.viewBinding.spinnerBuildingSecond.setEnabled(false);
+                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(false);
+                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(false);
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
+                }else{
+                    pathDialog.viewBinding.spinnerBuildingSecond.setEnabled(true);
+                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(true);
+                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(true);
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+        pathDialog.viewBinding.spinnerBuildingSecond.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+                if(parent.getItemAtPosition(position).toString().equals("없음")){
+                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(false);
+                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(false);
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
+                }else{
+                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(true);
+                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(true);
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+        pathDialog.viewBinding.spinnerBuildingThird.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+                if(parent.getItemAtPosition(position).toString().equals("없음")){
+                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(false);
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
+                }else{
+                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(true);
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+        pathDialog.viewBinding.spinnerBuildingFourth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+                if(parent.getItemAtPosition(position).toString().equals("없음")){
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
+                }else{
+                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+        // 완료 버튼을 누른다면
+        pathDialog.viewBinding.btnPathFinish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pathList = new ArrayList<>();
+
+                Spinner[] spinnerItem = { pathDialog.viewBinding.spinnerBuildingFirst,
+                        pathDialog.viewBinding.spinnerBuildingSecond,
+                        pathDialog.viewBinding.spinnerBuildingThird,
+                        pathDialog.viewBinding.spinnerBuildingFourth,
+                        pathDialog.viewBinding.spinnerBuildingFifth};
+
+                for(Spinner item : spinnerItem) {
+                    // 없음 선택한거 아니면
+                    if(item.getSelectedItemPosition() != 25) {
+                        Log.d(WriteActivity.this.getClass().getSimpleName(), "Added " + item.getSelectedItemPosition());
+                        pathList.add(item.getSelectedItemPosition());
+                    }
+                    // 없음 선택시
+                    else {
+                        break;
+                    }
+                }
+
+                post.setSavePath(pathList);
+                showPathTextView(pathList);
+                pathDialog.dismiss(); // 다이얼로그 닫기
+            }
+        });
+    }
+
+    private void showPathTextView(ArrayList<Integer> savePath){
+        // 기존 5개 동선 데이터 그대로 보여주기
+        String[] nameList = getResources().getStringArray(R.array.gachon_globalcampus_building2);
+        StringBuilder pathStr = new StringBuilder();
+
+        int i = 0;
+        for(int path : savePath) {
+            if(i != savePath.size() - 1) {
+                pathStr.append(nameList[path] + " - ");
+            }
+            else {
+                pathStr.append(nameList[path]);
+            }
+            i++;
+        }
+        binding.tvPath.setText(pathStr.toString());
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -336,7 +456,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
                                                                         binding.etContent.getText().toString(),
                                                                         photoUrl,
                                                                         binding.spinnerBuilding.getSelectedItemPosition(),
-                                                                        new ArrayList<GeoPoint>(),
+                                                                        pathList,
                                                                         Auth.getCurrentUser().getUid(),
                                                                         new Timestamp(new Date()), false);
 

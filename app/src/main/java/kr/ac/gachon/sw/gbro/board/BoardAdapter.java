@@ -15,7 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemBoardBinding;
@@ -121,6 +120,21 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         postList.clear();
         postList.addAll(post);
         notifyDataSetChanged();
+    }
+
+    /**
+     * 포스트 삭제
+     * @param post 삭제 대상 Post
+      */
+    public void removeItem(Post post) {
+        for(Post p : postList) {
+            if(p.getPostId().equals(post.getPostId())) {
+                int removedIdx = postList.indexOf(p);
+                postList.remove(p);
+                notifyItemRemoved(removedIdx);
+                break;
+            }
+        }
     }
 
     /**

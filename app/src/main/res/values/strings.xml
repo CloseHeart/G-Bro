@@ -56,7 +56,10 @@
     <string name="post_time">시각</string>
     <string name="post_type">게시글 종류</string>
     <string name="post_location">장소</string>
+    <string name="post_path">선택한 경로가 표시됩니다.</string>
     <string name="post_itemtype">물건 종류</string>
+    <string name="post_path_selection">경로 선택</string>
+    <string name="post_path_selection_done">완료</string>
     <string name="post_photo">관련 사진</string>
     <string name="post_content">내용을 입력하세요.</string>
     <string name="post_cancel_dialog_msg">취소하면 작성한 모든 정보가 삭제됩니다.\n글 작성을 정말 취소하시겠습니까?</string>
@@ -66,7 +69,7 @@
     <string name="post_nophoto">하나 이상의 사진을 등록해야 합니다!</string>
     <string name="post_deletephoto_msg">정말 이 사진을 삭제하시겠습니까?</string>
     <string name="post_remove">삭제</string>
-    <string name="remove_success">게시물이 정상적으로 삭제되었습니다.</string>
+    <string name="post_remove_success">게시물이 정상적으로 삭제되었습니다.</string>
     <string name="post_remove_fail">게시물 삭제에 실패하였습니다.</string>
     <string name="post_cantmodifyphoto">사진은 수정할 수 없습니다.</string>
     <string name="post_success">성공적으로 업로드 되었습니다.</string>

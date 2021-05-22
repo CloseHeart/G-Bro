@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -23,13 +22,10 @@ import java.util.List;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
-import kr.ac.gachon.sw.gbro.board.BoardAdapter;
-import kr.ac.gachon.sw.gbro.board.PostContentActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityChatlistBinding;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.model.ChatRoom;
-import kr.ac.gachon.sw.gbro.util.model.Post;
 
 public class ChatListActivity extends BaseActivity<ActivityChatlistBinding> implements ChatListAdapter.onItemClickListener {
     ActionBar actionBar;

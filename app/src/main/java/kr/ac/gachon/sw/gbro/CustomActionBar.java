@@ -1,10 +1,6 @@
 package kr.ac.gachon.sw.gbro;
 
 import android.app.Activity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.AdapterView;
 
 import androidx.appcompat.app.ActionBar;
 

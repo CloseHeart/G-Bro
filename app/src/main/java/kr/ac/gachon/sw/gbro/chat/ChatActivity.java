@@ -2,6 +2,7 @@ package kr.ac.gachon.sw.gbro.chat;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,7 +34,6 @@ import kr.ac.gachon.sw.gbro.fcm.FCMApi;
 import kr.ac.gachon.sw.gbro.fcm.FCMRetrofit;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
-import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMModel;
@@ -59,6 +59,9 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Bundle bundle = getIntent().getExtras();
 
         btn_chat = binding.btnChat;
@@ -76,6 +79,21 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Google 정책에 따라 MenuItem에 Switch 사용하지 않고 if문 사용
+        int itemId = item.getItemId();
+
+        // 저장 버튼
+        if(itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
     /**
      * 어댑터 설정
      */
@@ -86,6 +104,10 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()) {
                             targetUser = task.getResult().toObject(User.class);
+
+                            if(getSupportActionBar() != null)
+                                getSupportActionBar().setTitle(targetUser.getUserNickName());
+
                             targetUser.setUserId(task.getResult().getId());
                             // RecycleView에 LinearLayoutManager 객체 지정
                             binding.recycleViewChat.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
@@ -141,6 +163,12 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                         }
                     }
                 });
+
+        binding.recycleViewChat.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                binding.recycleViewChat.scrollBy(0, oldBottom - bottom);
+            }
+        });
     }
 
     /**
@@ -195,6 +223,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()) {
                             myUserdata = task.getResult().toObject(User.class);
+                            myUserdata.setUserId(task.getResult().getId());
                         }
                         else {
                             Log.w(this.getClass().getSimpleName(), "Snapshot Data NULL!");
@@ -213,7 +242,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
      */
     private void sendNotification(String token, String userNick, String userMsg) {
         NotificationModel notificationModel = new NotificationModel(userNick, userMsg);
-        ChatFCMData chatFCMData = new ChatFCMData("chat", targetUser.getUserProfileImgURL(), targetUser.getUserId());
+        ChatFCMData chatFCMData = new ChatFCMData("chat", chatId, myUserdata.getUserProfileImgURL(), myUserdata.getUserId());
         ChatFCMModel chatFCMModel = new ChatFCMModel(token, notificationModel, chatFCMData);
 
         FCMApi sendChat = FCMRetrofit.getClient(this).create(FCMApi.class);
@@ -222,12 +251,12 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
         responseBodyCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                Log.d(this.getClass().getSimpleName(),"Succcess");
+                Log.d(ChatActivity.this.getClass().getSimpleName(),"Success");
             }
 
             @Override
             public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
-                Log.e(this.getClass().getSimpleName(), "Failed!", t);
+                Log.e(ChatActivity.this.getClass().getSimpleName(), "Failed!", t);
             }
         });
     }

@@ -2,8 +2,6 @@ package kr.ac.gachon.sw.gbro.util.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import kr.ac.gachon.sw.gbro.util.model.NotificationModel;
-
 public class ChatFCMModel {
     @SerializedName("to")
     private String token;
