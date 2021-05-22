@@ -191,7 +191,7 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
      */
     public void drawPath(NaverMap naverMap, ArrayList<Integer> pathArr){
         // Exception
-        if(pathArr.size() > 5) {
+        if(pathArr.size() > 5 || pathArr.size() < 2) {
             return;
         }
 

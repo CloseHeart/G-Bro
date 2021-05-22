@@ -43,7 +43,6 @@ import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.LoadingDialog;
-import kr.ac.gachon.sw.gbro.util.PathDialog;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
@@ -74,8 +73,7 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         }
         btn_path = binding.btnPath;
         loadingDialog = new LoadingDialog(this);  // Dialog 초기화
-        pathDialog = new PathDialog(this);        // Dialog 초기화
-
+               // Dialog 초기화
         // 이미지 추가 RecyclerView 설정
         setAddImageRecyclerView();
 
@@ -84,11 +82,14 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         if(bundle != null) {
             isModify = true;
             post = bundle.getParcelable("post");
+            pathList = post.getSavePath();
+            pathDialog = new PathDialog(this, pathList);
             binding.rvPhoto.setEnabled(false);
             loadOriginalData();
         }
         else {
             post = new Post();
+            pathDialog = new PathDialog(this);
         }
 
         // 경로 선택 버튼을 누른다면
@@ -97,6 +98,16 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             public void onClick(View view) {
                 // 경로 선택 dialog 띄움.
                 showPathDialog();
+            }
+        });
+
+        // PathDialog 닫혔을 때 이벤트 처리
+        pathDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                pathList = pathDialog.getPathList();
+                post.setSavePath(pathList);
+                showPathTextView(pathList);
             }
         });
 
@@ -260,7 +271,8 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
         binding.etContent.setText(post.getContent());
         binding.spinnerBuilding.setSelection(post.getSummaryBuildingType());
         binding.spinnerPosttype.setSelection(post.getType() - 1);
-        showPathTextView(post.getSavePath());
+
+        if(post.getSavePath() != null)  showPathTextView(post.getSavePath());
     }
 
     /**
@@ -317,101 +329,11 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
      * 경로 선택을 위한 path dialog를 보여준다
      * @author Taehyun Park
      */
-    public void showPathDialog(){
+    public void showPathDialog() {
         pathDialog.show();
-        // 없음을 선택한다면 아래 스피너는 선택 못하게
-        pathDialog.viewBinding.spinnerBuildingFirst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                if(parent.getItemAtPosition(position).toString().equals("없음")){
-                    pathDialog.viewBinding.spinnerBuildingSecond.setEnabled(false);
-                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(false);
-                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(false);
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
-                }else{
-                    pathDialog.viewBinding.spinnerBuildingSecond.setEnabled(true);
-                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(true);
-                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(true);
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
-        });
-        pathDialog.viewBinding.spinnerBuildingSecond.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                if(parent.getItemAtPosition(position).toString().equals("없음")){
-                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(false);
-                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(false);
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
-                }else{
-                    pathDialog.viewBinding.spinnerBuildingThird.setEnabled(true);
-                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(true);
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
-        });
-        pathDialog.viewBinding.spinnerBuildingThird.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                if(parent.getItemAtPosition(position).toString().equals("없음")){
-                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(false);
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
-                }else{
-                    pathDialog.viewBinding.spinnerBuildingFourth.setEnabled(true);
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
-        });
-        pathDialog.viewBinding.spinnerBuildingFourth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                if(parent.getItemAtPosition(position).toString().equals("없음")){
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(false);
-                }else{
-                    pathDialog.viewBinding.spinnerBuildingFifth.setEnabled(true);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
-        });
-        // 완료 버튼을 누른다면
-        pathDialog.viewBinding.btnPathFinish.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pathList = new ArrayList<>();
-
-                Spinner[] spinnerItem = { pathDialog.viewBinding.spinnerBuildingFirst,
-                        pathDialog.viewBinding.spinnerBuildingSecond,
-                        pathDialog.viewBinding.spinnerBuildingThird,
-                        pathDialog.viewBinding.spinnerBuildingFourth,
-                        pathDialog.viewBinding.spinnerBuildingFifth};
-
-                for(Spinner item : spinnerItem) {
-                    // 없음 선택한거 아니면
-                    if(item.getSelectedItemPosition() != 25) {
-                        Log.d(WriteActivity.this.getClass().getSimpleName(), "Added " + item.getSelectedItemPosition());
-                        pathList.add(item.getSelectedItemPosition());
-                    }
-                    // 없음 선택시
-                    else {
-                        break;
-                    }
-                }
-
-                post.setSavePath(pathList);
-                showPathTextView(pathList);
-                pathDialog.dismiss(); // 다이얼로그 닫기
-            }
-        });
     }
 
-    private void showPathTextView(ArrayList<Integer> savePath){
+    private void showPathTextView(ArrayList<Integer> savePath) {
         // 기존 5개 동선 데이터 그대로 보여주기
         String[] nameList = getResources().getStringArray(R.array.gachon_globalcampus_building2);
         StringBuilder pathStr = new StringBuilder();

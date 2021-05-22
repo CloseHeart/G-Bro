@@ -137,6 +137,22 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         }
     }
 
+
+    /**
+     * 아이템 변경
+     * @param post 변경 대상 Post (같은 ID가 있어야만 변경됨)
+     */
+    public void changeItem(Post post) {
+        for(Post p : postList) {
+            if(p.getPostId().equals(post.getPostId())) {
+                int pos = postList.indexOf(p);
+                postList.set(pos, post);
+                notifyItemChanged(pos);
+                break;
+            }
+        }
+    }
+
     /**
      * 모든 List 정보 삭제
      * @author Minjae Seon
