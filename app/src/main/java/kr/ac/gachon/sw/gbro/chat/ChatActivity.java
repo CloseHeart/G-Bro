@@ -152,7 +152,6 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
                                                             if(targetUser.getFcmToken() != null) {
                                                                 // 알림 전송
                                                                 sendNotification(targetUser.getFcmToken(), myUserdata.getUserNickName(), edit_chat.getText().toString().trim());
-                                                                sendNotification(myUserdata.getFcmToken(), targetUser.getUserNickName(), edit_chat.getText().toString().trim());
                                                             }
                                                             else {
                                                                 Log.w(ChatActivity.this.getClass().getSimpleName(), "Target FCM Token NULL");
