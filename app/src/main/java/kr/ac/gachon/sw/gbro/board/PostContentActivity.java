@@ -125,9 +125,15 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         vpImageSlide.setAdapter(postContentAdapter);
         new TabLayoutMediator(tlImageSlide, vpImageSlide, ((tab, position) -> {})).attach();
 
+        // 경로 가져오기
         ArrayList<Integer> mapPath = contentPost.getSavePath();
-        MapFragment fragment = MapFragment.getPathInstance(mapPath);
-        postContentAdapter.addNewFragment(fragment);
+
+        // 경로 null 아니면
+        if(mapPath != null) {
+            // 경로 지도 추가
+            MapFragment fragment = MapFragment.getPathInstance(mapPath);
+            postContentAdapter.addNewFragment(fragment);
+        }
 
         // 사진 가져오기
         for(String photoUrl : contentPost.getPhotoUrlList()) {

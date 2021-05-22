@@ -99,6 +99,28 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
                 showPathDialog();
             }
         });
+
+        // Post Type 선택 Item 이벤트
+        binding.spinnerPosttype.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // 습득물 선택시
+                if(position == 1) {
+                    // 경로 선택 비활성화
+                    btn_path.setVisibility(View.GONE);
+                    binding.tvPath.setVisibility(View.GONE);
+                }
+                // 분실물 선택시
+                else {
+                    // 경로 선택 활성화
+                    btn_path.setVisibility(View.VISIBLE);
+                    binding.tvPath.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
     }
 
     @Override
@@ -120,7 +142,6 @@ public class WriteActivity extends BaseActivity<ActivityWriteBinding> implements
             return true;
         }
         else if(itemId == R.id.write_remove) {
-            // TODO : 삭제 기능 구현, 현재 postId
             removePost();
             return true;
         }
