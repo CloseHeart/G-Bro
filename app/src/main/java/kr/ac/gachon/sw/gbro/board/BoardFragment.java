@@ -139,7 +139,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                                         }
                                     }
                                     boardAdapter.notifyDataSetChanged();
-                                    last = t.getResult().getDocumentChanges().get(t.getResult().getDocumentChanges().size() - 1).getDocument();
+                                    if(t.getResult().getDocumentChanges().size() > 0) last = t.getResult().getDocumentChanges().get(t.getResult().getDocumentChanges().size() - 1).getDocument();
                                 }
 
                                 if (t.getResult().size() < 20) {
@@ -198,7 +198,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                         }
                     }
 
-                    last = value.getDocumentChanges().get(value.getDocumentChanges().size() - 1).getDocument();
+                    if(value.getDocumentChanges().size() > 0) last = value.getDocumentChanges().get(value.getDocumentChanges().size() - 1).getDocument();
 
                     // Refresh
                     boardAdapter.notifyDataSetChanged();
