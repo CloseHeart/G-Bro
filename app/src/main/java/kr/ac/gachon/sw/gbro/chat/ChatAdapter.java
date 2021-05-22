@@ -6,9 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,12 +17,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 
 import kr.ac.gachon.sw.gbro.R;
+import kr.ac.gachon.sw.gbro.databinding.MyChatMessageBinding;
+import kr.ac.gachon.sw.gbro.databinding.OtherChatMessageBinding;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Util;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.User;
 
-// TODO : ViewBinding으로 전환
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<ChatData> items = new ArrayList<ChatData>();
     private Context context;
@@ -40,36 +38,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // 내 채팅 홀더
     public static class ChatMyViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextView;
-        TextView dateTextView;
+        private MyChatMessageBinding binding;
 
-        public ChatMyViewHolder(@NonNull final View itemView){
-            super(itemView);
-            messageTextView = itemView.findViewById(R.id.my_chatmessage_tv_message);
-            dateTextView = itemView.findViewById(R.id.my_chatmessage_tv_date);
+        public ChatMyViewHolder(@NonNull MyChatMessageBinding binding){
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 
     // 다른 사람 채팅 홀더
-    public static class ChatOtherViewHolder extends  RecyclerView.ViewHolder{
-        LinearLayout linearLayout;
-        TextView nicknameTextView;
-        TextView dateTextView;
-        TextView messageTextView;
-        ImageView profileUrl;   // 프로필 사진 url
+    public static class ChatOtherViewHolder extends RecyclerView.ViewHolder{
+        private OtherChatMessageBinding binding;
 
-        public ChatOtherViewHolder (@NonNull final View itemView) {
-            super(itemView);
-            linearLayout = itemView.findViewById(R.id.other_chat_message_item_linear);
-            nicknameTextView = itemView.findViewById(R.id.other_chatmessage_tv_nickname);
-            dateTextView = itemView.findViewById(R.id.other_chatmessage_tv_date);
-            messageTextView = itemView.findViewById(R.id.other_chatmessage_tv_message);
-            profileUrl = itemView.findViewById(R.id.other_profile_url);
+        public ChatOtherViewHolder (@NonNull OtherChatMessageBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 
-
-    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
@@ -77,11 +63,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case 0:
                 Log.d("ViewType", "ViewType : " + viewType);
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_chat_message, parent, false);
-                return new ChatMyViewHolder(view);
+                return new ChatMyViewHolder(MyChatMessageBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
             case 1:
                 Log.d("ViewType", "ViewType : " + viewType);
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.other_chat_message, parent, false);
-                return new ChatOtherViewHolder(view);
+                return new ChatOtherViewHolder(OtherChatMessageBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
         }
         return null;
     }
@@ -93,15 +79,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if(model.getUserId().equals(mUid)){
             ChatMyViewHolder chatMyViewHolder = (ChatMyViewHolder) holder;
-            ((ChatMyViewHolder) holder).messageTextView.setText(model.getMessage());
-            ((ChatMyViewHolder) holder).dateTextView.setText(Util.timeStamptoDetailString(model.getDate()));
+            ((ChatMyViewHolder) holder).binding.myChatmessageTvMessage.setText(model.getMessage());
+            ((ChatMyViewHolder) holder).binding.myChatmessageTvDate.setText(Util.timeStamptoDetailString(model.getDate()));
         }
         else {
             ChatOtherViewHolder otherViewHolder = (ChatOtherViewHolder) holder;
-            ((ChatOtherViewHolder) holder).nicknameTextView.setText(targetUser.getUserNickName());
+            ((ChatOtherViewHolder) holder).binding.otherChatmessageTvNickname.setText(targetUser.getUserNickName());
 
             if(targetUserProfile != null) {
-                ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
+                ((ChatOtherViewHolder) holder).binding.otherProfileUrl.setImageBitmap(targetUserProfile);
             }
             else {
                 if(targetUser.getUserProfileImgURL() != null) {
@@ -111,10 +97,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 public void onComplete(@NonNull Task<byte[]> task) {
                                     if (task.isSuccessful()) {
                                         targetUserProfile = Util.byteArrayToBitmap(task.getResult());
-                                        ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
+                                        ((ChatOtherViewHolder) holder).binding.otherProfileUrl.setImageBitmap(targetUserProfile);
                                     } else {
                                         targetUserProfile = Util.drawableToBitmap(context, R.drawable.profile);
-                                        ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
+                                        ((ChatOtherViewHolder) holder).binding.otherProfileUrl.setImageBitmap(targetUserProfile);
                                     }
 
                                 }
@@ -122,11 +108,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 else {
                     targetUserProfile = Util.drawableToBitmap(context, R.drawable.profile);
-                    ((ChatOtherViewHolder) holder).profileUrl.setImageBitmap(targetUserProfile);
+                    ((ChatOtherViewHolder) holder).binding.otherProfileUrl.setImageBitmap(targetUserProfile);
                 }
             }
-            ((ChatOtherViewHolder) holder).messageTextView.setText(model.getMessage());
-            ((ChatOtherViewHolder) holder).dateTextView.setText(Util.timeStamptoDetailString(model.getDate()));
+            ((ChatOtherViewHolder) holder).binding.otherChatmessageTvMessage.setText(model.getMessage());
+            ((ChatOtherViewHolder) holder).binding.otherChatmessageTvDate.setText(Util.timeStamptoDetailString(model.getDate()));
         }
     }
 

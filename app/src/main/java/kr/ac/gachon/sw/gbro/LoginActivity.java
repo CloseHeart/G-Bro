@@ -28,6 +28,7 @@ import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityLoginBinding;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.Preferences;
 import kr.ac.gachon.sw.gbro.util.Util;
 
 import static kr.ac.gachon.sw.gbro.util.Util.RC_SIGN_IN;
@@ -35,6 +36,7 @@ import static kr.ac.gachon.sw.gbro.util.Util.RC_SIGN_IN;
 public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
+    private Preferences prefs;
 
     @Override
     protected ActivityLoginBinding getBinding() {
@@ -49,6 +51,9 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
         // Firebase Auth Instance
         mAuth = Auth.getFirebaseAuthInstance();
+
+        // SharedPreferences
+        prefs = new Preferences(getApplicationContext());
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +71,11 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
         // 현재 유저가 null 아니면
         if(Auth.getCurrentUser() != null) {
+            // CurrentChat이 null이 아니라면 null로 설정
+            if(prefs.getString("currentchat", null) != null) {
+                prefs.getString("currentchat", null);
+            }
+
             // 메인으로
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();

@@ -26,13 +26,21 @@ import kr.ac.gachon.sw.gbro.chat.ChatActivity;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.Preferences;
 import kr.ac.gachon.sw.gbro.util.Util;
 
 public class FCMService extends FirebaseMessagingService {
     private final String LOG_TAG = this.getClass().getSimpleName();
-
-    private static final HashMap<String, Integer> msgList = new HashMap<>();
+    private static Preferences prefs;
+    private static HashMap<String, Integer> msgList;
     private static int lastMsgNum = 1;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        prefs = new Preferences(getApplicationContext());
+        msgList = new HashMap<>();
+    }
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
@@ -87,47 +95,53 @@ public class FCMService extends FirebaseMessagingService {
         if(data.get("type") != null) {
             // Type이 chat이고 사용자가 null이 아니라면
             if(data.get("type").equals("chat") && Auth.getCurrentUser() != null) {
-                String userId = data.get("userId");
-                if(!msgList.containsKey(userId)) {
-                    msgList.put(userId, lastMsgNum);
-                    lastMsgNum++;
-                }
+                // 현재 Chat ID가 null이 아니라면
+                String currentChatId = prefs.getString("currentchat", null);
+                if(currentChatId != null && !currentChatId.equals(data.get("chatId"))) {
 
-                Log.d(LOG_TAG, "Msg by " + userId + "/ ID : " + msgList.get(userId));
-
-                // 채팅 Intent
-                Intent chatIntent = new Intent(FCMService.this, ChatActivity.class);
-                chatIntent.putExtra("chatid", data.get("chatId"));
-                chatIntent.putExtra("targetid", userId);
-                PendingIntent chatPIntent = PendingIntent.getActivity(this, 0, chatIntent, PendingIntent.FLAG_ONE_SHOT);
-
-                // Profile이 NULL이 아니라면
-                if(data.get("profile") != null) {
-                    // Profile에 담긴 URL로 데이터 가져와서 Notify
-                    CloudStorage.getImageFromURL(data.get("profile"))
-                            .addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                                @Override
-                                public void onComplete(@NonNull Task<byte[]> task) {
-                                    if(userId != null && msgList.get(userId) != null) {
-                                        notiBuilder.setLargeIcon(Util.byteArrayToBitmap(task.getResult()));
-                                        notiBuilder.setContentIntent(chatPIntent);
-                                        notiManager.notify(msgList.get(userId), notiBuilder.build());
-                                    }
-                                    else {
-                                        Log.w(LOG_TAG, "User ID Not Found!");
-                                    }
-                                }
-                            });
-                }
-                // 기본 아이콘으로 Notify
-                else {
-                    if(userId != null && msgList.get(userId) != null) {
-                        notiBuilder.setLargeIcon(Util.drawableToBitmap(getApplicationContext(), R.drawable.profile));
-                        notiBuilder.setContentIntent(chatPIntent);
-                        notiManager.notify(msgList.get(userId), notiBuilder.build());
+                    // User ID Check
+                    String userId = data.get("userId");
+                    if(!msgList.containsKey(userId)) {
+                        msgList.put(userId, lastMsgNum);
+                        lastMsgNum++;
                     }
+
+                    Log.d(LOG_TAG, "Msg by " + userId + "/ ID : " + msgList.get(userId));
+
+                    // 채팅 Intent
+                    Intent chatIntent = new Intent(FCMService.this, ChatActivity.class);
+                    chatIntent.putExtra("chatid", data.get("chatId"));
+                    chatIntent.putExtra("targetid", userId);
+                    PendingIntent chatPIntent = PendingIntent.getActivity(this, 0, chatIntent, PendingIntent.FLAG_ONE_SHOT);
+
+                    // Profile이 NULL이 아니라면
+                    if(data.get("profile") != null) {
+                        // Profile에 담긴 URL로 데이터 가져와서 Notify
+                        CloudStorage.getImageFromURL(data.get("profile"))
+                                .addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<byte[]> task) {
+                                        if(userId != null && msgList.get(userId) != null) {
+                                            notiBuilder.setLargeIcon(Util.byteArrayToBitmap(task.getResult()));
+                                            notiBuilder.setContentIntent(chatPIntent);
+                                            notiManager.notify(msgList.get(userId), notiBuilder.build());
+                                        }
+                                        else {
+                                            Log.w(LOG_TAG, "User ID Not Found!");
+                                        }
+                                    }
+                                });
+                    }
+                    // 기본 아이콘으로 Notify
                     else {
-                        Log.w(LOG_TAG, "User ID Not Found!");
+                        if(userId != null && msgList.get(userId) != null) {
+                            notiBuilder.setLargeIcon(Util.drawableToBitmap(getApplicationContext(), R.drawable.profile));
+                            notiBuilder.setContentIntent(chatPIntent);
+                            notiManager.notify(msgList.get(userId), notiBuilder.build());
+                        }
+                        else {
+                            Log.w(LOG_TAG, "User ID Not Found!");
+                        }
                     }
                 }
             }

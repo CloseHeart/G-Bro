@@ -125,13 +125,15 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         vpImageSlide.setAdapter(postContentAdapter);
         new TabLayoutMediator(tlImageSlide, vpImageSlide, ((tab, position) -> {})).attach();
 
-        // TODO : MapFragment 추가 - 아래는 TEST CODE
-        ArrayList<Integer> testMapPath = new ArrayList<>();
-        testMapPath.add(0);
-        testMapPath.add(1);
-        testMapPath.add(2);
-        MapFragment fragment = MapFragment.getPathInstance(testMapPath);
-        postContentAdapter.addNewFragment(fragment);
+        // 경로 가져오기
+        ArrayList<Integer> mapPath = contentPost.getSavePath();
+
+        // 경로 null 아니면
+        if(mapPath != null) {
+            // 경로 지도 추가
+            MapFragment fragment = MapFragment.getPathInstance(mapPath);
+            postContentAdapter.addNewFragment(fragment);
+        }
 
         // 사진 가져오기
         for(String photoUrl : contentPost.getPhotoUrlList()) {

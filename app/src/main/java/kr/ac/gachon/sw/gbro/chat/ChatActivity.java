@@ -34,6 +34,7 @@ import kr.ac.gachon.sw.gbro.fcm.FCMApi;
 import kr.ac.gachon.sw.gbro.fcm.FCMRetrofit;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.Preferences;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMModel;
@@ -49,6 +50,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
     private Button btn_chat;
     private User myUserdata;
     private User targetUser;
+    private Preferences prefs;
 
     @Override
     protected ActivityChattingBinding getBinding() {
@@ -62,6 +64,8 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
         if(getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        prefs = new Preferences(getApplicationContext());
+
         Bundle bundle = getIntent().getExtras();
 
         btn_chat = binding.btnChat;
@@ -70,6 +74,8 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
         if(bundle != null) {
             chatId = bundle.getString("chatid");
             targetId = bundle.getString("targetid");
+            prefs.setString("currentchat", chatId);
+
             getMyData();
             setAdapter();
         }
@@ -77,6 +83,12 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        prefs.setString("currentchat", null);
+        super.onDestroy();
     }
 
     @Override
