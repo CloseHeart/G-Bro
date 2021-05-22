@@ -80,7 +80,9 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        postListener.remove();
+        if(postListener != null) {
+            postListener.remove();
+        }
     }
 
     /**

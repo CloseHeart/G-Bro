@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -28,9 +29,10 @@ import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.model.ChatRoom;
 
 public class ChatListActivity extends BaseActivity<ActivityChatlistBinding> implements ChatListAdapter.onItemClickListener {
-    ActionBar actionBar;
-    RecyclerView rvChatList;
-    ChatListAdapter chatListAdapter;
+    private ActionBar actionBar;
+    private RecyclerView rvChatList;
+    private ChatListAdapter chatListAdapter;
+    private ListenerRegistration chatRoomListener;
 
     @Override
     protected ActivityChatlistBinding getBinding() {
@@ -63,6 +65,14 @@ public class ChatListActivity extends BaseActivity<ActivityChatlistBinding> impl
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(chatRoomListener != null) {
+            chatRoomListener.remove();
+        }
+    }
+
     /**
      * Adapter 설정
      * @author Minjae Seon
@@ -75,7 +85,7 @@ public class ChatListActivity extends BaseActivity<ActivityChatlistBinding> impl
         chatListAdapter = new ChatListAdapter(this, chatRoomList, this);
         rvChatList.setAdapter(chatListAdapter);
 
-        Firestore.getMyChatRoom(Auth.getCurrentUser().getUid())
+        chatRoomListener = Firestore.getMyChatRoom(Auth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
