@@ -1,14 +1,21 @@
 package kr.ac.gachon.sw.gbro.map;
 
+import android.Manifest;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,13 +25,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
+import com.naver.maps.map.util.FusedLocationSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,13 +45,42 @@ import kr.ac.gachon.sw.gbro.databinding.FragmentMapBinding;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.model.Post;
 
-public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnMapReadyCallback {
+public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnMapReadyCallback{
     private ArrayList<Marker> markers = null;
 
     private com.naver.maps.map.MapFragment mapFragment;
     private ArrayList<Integer> path = null;
     private boolean isMain = false;
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
+    private FusedLocationSource locationSource;
+    private NaverMap naverMap;
+    private double lat,lon;
+
+    @Override
+    public void onMapReady(@NonNull NaverMap naverMap) {
+        this.naverMap = naverMap;
+        naverMap.setLocationSource(locationSource);
+        naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
+
+        naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
+            @Override
+            public void onLocationChange(@NonNull Location location) {
+                lat = location.getLatitude();
+                lon = location.getLongitude();
+            }
+        });
+    }
+
+    public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions,@NonNull int[] grantResults){
+        if(locationSource.onRequestPermissionsResult(requestCode,permissions,grantResults)){
+            if(!locationSource.isActivated()){
+                naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+    }
     @Override
     protected FragmentMapBinding getBinding() {
         return FragmentMapBinding.inflate(getLayoutInflater());
@@ -67,14 +106,15 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        locationSource= new FusedLocationSource(this,LOCATION_PERMISSION_REQUEST_CODE);
         if (getArguments() != null) {
             path = getArguments().getIntegerArrayList("path");
             isMain = getArguments().getBoolean("isMain");
         }
+
+
     }
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setMap();
@@ -119,7 +159,9 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
                 if(isMain) {
                     Log.d("MapFragment", "Main Map");
                     drawMarker(naverMap);
+                    onMapReady(naverMap);
                 }
+
             });
         }
     }
@@ -207,11 +249,6 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
         path.setCoords(coordinates);
 
         path.setMap(naverMap);
-    }
-
-
-    @Override
-    public void onMapReady(@NonNull NaverMap naverMap) {
     }
 
     /**
