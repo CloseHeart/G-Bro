@@ -205,6 +205,7 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         binding.postUploadtime.setText(Util.timeStamptoDetailString(contentPost.getWriteTime()));
         binding.postLocation.setText(contentPost.getSummaryBuildingName(getApplicationContext()));
 
+        setChat();
         // 본인이 작성자면
         if(contentPost.getWriterId().equals(Auth.getCurrentUser().getUid())) {
             // 채팅버튼 삭제
