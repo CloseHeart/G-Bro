@@ -219,6 +219,29 @@ public class Firestore {
         }
     }
 
+    /**
+     * 해당하는 건물에 완료되지 않은 모든 Post를 불러온다
+     * @param postType Post Type
+     *                 0 - 전체
+     *                 1 - 분실물
+     *                 2 - 습득물
+     * @param buildingNum 건물 번호
+     * @return Task<QuerySnapshot>
+     */
+    public static Task<QuerySnapshot> getUnfinishedBuildingPost(int postType, int buildingNum) {
+        if(postType == 0) {
+            return getFirestoreInstance().collection("post")
+                    .whereEqualTo("summaryBuildingType", buildingNum)
+                    .whereEqualTo("finished", false).get();
+        }
+        else {
+            return getFirestoreInstance().collection("post")
+                    .whereEqualTo("summaryBuildingType", buildingNum)
+                    .whereEqualTo("type", postType)
+                    .whereEqualTo("finished", false).get();
+        }
+    }
+
     public static Query getMyChatRoom(String userId) {
          return getFirestoreInstance().collection("chatRoom").whereArrayContains("chatUserId", userId);
     }
