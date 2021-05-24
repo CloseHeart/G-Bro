@@ -198,6 +198,10 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
                             Log.d(BoardFragment.this.getClass().getSimpleName(), "Removed Item " + postData.getPostId());
                             boardAdapter.removeItem(postData);
                         }
+                        else if(change.getType() == DocumentChange.Type.MODIFIED) {
+                            Log.d(BoardFragment.this.getClass().getSimpleName(), "Changed Item " + postData.getPostId());
+                            boardAdapter.changeItem(postData);
+                        }
                     }
 
                     if(value.getDocumentChanges().size() > 0) last = value.getDocumentChanges().get(value.getDocumentChanges().size() - 1).getDocument();
