@@ -39,6 +39,7 @@ import kr.ac.gachon.sw.gbro.util.Preferences;
 import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMData;
 import kr.ac.gachon.sw.gbro.util.model.ChatFCMModel;
+import kr.ac.gachon.sw.gbro.util.model.FCMResponse;
 import kr.ac.gachon.sw.gbro.util.model.NotificationModel;
 import kr.ac.gachon.sw.gbro.util.model.User;
 import retrofit2.Callback;
@@ -263,17 +264,17 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
         ChatFCMModel chatFCMModel = new ChatFCMModel(token, notificationModel, chatFCMData);
 
         FCMApi sendChat = FCMRetrofit.getClient(this).create(FCMApi.class);
-        retrofit2.Call<ResponseBody> responseBodyCall = sendChat.sendChatNotification(chatFCMModel);
+        retrofit2.Call<FCMResponse> responseBodyCall = sendChat.sendChatNotification(chatFCMModel);
 
-        responseBodyCall.enqueue(new Callback<ResponseBody>() {
+        responseBodyCall.enqueue(new Callback<FCMResponse>() {
             @Override
-            public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                Log.d(ChatActivity.this.getClass().getSimpleName(),"Success");
+            public void onResponse(@NonNull retrofit2.Call<FCMResponse> call, @NonNull retrofit2.Response<FCMResponse> response) {
+                Log.d(ChatActivity.this.getClass().getSimpleName(),"Success\nMsg : " + response.message() + "\nBody : " + response.toString());
             }
 
             @Override
-            public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
-                Log.e(ChatActivity.this.getClass().getSimpleName(), "Failed!", t);
+            public void onFailure(@NonNull retrofit2.Call<FCMResponse> call, @NonNull Throwable t) {
+                Log.e(ChatActivity.this.getClass().getSimpleName(), "Failed!\nReq Body : " + call.toString(), t);
             }
         });
     }
