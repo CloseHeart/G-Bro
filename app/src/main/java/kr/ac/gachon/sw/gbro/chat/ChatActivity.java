@@ -20,6 +20,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.okhttp.ResponseBody;
@@ -51,6 +52,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
     private User myUserdata;
     private User targetUser;
     private Preferences prefs;
+    private ListenerRegistration chatListener;
 
     @Override
     protected ActivityChattingBinding getBinding() {
@@ -88,6 +90,9 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
     @Override
     protected void onDestroy() {
         prefs.setString("currentchat", null);
+        if(chatListener != null) {
+            chatListener.remove();
+        }
         super.onDestroy();
     }
 
@@ -187,7 +192,7 @@ public class ChatActivity extends BaseActivity<ActivityChattingBinding> {
      * 채팅 실시간 업데이트
      */
     private void setChatUpdate() {
-        Firestore.getFirestoreInstance().collection("chatRoom").document(chatId).collection("chatData").orderBy("date", Query.Direction.ASCENDING)
+        chatListener = Firestore.getChatDataQuery(chatId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, FirebaseFirestoreException error) {

@@ -200,6 +200,15 @@ public class Firestore {
     }
 
     /**
+     * 채팅 데이터를 가져오는 Query를 가져온다
+     * @param chatRoomId Chat Room ID
+     * @return Query
+     */
+    public static Query getChatDataQuery(String chatRoomId) {
+        return getFirestoreInstance().collection("chatRoom").document(chatRoomId).collection("chatData").orderBy("date", Query.Direction.ASCENDING);
+    }
+
+    /**
      * 완료되지 않은 모든 Post를 불러온다
      * @param postType Post Type
      *                 0 - 전체

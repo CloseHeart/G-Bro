@@ -205,6 +205,7 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
         binding.postUploadtime.setText(Util.timeStamptoDetailString(contentPost.getWriteTime()));
         binding.postLocation.setText(contentPost.getSummaryBuildingName(getApplicationContext()));
 
+        setChat();
         // 본인이 작성자면
         if(contentPost.getWriterId().equals(Auth.getCurrentUser().getUid())) {
             // 채팅버튼 삭제
@@ -244,6 +245,7 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                                                         if(createTask.isSuccessful()) {
                                                             chatActivity.putExtra("chatid", createTask.getResult().getId());
                                                             startActivity(chatActivity);
+                                                            Log.d(PostContentActivity.this.getClass().getSimpleName(), "Start Chat " + createTask.getResult().getId() + " with " + contentPost.getWriterId());
                                                         }
                                                     }
                                                 });
@@ -252,7 +254,10 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                                     else {
                                         chatActivity.putExtra("chatid", documents.get(0).getId());
                                         startActivity(chatActivity);
+                                        Log.d(PostContentActivity.this.getClass().getSimpleName(), "Start Chat " + documents.get(0).getId() + " with " + contentPost.getWriterId());
                                     }
+
+                                    Log.d(PostContentActivity.this.getClass().getSimpleName(), "Chat Extra Data " + chatActivity.getExtras());
                                 }
                             }
                         });

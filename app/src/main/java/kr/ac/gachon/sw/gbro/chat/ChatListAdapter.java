@@ -9,25 +9,34 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.databinding.ItemChatlistBinding;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.CloudStorage;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.model.ChatData;
 import kr.ac.gachon.sw.gbro.util.model.ChatRoom;
 import kr.ac.gachon.sw.gbro.util.model.User;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatListViewHolder> {
     private Context context;
     private ArrayList<ChatRoom> chatRoomList;
+    private ArrayList<ListenerRegistration> chatDataListenerList;
 
     public interface onItemClickListener {
         void onClick(View v, ChatRoom chatRoom);
@@ -39,23 +48,33 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatLi
         this.context = context;
         this.chatRoomList = chatRoomList;
         this.listener = listener;
+        chatDataListenerList = new ArrayList<>();
     }
 
-public class ChatListViewHolder extends RecyclerView.ViewHolder {
-    private ItemChatlistBinding binding;
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
 
-    public ChatListViewHolder(@NonNull ItemChatlistBinding binding) {
-        super(binding.getRoot());
-        this.binding = binding;
-
-        binding.getRoot().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onClick(v, chatRoomList.get(getAdapterPosition()));
-            }
-        });
+        for(ListenerRegistration listener : chatDataListenerList) {
+            if(listener != null) listener.remove();
+        }
     }
-}
+
+    public class ChatListViewHolder extends RecyclerView.ViewHolder {
+        private ItemChatlistBinding binding;
+
+        public ChatListViewHolder(@NonNull ItemChatlistBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onClick(v, chatRoomList.get(getAdapterPosition()));
+                }
+            });
+        }
+    }
 
     @NonNull
     @Override
@@ -75,6 +94,8 @@ public class ChatListViewHolder extends RecyclerView.ViewHolder {
             targetId = userList.get(0);
         }
 
+        // 새 메시지 Snapshot
+        setMessageSnapshot(position, binding);
 
         // 유저 데이터 가져와서 닉네임 및 이미지 설정
         Firestore.getUserData(targetId).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -151,5 +172,38 @@ public class ChatListViewHolder extends RecyclerView.ViewHolder {
     public void clear() {
         chatRoomList.clear();
         notifyDataSetChanged();
+    }
+
+    private void setMessageSnapshot(int position, ItemChatlistBinding binding) {
+        chatDataListenerList.add(
+                Firestore.getChatDataQuery(chatRoomList.get(position).getRoomId())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        // 에러 존재시
+                        if(error != null) {
+                            // Snapshot 에러 로그 출력
+                            Log.w(this.getClass().getSimpleName(), "Snapshot Error!", error);
+                        }
+
+                        if(value != null) {
+                            // 변경된 리스트 가져옴
+                            List<DocumentChange> changeList = value.getDocumentChanges();
+                            // 변경 리스트 전체 반복
+                            for(DocumentChange change : changeList) {
+                                // 추가된 경우
+                                if(change.getType() == DocumentChange.Type.ADDED) {
+                                    ChatData chatData = change.getDocument().toObject(ChatData.class);
+                                    binding.tvLastchat.setText(chatData.getMessage().trim().replaceAll("\n", ""));
+                                }
+                            }
+                        }
+                        // Snapshot에서 넘어온 데이터가 NULL이라면
+                        else {
+                            // 에러 로그
+                            Log.w(this.getClass().getSimpleName(), "Snapshot Data NULL!");
+                        }
+                    }
+                }));
     }
 }
