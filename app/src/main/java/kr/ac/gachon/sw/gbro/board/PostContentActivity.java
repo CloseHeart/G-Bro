@@ -245,6 +245,7 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                                                         if(createTask.isSuccessful()) {
                                                             chatActivity.putExtra("chatid", createTask.getResult().getId());
                                                             startActivity(chatActivity);
+                                                            Log.d(PostContentActivity.this.getClass().getSimpleName(), "Start Chat " + createTask.getResult().getId() + " with " + contentPost.getWriterId());
                                                         }
                                                     }
                                                 });
@@ -253,7 +254,10 @@ public class PostContentActivity extends BaseActivity<ActivityPostContentBinding
                                     else {
                                         chatActivity.putExtra("chatid", documents.get(0).getId());
                                         startActivity(chatActivity);
+                                        Log.d(PostContentActivity.this.getClass().getSimpleName(), "Start Chat " + documents.get(0).getId() + " with " + contentPost.getWriterId());
                                     }
+
+                                    Log.d(PostContentActivity.this.getClass().getSimpleName(), "Chat Extra Data " + chatActivity.getExtras());
                                 }
                             }
                         });
