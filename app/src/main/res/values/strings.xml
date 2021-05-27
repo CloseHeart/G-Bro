@@ -12,6 +12,10 @@
     <string name="none">없음</string>
     <string name="error">에러가 발생했습니다. 잠시 후 다시 시도해주세요.</string>
     <string name="backpressed">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="input">입력</string>
 
     <string name="login_invalid">가천대학교 구성원만 사용할 수 있습니다.</string>
     <string name="login_error">로그인에 실패했습니다.</string>
@@ -47,7 +51,6 @@
     <string name="setting_keywordnoti">키워드 알림</string>
     <string name="setting_keywordnoti_summary">지정한 키워드가 있는 게시물이 등록되면 알림을 받습니다.</string>
     <string name="setting_notikeyword">키워드 설정</string>
-    <string name="setting_notikeyword_msg">키워드는 ,로 구분되며 최대 3개까지 등록할 수 있습니다.\n(3개 이상일 경우 앞에서 3개만 적용되며, 키워드에 ,을 넣으면 제대로 작동하지 않습니다.)</string>
     <string name="setting_nearbyonoff">주변 분실물 알림</string>
     <string name="setting_nearbyonoff_summary">가까운 위치에 분실물이 있으면 알림을 받습니다.</string>
 
@@ -83,5 +86,9 @@
     <string name="Info_lost_cnt">분실물 : %d 개</string>
     <string name="Info_get_cnt">습득물 : %d 개</string>
 
+    <string name="localnoti_foreground_title">G-Bro 알림 작동중</string>
+    <string name="localnoti_foreground_msg">알림 서비스가 작동중입니다! 여기를 누르시면 작동 알림을 끄실 수 있습니다.</string>
 
+    <string name="keywordnoti_title">키워드 알림</string>
+    <string name="keywordnoti_msg">%s 키워드가 있는 게시물이 등록되었습니다!</string>
 </resources>

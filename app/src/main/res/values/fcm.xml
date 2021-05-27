@@ -2,4 +2,8 @@
 <resources>
     <string name="fcm_id">FirebaseMsg</string>
     <string name="fcm_name">서버 알람</string>
+
+    <string name="localnoti_service_name">알림 작동 중 알림</string>
+    <string name="keywordnoti_name">키워드 알림</string>
+    <string name="nearbynoti_name">근처 분실물 알림</string>
 </resources>

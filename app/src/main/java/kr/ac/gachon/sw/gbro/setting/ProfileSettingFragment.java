@@ -66,7 +66,6 @@ public class ProfileSettingFragment extends PreferenceFragmentCompat {
                         // 성공했다면
                         if(documentTask.isSuccessful()) {
                             Toast.makeText(getContext(), R.string.change_nickname_success, Toast.LENGTH_LONG).show();
-                            // 추후에 새로고침 기능 넣을 것
                         }
                         // 실패했다면
                         else {

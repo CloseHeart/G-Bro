@@ -27,16 +27,19 @@ import kr.ac.gachon.sw.gbro.chat.ChatListActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityMainBinding;
 import kr.ac.gachon.sw.gbro.databinding.CustomactionbarBinding;
 import kr.ac.gachon.sw.gbro.map.MapFragment;
+import kr.ac.gachon.sw.gbro.service.LocalNotiService;
 import kr.ac.gachon.sw.gbro.setting.SettingActivity;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
+import kr.ac.gachon.sw.gbro.util.Preferences;
 import kr.ac.gachon.sw.gbro.util.model.User;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding>{
-    long lastPressedTime = 0;
-    long backPressedTime = 2000;
+    private long lastPressedTime = 0;
+    private long backPressedTime = 2000;
     private String searchName = null;
     private static int selectedPosition = 0;
+    private Preferences prefs;
 
     @Override
     protected ActivityMainBinding getBinding() {
@@ -46,9 +49,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // SharedPreferences
+        prefs = new Preferences(getApplicationContext());
+
         setFragment();
         setSlidingPanel();
         setFab();
+        setService();
         checkFCMToken();
     }
 
@@ -232,6 +240,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
                         }
                     });
 
+        }
+    }
+
+    private void setService() {
+        if(prefs.getBoolean("keyWordOnOff", false) || prefs.getBoolean("nearbyOnOff", false)) {
+            startService(new Intent(getApplicationContext(), LocalNotiService.class));
         }
     }
 }

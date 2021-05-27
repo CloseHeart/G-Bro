@@ -8,7 +8,6 @@
             android:summary="@string/setting_changeinfo_summary"
             />
 
-
         <Preference
             android:key="check_my_board"
             android:title="@string/setting_mypost"
@@ -30,10 +29,9 @@
             android:summary="@string/setting_keywordnoti_summary"
             android:defaultValue="false"/>
 
-        <EditTextPreference
+        <Preference
             android:key="notiKeyWord"
             android:title="@string/setting_notikeyword"
-            android:dialogMessage="@string/setting_notikeyword_msg"
             android:dependency="keyWordOnOff"/>
 
         <SwitchPreference

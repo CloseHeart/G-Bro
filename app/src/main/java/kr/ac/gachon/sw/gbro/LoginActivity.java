@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import kr.ac.gachon.sw.gbro.base.BaseActivity;
 import kr.ac.gachon.sw.gbro.databinding.ActivityLoginBinding;
+import kr.ac.gachon.sw.gbro.service.LocalNotiService;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Preferences;
@@ -68,7 +69,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onStart() {
         super.onStart();
-
         // 현재 유저가 null 아니면
         if(Auth.getCurrentUser() != null) {
             // CurrentChat이 null이 아니라면 null로 설정
