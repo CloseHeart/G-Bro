@@ -20,6 +20,12 @@ public class Util {
     // FCM DEFAULT ID
     public static final int FCM_DEFAULT_ID = 0;
 
+    // 키워드 Notification Service Foreground Notificaiton ID
+    public static final String KEYWORD_FOREGROUND_ID = "keyword_foreground";
+
+    // 키워드 Notification  ID
+    public static final String KEYWORD_ID = "keyword";
+
     /**
      * Firebase Timestamp 정보를 Format에 맞춰 String 형태로 반환
      * @author Minjae Seon
