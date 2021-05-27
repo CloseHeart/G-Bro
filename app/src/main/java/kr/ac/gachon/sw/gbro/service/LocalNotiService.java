@@ -71,6 +71,7 @@ public class LocalNotiService extends Service {
             stopSelf();
         }
 
+        // Foreground 알림 활성화
         initForegroundService();
 
         if(keywordOn) {
@@ -82,6 +83,7 @@ public class LocalNotiService extends Service {
                         }
 
                         if(value != null) {
+                            // 처음이 아니라면
                             if(!isKeywordFirst) {
                                 ArrayList<String> keywordList = prefs.getStringArrayList("keywordList", null);
 
@@ -94,21 +96,27 @@ public class LocalNotiService extends Service {
                                         Post postData = change.getDocument().toObject(Post.class);
                                         postData.setPostId(change.getDocument().getId());
 
-                                        // 추가된 경우라면
-                                        if (change.getType() == DocumentChange.Type.ADDED) {
-                                            for (String keyword : keywordList) {
-                                                // 내용이나 제목에 일치하는 내용이 있다면
-                                                if (postData.getContent().trim().contains(keyword) || postData.getTitle().trim().contains(keyword)) {
-                                                    // 알림 전송
-                                                    showKeywordNotification(keyword, postData);
-                                                    break;
+                                        // 글 작성자가 본인이 아니라면
+                                        if(!postData.getWriterId().equals(Auth.getCurrentUser().getUid())) {
+                                            // 추가된 경우라면
+                                            if (change.getType() == DocumentChange.Type.ADDED) {
+                                                for (String keyword : keywordList) {
+                                                    // 내용이나 제목에 일치하는 내용이 있다면
+                                                    if (postData.getContent().trim().contains(keyword) || postData.getTitle().trim().contains(keyword)) {
+                                                        // 알림 전송
+                                                        showKeywordNotification(keyword, postData);
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
+                            // 처음이라면
                             else {
+                                // 처음에는 전체 데이터가 다 ADDED이기 때문에 알림 전송 안함
+                                // 대신 체크 변수를 false로
                                 isKeywordFirst = false;
                             }
                         }
