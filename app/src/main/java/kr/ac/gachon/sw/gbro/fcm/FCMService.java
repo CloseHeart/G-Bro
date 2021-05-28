@@ -98,7 +98,6 @@ public class FCMService extends FirebaseMessagingService {
                 // 현재 Chat ID가 null이 아니라면
                 String currentChatId = prefs.getString("currentchat", null);
                 if(currentChatId != null && !currentChatId.equals(data.get("chatId"))) {
-
                     // User ID Check
                     String userId = data.get("userId");
                     if(!msgList.containsKey(userId)) {
@@ -113,6 +112,7 @@ public class FCMService extends FirebaseMessagingService {
                     chatIntent.putExtra("chatid", data.get("chatId"));
                     chatIntent.putExtra("targetid", userId);
                     PendingIntent chatPIntent = PendingIntent.getActivity(this, 0, chatIntent, PendingIntent.FLAG_ONE_SHOT);
+                    notiBuilder.setContentIntent(chatPIntent);
 
                     // Profile이 NULL이 아니라면
                     if(data.get("profile") != null) {
@@ -123,7 +123,6 @@ public class FCMService extends FirebaseMessagingService {
                                     public void onComplete(@NonNull Task<byte[]> task) {
                                         if(userId != null && msgList.get(userId) != null) {
                                             notiBuilder.setLargeIcon(Util.byteArrayToBitmap(task.getResult()));
-                                            notiBuilder.setContentIntent(chatPIntent);
                                             notiManager.notify(msgList.get(userId), notiBuilder.build());
                                         }
                                         else {
@@ -136,7 +135,6 @@ public class FCMService extends FirebaseMessagingService {
                     else {
                         if(userId != null && msgList.get(userId) != null) {
                             notiBuilder.setLargeIcon(Util.drawableToBitmap(getApplicationContext(), R.drawable.profile));
-                            notiBuilder.setContentIntent(chatPIntent);
                             notiManager.notify(msgList.get(userId), notiBuilder.build());
                         }
                         else {
