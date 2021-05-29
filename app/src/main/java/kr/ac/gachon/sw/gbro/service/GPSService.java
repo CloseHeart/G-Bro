@@ -40,13 +40,12 @@ public class GPSService extends Service {
     public void onCreate() {
         super.onCreate();
         String[] buildings = getResources().getStringArray(R.array.gachon_globalcampus_coordinate);
-        String[] buildingNames = getResources().getStringArray(R.array.gachon_globalcampus_building2);
 
-        addGeofecne(buildings, buildingNames);
+        addGeofecne(buildings);
     }
 
     // Geofence list 추가
-    private void addGeofecne(String[] list, String[] name){
+    private void addGeofecne(String[] list){
         if(list == null || list.length == 0){
             Log.d(getClass().getName(), "list is empty");
             onDestroy();    // 빌딩들이 없으니, 서비스 종료
@@ -56,8 +55,8 @@ public class GPSService extends Service {
 
             // 빌딩 지오펜스 추가
             geofenceList.add(new Geofence.Builder()
-                    .setRequestId(name[i]) // 이벤트 발생시 BroadcastReceiver에서 구분할 id (빌딩 이름)
-                    .setCircularRegion(Double.valueOf(res[0]), Double.valueOf(res[1]), RADIUS)  // 위치 및 반경(m)
+                    .setRequestId(String.valueOf(i)) // 이벤트 발생시 BroadcastReceiver에서 구분할 id (빌딩 타입)
+                    .setCircularRegion(Double.parseDouble(res[0]), Double.parseDouble(res[1]), RADIUS)  // 위치 및 반경(m)
                     .setExpirationDuration(Geofence.NEVER_EXPIRE)    // Geofence 만료 시간
                     .setLoiteringDelay(1000 * 60)   // 1분 머물기 시간
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL) // 머물기 감지시
