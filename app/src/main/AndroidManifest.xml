@@ -8,32 +8,41 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
-        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GBro">
+        <receiver
+            android:name=".map.GeofenceReceiver"
+            android:allowBackup="true"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <service
+            android:name=".service.GPSService"
+            android:enabled="true"
+            android:exported="true" />
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="@string/navermap_clientid" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/fcm_id" />
-        
+
         <service
             android:name=".fcm.FCMService"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.LocalNotiService"
             android:exported="false" />
@@ -53,11 +62,13 @@
         <activity android:name=".setting.SettingActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".board.PostContentActivity" />
-        <activity android:name=".board.WriteActivity"
+        <activity
+            android:name=".board.WriteActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".setting.MyPostActivity" />
         <activity android:name=".chat.ChatListActivity" />
-        <activity android:name=".chat.ChatActivity"
+        <activity
+            android:name=".chat.ChatActivity"
             android:windowSoftInputMode="adjustResize" />
     </application>
 

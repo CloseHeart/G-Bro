@@ -264,4 +264,9 @@ public class Firestore {
     public static Task<Void> setUserFcmToken(String userId, String fcmToken) {
         return getFirestoreInstance().collection("user").document(userId).update("fcmToken", fcmToken);
     }
+
+    public static Task<QuerySnapshot> getBuildingPost(int buildingId){
+        return getFirestoreInstance().collection("post").whereEqualTo("summaryBuildingType", buildingId).get();
+    }
+
 }
