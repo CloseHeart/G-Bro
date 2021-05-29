@@ -91,4 +91,7 @@
 
     <string name="keywordnoti_title">키워드 알림</string>
     <string name="keywordnoti_msg">%s 키워드가 있는 게시물이 등록되었습니다!</string>
+
+    <string name="nearbynoti_title">근처 알림</string>
+    <string name="nearbynoti_msg">%s에 %d개의 분실물이 있습니다!</string>
 </resources>

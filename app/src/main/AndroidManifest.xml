@@ -22,11 +22,6 @@
             android:name=".map.GeofenceReceiver"
             android:allowBackup="true"
             android:enabled="true"
-            android:exported="true"></receiver>
-
-        <service
-            android:name=".service.GPSService"
-            android:enabled="true"
             android:exported="true" />
 
         <meta-data
