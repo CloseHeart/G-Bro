@@ -1,22 +1,33 @@
 package kr.ac.gachon.sw.gbro.service;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -31,6 +42,7 @@ import java.util.List;
 import kr.ac.gachon.sw.gbro.R;
 import kr.ac.gachon.sw.gbro.board.BoardFragment;
 import kr.ac.gachon.sw.gbro.board.PostContentActivity;
+import kr.ac.gachon.sw.gbro.map.GeofenceReceiver;
 import kr.ac.gachon.sw.gbro.util.Auth;
 import kr.ac.gachon.sw.gbro.util.Firestore;
 import kr.ac.gachon.sw.gbro.util.Preferences;
@@ -42,6 +54,11 @@ public class LocalNotiService extends Service {
     private Preferences prefs;
     private ListenerRegistration boardUpdateListener;
     private boolean isKeywordFirst;
+
+    private GeofencingClient geofencingClient;
+    private static List<Geofence> geofenceList = new ArrayList<>();
+    private PendingIntent geofencePendingIntent;
+    private static final int RADIUS = 100;
 
     @Nullable
     @Override
@@ -128,6 +145,42 @@ public class LocalNotiService extends Service {
                     });
         }
 
+        if(nearbyOn){
+            Log.d(LocalNotiService.this.getClass().getSimpleName(), "GPS Service start");
+            String[] buildings = getResources().getStringArray(R.array.gachon_globalcampus_coordinate);
+            addGeofecne(buildings);
+
+            // 지오펜싱 클라이언트
+            geofencingClient = LocationServices.getGeofencingClient(this);
+
+            // 권한 체크
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getApplicationContext(), "ACCESS_FINE_LOCATION 권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions((Activity) getApplicationContext(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Integer.parseInt(Manifest.permission.ACCESS_FINE_LOCATION));
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if(ActivityCompat.shouldShowRequestPermissionRationale((Activity) getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)){
+                    Toast.makeText(getApplicationContext(), "ACCESS_BACKGROUND_LOCATION 권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show();
+                }
+                ActivityCompat.requestPermissions((Activity) getApplicationContext(), new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, Integer.parseInt(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
+            }
+
+            // 지오펜싱 추가
+            geofencingClient.addGeofences(getGeofencingRequest(geofenceList), getGeofencePendingIntent())
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(LocalNotiService.this.getClass().getSimpleName(), "Success add Geofences");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(LocalNotiService.this.getClass().getSimpleName(), "Fail add Geofences");
+                }
+            });
+        }
+
         return START_STICKY;
     }
 
@@ -187,4 +240,41 @@ public class LocalNotiService extends Service {
             notiManager.notify(100, notiBuilder.build());
         }
     }
+
+    // Geofence list 추가
+    private void addGeofecne(String[] list){
+        if(list == null || list.length == 0){
+            Log.d(getClass().getName(), "list is empty");
+            onDestroy();    // 빌딩들이 없으니, 서비스 종료
+        }
+        for (int i = 0; i < list.length; i++) {
+            String[] res = list[i].split(",");
+
+            // 빌딩 지오펜스 추가
+            geofenceList.add(new Geofence.Builder()
+                    .setRequestId(String.valueOf(i)) // 이벤트 발생시 BroadcastReceiver에서 구분할 id (빌딩 타입)
+                    .setCircularRegion(Double.parseDouble(res[0]), Double.parseDouble(res[1]), RADIUS)  // 위치 및 반경(m)
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE)    // Geofence 만료 시간
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER) // 머물기 감지시
+                    .build());
+        }
+    }
+
+    private GeofencingRequest getGeofencingRequest(List<Geofence> geofenceList) {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(LocalNotiService.geofenceList);
+        return builder.build();
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent;
+        } else {
+            Intent intent = new Intent(this, GeofenceReceiver.class);
+            geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+        return geofencePendingIntent;
+    }
+
 }

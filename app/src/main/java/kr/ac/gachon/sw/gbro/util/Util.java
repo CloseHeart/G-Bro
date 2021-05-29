@@ -26,6 +26,9 @@ public class Util {
     // 키워드 Notification  ID
     public static final String KEYWORD_ID = "keyword";
 
+    // Nearby Notification ID
+    public static final String NEARBY_ID = "nearby";
+
     /**
      * Firebase Timestamp 정보를 Format에 맞춰 String 형태로 반환
      * @author Minjae Seon
