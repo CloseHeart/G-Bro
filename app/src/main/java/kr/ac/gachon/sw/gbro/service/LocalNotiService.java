@@ -58,7 +58,7 @@ public class LocalNotiService extends Service {
     private GeofencingClient geofencingClient;
     private static List<Geofence> geofenceList = new ArrayList<>();
     private PendingIntent geofencePendingIntent;
-    private static final int RADIUS = 100;
+    private static final int RADIUS = 80;
 
     @Nullable
     @Override
@@ -68,8 +68,24 @@ public class LocalNotiService extends Service {
 
     @Override
     public void onDestroy() {
-        if(boardUpdateListener != null) {
+        if (boardUpdateListener != null) {
             boardUpdateListener.remove();
+        }
+
+        if(geofencingClient != null) {
+            geofencingClient.removeGeofences(getGeofencePendingIntent())
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(LocalNotiService.this.getClass().getSimpleName(), "Success add Geofences");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(LocalNotiService.this.getClass().getSimpleName(), "Failed Remove Geofences", e);
+                        }
+                    });
         }
 
         super.onDestroy();
@@ -84,24 +100,41 @@ public class LocalNotiService extends Service {
         boolean nearbyOn = prefs.getBoolean("nearbyOnOff", false);
 
         // 현재 유저가 null이거나 아무 알림도 켜지지 않은 경우 서비스 정지
-        if(Auth.getCurrentUser() == null || (!keywordOn && !nearbyOn)) {
+        if (Auth.getCurrentUser() == null || (!keywordOn && !nearbyOn)) {
             stopSelf();
+        }
+
+        // 근처 알림 켜졌을떄 권한 체크
+        if(nearbyOn) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // 백그라운드 권한 안되어있으면
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // 서비스 정지
+                    stopSelf();
+                }
+            } else {
+                // 위치 권한 허용 안되어있으면
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // 서비스 정지
+                    stopSelf();
+                }
+            }
         }
 
         // Foreground 알림 활성화
         initForegroundService();
 
-        if(keywordOn) {
+        if (keywordOn) {
             boardUpdateListener =
                     Firestore.getPostData(2, null).addSnapshotListener((value, error) -> {
-                        if(error != null) {
+                        if (error != null) {
                             // Snapshot 에러 로그 출력
                             Log.w(LocalNotiService.this.getClass().getSimpleName(), "Snapshot Error!", error);
                         }
 
-                        if(value != null) {
+                        if (value != null) {
                             // 처음이 아니라면
-                            if(!isKeywordFirst) {
+                            if (!isKeywordFirst) {
                                 ArrayList<String> keywordList = prefs.getStringArrayList("keywordList", null);
 
                                 if (keywordList != null && keywordList.size() > 0) {
@@ -114,7 +147,7 @@ public class LocalNotiService extends Service {
                                         postData.setPostId(change.getDocument().getId());
 
                                         // 글 작성자가 본인이 아니라면
-                                        if(!postData.getWriterId().equals(Auth.getCurrentUser().getUid())) {
+                                        if (!postData.getWriterId().equals(Auth.getCurrentUser().getUid())) {
                                             // 추가된 경우라면
                                             if (change.getType() == DocumentChange.Type.ADDED) {
                                                 for (String keyword : keywordList) {
@@ -145,28 +178,16 @@ public class LocalNotiService extends Service {
                     });
         }
 
-        if(nearbyOn){
+        if (nearbyOn) {
             Log.d(LocalNotiService.this.getClass().getSimpleName(), "GPS Service start");
             String[] buildings = getResources().getStringArray(R.array.gachon_globalcampus_coordinate);
-            addGeofecne(buildings);
+            addGeofence(buildings);
 
             // 지오펜싱 클라이언트
             geofencingClient = LocationServices.getGeofencingClient(this);
 
-            // 권한 체크
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getApplicationContext(), "ACCESS_FINE_LOCATION 권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions((Activity) getApplicationContext(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Integer.parseInt(Manifest.permission.ACCESS_FINE_LOCATION));
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                if(ActivityCompat.shouldShowRequestPermissionRationale((Activity) getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)){
-                    Toast.makeText(getApplicationContext(), "ACCESS_BACKGROUND_LOCATION 권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show();
-                }
-                ActivityCompat.requestPermissions((Activity) getApplicationContext(), new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, Integer.parseInt(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
-            }
+            Log.d(LocalNotiService.this.getClass().getSimpleName(), "Geofence Size : " + geofenceList.size());
 
-            // 지오펜싱 추가
             geofencingClient.addGeofences(getGeofencingRequest(geofenceList), getGeofencePendingIntent())
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -176,7 +197,7 @@ public class LocalNotiService extends Service {
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.w(LocalNotiService.this.getClass().getSimpleName(), "Fail add Geofences");
+                    Log.w(LocalNotiService.this.getClass().getSimpleName(), "Fail add Geofences", e);
                 }
             });
         }
@@ -242,13 +263,16 @@ public class LocalNotiService extends Service {
     }
 
     // Geofence list 추가
-    private void addGeofecne(String[] list){
+    private void addGeofence(String[] list){
         if(list == null || list.length == 0){
             Log.d(getClass().getName(), "list is empty");
             onDestroy();    // 빌딩들이 없으니, 서비스 종료
         }
-        for (int i = 0; i < list.length; i++) {
+
+        for (int i = 0; i < list.length - 1; i++) {
             String[] res = list[i].split(",");
+
+            Log.d("Geofence", "Added " + Double.parseDouble(res[0]) + ", " + Double.parseDouble(res[1]));
 
             // 빌딩 지오펜스 추가
             geofenceList.add(new Geofence.Builder()

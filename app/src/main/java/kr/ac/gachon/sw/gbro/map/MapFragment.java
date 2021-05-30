@@ -52,35 +52,10 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
     private ArrayList<Integer> path = null;
     private boolean isMain = false;
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
-    private FusedLocationSource locationSource;
-    private NaverMap naverMap;
-    private double lat,lon;
-
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
-        this.naverMap = naverMap;
-        naverMap.setLocationSource(locationSource);
-        naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
-
-        naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
-            @Override
-            public void onLocationChange(@NonNull Location location) {
-                lat = location.getLatitude();
-                lon = location.getLongitude();
-            }
-        });
     }
 
-    public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions,@NonNull int[] grantResults){
-        if(locationSource.onRequestPermissionsResult(requestCode,permissions,grantResults)){
-            if(!locationSource.isActivated()){
-                naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
-            }
-            return;
-        }
-        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
-    }
     @Override
     protected FragmentMapBinding getBinding() {
         return FragmentMapBinding.inflate(getLayoutInflater());
@@ -106,13 +81,10 @@ public class MapFragment extends BaseFragment<FragmentMapBinding> implements OnM
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locationSource= new FusedLocationSource(this,LOCATION_PERMISSION_REQUEST_CODE);
         if (getArguments() != null) {
             path = getArguments().getIntegerArrayList("path");
             isMain = getArguments().getBoolean("isMain");
         }
-
-
     }
 
     @Override

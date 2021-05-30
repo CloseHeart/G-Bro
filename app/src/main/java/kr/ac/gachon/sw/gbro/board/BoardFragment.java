@@ -74,7 +74,7 @@ public class BoardFragment extends BaseFragment<FragmentBoardBinding> implements
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         loadingDialog = new LoadingDialog(getActivity());
         setAdapter();
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

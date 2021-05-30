@@ -38,7 +38,7 @@ public class ProfileFragment extends BaseFragment<FragmentProfileBinding> {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setProfileData();
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     /**

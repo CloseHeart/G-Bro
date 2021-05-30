@@ -45,6 +45,6 @@ public class ImageViewFragment extends BaseFragment<FragmentImageviewBinding> {
         if(image != null) {
             binding.imageView.setImageBitmap(image);
         }
-        return binding.getRoot();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 }

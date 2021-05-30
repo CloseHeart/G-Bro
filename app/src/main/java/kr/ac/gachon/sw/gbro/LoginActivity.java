@@ -53,9 +53,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         // Firebase Auth Instance
         mAuth = Auth.getFirebaseAuthInstance();
 
-        // SharedPreferences
-        prefs = new Preferences(getApplicationContext());
-
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +66,9 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onStart() {
         super.onStart();
+        // SharedPreferences
+        prefs = new Preferences(getApplicationContext());
+
         // 현재 유저가 null 아니면
         if(Auth.getCurrentUser() != null) {
             // CurrentChat이 null이 아니라면 null로 설정

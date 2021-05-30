@@ -56,42 +56,32 @@ public class GeofenceReceiver extends BroadcastReceiver {
 
             for(Geofence currentGeofence : triggeringGeofences){
                 int buildingType = Integer.parseInt(currentGeofence.getRequestId());
-                int postCnt = getPostCount(buildingType);
 
-                if(postCnt == 0){
-                    Log.d(GeofenceReceiver.this.getClass().getSimpleName(), "No Post in " + buildingType);
-                }
-                else{
-                    String buildingName = Resources.getSystem().getStringArray(R.array.gachon_globalcampus_building2)[buildingType];
-                    Log.d(GeofenceReceiver.this.getClass().getSimpleName(), "Post : " + postCnt + " in + " + buildingType);
+                Firestore.getBuildingPost(buildingType).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            Log.d(getClass().getName(), "Success Get Post");
+                            int count = task.getResult().size();
 
-                    showNearbyNotification(buildingName, postCnt);
-                }
+                            if(count == 0){
+                                Log.d(GeofenceReceiver.this.getClass().getSimpleName(), "No Post in " + buildingType);
+                            }
+                            else {
+                                String buildingName = context.getResources().getStringArray(R.array.gachon_globalcampus_building2)[buildingType];
+                                Log.d(GeofenceReceiver.this.getClass().getSimpleName(), "Post : " + count + " in + " + buildingType);
+
+                                showNearbyNotification(buildingName, count);
+                            }
+                        }
+                        else{
+                            Log.d(getClass().getName(), "Fail Get Post");
+                        }
+                    }
+                });
             }
         }
 
-    }
-
-    /**
-     * 해당 건물에 등록된 모든 post 갯수
-     * @param buildingType int
-     * @return count
-     */
-    private int getPostCount(int buildingType){
-        final int[] count = {0};
-        Firestore.getBuildingPost(buildingType).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    Log.d(getClass().getName(), "Success Get Post");
-                    count[0] = task.getResult().size();
-                }
-                else{
-                    Log.d(getClass().getName(), "Fail Get Post");
-                }
-            }
-        });
-        return count[0];
     }
 
     private void showNearbyNotification(String buildingName, int postCnt){

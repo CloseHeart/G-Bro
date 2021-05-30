@@ -53,6 +53,9 @@
     <string name="setting_notikeyword">키워드 설정</string>
     <string name="setting_nearbyonoff">주변 분실물 알림</string>
     <string name="setting_nearbyonoff_summary">가까운 위치에 분실물이 있으면 알림을 받습니다.</string>
+    <string name="setting_nearby_permission">해당 기능을 사용하기 위해서는 위치 관련 권한이 필요합니다.</string>
+    <string name="setting_nearby_bgpermission">서비스에서 위치를 확인할 수 있도록 \'항상 허용\'을 선택하여 주세요!</string>
+    <string name="setting_nearby_permission_denied">위치 권한이 거부되어 사용할 수 없습니다. 설정에서 위치 권한을 변경해주세요.</string>
 
     <string name="post_title">제목</string>
     <string name="post_date">날짜</string>
