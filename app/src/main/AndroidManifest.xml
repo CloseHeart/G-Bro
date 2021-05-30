@@ -11,18 +11,16 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:theme="@style/Theme.GBro">
+
         <receiver
             android:name=".map.GeofenceReceiver"
-            android:allowBackup="true"
-            android:enabled="true"
-            android:exported="true" />
+            android:enabled="true" />
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
@@ -38,6 +36,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <service
             android:name=".service.LocalNotiService"
             android:exported="false" />
