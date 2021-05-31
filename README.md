@@ -14,7 +14,11 @@
 </p>
 
 ## Preview
- - Coming Soon..
+<p align="center">
+ <img src="https://user-images.githubusercontent.com/3215313/120203261-79bdd680-c262-11eb-806e-39c827e0cbea.png" width="25%">
+ <img src="https://user-images.githubusercontent.com/3215313/120203308-88a48900-c262-11eb-9b22-0ae02985750e.png" width="25%">
+ <img src="https://user-images.githubusercontent.com/3215313/120203327-90642d80-c262-11eb-9513-d27ac2c87b6a.png" width="25%">
+</p>
 
 ## Function
  - Gachon University Member Certification
