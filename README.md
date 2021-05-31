@@ -1,5 +1,5 @@
 <p align="center">
-    <a href=""><img alt="G-Bro Logo" src="https://raw.githubusercontent.com/CloseHeart/G-Bro/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"></a>
+    <a href="https://github.com/CloseHeart/G-Bro"><img alt="G-Bro Logo" src="https://raw.githubusercontent.com/CloseHeart/G-Bro/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"></a>
 </p>
 
 <h1 align="center">G-Bro</h1>
