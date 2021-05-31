@@ -204,6 +204,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
 
     private void checkFCMToken() {
         if(Auth.getCurrentUser() != null) {
+            Log.d(MainActivity.this.getClass().getSimpleName(), "Check FCM Token");
+
             Firestore.getUserData(Auth.getCurrentUser().getUid())
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
@@ -211,28 +213,31 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>{
                             if(task.isSuccessful()) {
                                 User user = task.getResult().toObject(User.class);
 
-                                if(user.getFcmToken() == null) {
-                                    FirebaseMessaging.getInstance().getToken()
-                                            .addOnCompleteListener(new OnCompleteListener<String>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<String> tokenTask) {
-                                                    if(task.isSuccessful()) {
+                                FirebaseMessaging.getInstance().getToken()
+                                        .addOnCompleteListener(new OnCompleteListener<String>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<String> tokenTask) {
+                                                if(task.isSuccessful()) {
+                                                    if(user.getFcmToken() == null || !user.getFcmToken().equals(tokenTask.getResult())) {
                                                         Firestore.setUserFcmToken(Auth.getCurrentUser().getUid(), tokenTask.getResult())
                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<Void> setTask) {
-                                                                        if(!setTask.isSuccessful()) {
-                                                                            Log.e(MainActivity.this.getClass().getSimpleName(), "Set Token Error", setTask.getException());
+                                                                        if (setTask.isSuccessful()) {
+                                                                            Log.d(MainActivity.this.getClass().getSimpleName(), "Update Token Success");
+                                                                        }
+                                                                        else {
+                                                                            Log.e(MainActivity.this.getClass().getSimpleName(), "Update Token Error", setTask.getException());
                                                                         }
                                                                     }
                                                                 });
                                                     }
-                                                    else {
-                                                        Log.e(MainActivity.this.getClass().getSimpleName(), "Get Token Error", tokenTask.getException());
-                                                    }
                                                 }
-                                            });
-                                }
+                                                else {
+                                                    Log.e(MainActivity.this.getClass().getSimpleName(), "Get Token Error", tokenTask.getException());
+                                                }
+                                            }
+                                        });
                             }
                             else {
                                 Log.e(MainActivity.this.getClass().getSimpleName(), "Get User Data Error", task.getException());
