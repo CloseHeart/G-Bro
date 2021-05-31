@@ -39,8 +39,6 @@ public class KeywordDialog extends Dialog {
         super(context);
         this.keywordList = keywordList;
 
-        setCanceledOnTouchOutside(false);
-        setCancelable(false);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         viewBinding = DialogKeywordBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());

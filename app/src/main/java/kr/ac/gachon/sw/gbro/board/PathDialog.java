@@ -21,8 +21,6 @@ public class PathDialog extends Dialog {
     
     public PathDialog(@NonNull Context context){
         super(context);
-        setCanceledOnTouchOutside(false);
-        setCancelable(false);
         requestWindowFeature(Window.FEATURE_NO_TITLE);  // 타이틀 제거
         viewBinding = DialogPathSelectionBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
@@ -33,8 +31,6 @@ public class PathDialog extends Dialog {
 
     public PathDialog(@NonNull Context context, ArrayList<Integer> pathList){
         super(context);
-        setCanceledOnTouchOutside(false);
-        setCancelable(false);
         requestWindowFeature(Window.FEATURE_NO_TITLE);  // 타이틀 제거
         viewBinding = DialogPathSelectionBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
